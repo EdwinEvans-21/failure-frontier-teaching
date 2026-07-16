@@ -1,0 +1,16 @@
+{
+  "problem_id": "palindrome-number",
+  "title": "Palindrome Number",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "isPalindrome"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 2.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 64
+  }
+}

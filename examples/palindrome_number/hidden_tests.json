@@ -1,0 +1,8 @@
+[
+  {"args": [0], "expected": true},
+  {"args": [7], "expected": true},
+  {"args": [12321], "expected": true},
+  {"args": [123], "expected": false},
+  {"args": [1000021], "expected": false},
+  {"args": [-101], "expected": false}
+]

@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "failure-frontier-teaching"
+version = "0.1.0"
+description = "A Docker-isolated local judge for Failure-Frontier Teaching experiments"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+ffjudge = "ffjudge.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["ffjudge*"]
