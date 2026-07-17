@@ -4,7 +4,7 @@
   "difficulty": "medium_upper",
   "role": "medium_upper_construction_candidate",
   "source_url": "https://leetcode.com/problems/exact-monotone-paths/",
-  "description": "Construct an obstacle grid with exactly k monotone paths, or return an empty list when no construction exists.",
+  "description": "Given integers m, n, and k, construct an m-row by n-column obstacle grid having exactly k distinct paths from the top-left cell to the bottom-right cell. Return the grid as list[str], using '.' for an open cell and '#' for an obstacle. Both endpoints must be open. A path may visit only open cells and at each step may move exactly one cell right or one cell down. Return [] exactly when no such grid exists; otherwise any grid satisfying all requirements is valid.",
   "input_contract": "Integers m, n, k with 1 <= m, n <= 10 and 1 <= k <= 4.",
   "output_contract": "Return list[str] using only '.' and '#', or [] when infeasible.",
   "entrypoint": {

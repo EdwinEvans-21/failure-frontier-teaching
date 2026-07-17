@@ -4,7 +4,7 @@
   "difficulty": "easy",
   "role": "sanity_control",
   "source_url": "https://leetcode.com/problems/palindrome-number/",
-  "description": "Determine whether the decimal representation of an integer reads the same from left to right and right to left.",
+  "description": "Given an integer x, return true exactly when its usual base-10 representation reads the same from left to right and right to left. A negative integer is not a palindrome because its leading minus sign has no matching trailing sign. The value 0 is a palindrome. Do not add leading zeroes when interpreting the representation.",
   "input_contract": "One signed 32-bit integer x.",
   "output_contract": "Return a bool; integer values such as 0 and 1 are not accepted as substitutes.",
   "entrypoint": {

@@ -36,7 +36,13 @@ class BaselineManifestTests(unittest.TestCase):
             relative = Path(record["path"])
             target = destination / relative
             target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(ROOT / relative, target)
+            content = subprocess.run(
+                ["git", "show", f"failure-frontier-baseline-v1:{relative.as_posix()}"],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+            ).stdout
+            target.write_bytes(content)
         manifest = destination / "experiments/baseline_v1/baseline_manifest.json"
         manifest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(self.manifest_path, manifest)
@@ -51,7 +57,10 @@ class BaselineManifestTests(unittest.TestCase):
             return verify(root, manifest)
 
     def test_checked_in_baseline_verifies(self) -> None:
-        self.assertEqual(verify(ROOT, self.manifest_path), [])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = self.copy_baseline(root)
+            self.assertEqual(verify(root, manifest), [])
 
     def test_manifest_identity_and_environment_are_recorded(self) -> None:
         self.assertEqual(self.manifest["baseline_id"], BASELINE_ID)

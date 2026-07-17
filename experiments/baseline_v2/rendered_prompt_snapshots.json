@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "hash_target": "exact UTF-8 bytes returned by PromptRenderer.formatted_problem",
+  "snapshots": {
+    "lc-0009-palindrome-number": {
+      "sha256": "6da67fa450eb4bcda917758aafa3045068e4c1abff108699c896151d0ea84163",
+      "length": 764
+    },
+    "lc-3988-exact-monotone-paths": {
+      "sha256": "cf776b89ab4968b5c6571a886da51fd661db91412dd28eae8e1e394f8f8107d7",
+      "length": 1087
+    },
+    "lc-3980-minimum-operations-binary-transform": {
+      "sha256": "438acdbf315bb88b2a5e385ca9febf2b4bc29ad84c277b5fa52de5f417fa2692",
+      "length": 1401
+    },
+    "lc-3312-sorted-gcd-pair-queries": {
+      "sha256": "566b8e37bb862401b3ba338c5a9ebc662254eb556fe9315747fa86abe7bf9e3c",
+      "length": 1148
+    },
+    "lc-3962-maximum-subarray-sum-after-k-swaps": {
+      "sha256": "8cfbc74453e765652a54341f0d336c1dce4deb92e915a53330fa3ee1179ffdcf",
+      "length": 1123
+    }
+  }
+}
+

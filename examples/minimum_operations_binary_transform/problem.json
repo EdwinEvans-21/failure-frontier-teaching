@@ -4,7 +4,7 @@
   "difficulty": "medium",
   "role": "medium_dp_candidate",
   "source_url": "https://leetcode.com/problems/minimum-operations-to-transform-binary-string/",
-  "description": "Transform one equal-length binary string into another using the minimum number of allowed bit and adjacent-pair operations.",
+  "description": "Given two non-empty binary strings s1 and s2 of the same length, transform the current string s1 into s2 using the minimum number of operations. In one operation, you may do exactly one of the following: (1) choose one position whose current bit is 0 and change that bit from 0 to 1; or (2) choose two adjacent positions whose current bits are both 1 and change that adjacent pair from 11 to 00. Each application of either operation costs one operation, and the operations may be applied repeatedly whenever their stated precondition holds. The single-position operation cannot change 1 to 0, and the adjacent operation is directional: it changes only 11 to 00, never 00 to 11. Return the minimum number of operations required, or -1 if s2 is unreachable from s1.",
   "input_contract": "Two non-empty equal-length binary strings s1 and s2 with length at most 100000.",
   "output_contract": "Return the minimum operation count as an integer, or -1 when the target is unreachable.",
   "entrypoint": {

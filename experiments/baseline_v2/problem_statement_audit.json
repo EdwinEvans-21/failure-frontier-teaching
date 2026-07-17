@@ -1,0 +1,114 @@
+{
+  "schema_version": "1.0",
+  "audit_scope": "five_problem_benchmark_statement_integrity",
+  "canonical_source_policy": "problem.json is the sole runtime source of problem semantics; public_tests.json supplies only public examples",
+  "records": [
+    {
+      "problem_id": "lc-0009-palindrome-number",
+      "canonical_problem_json_path": "examples/palindrome_number/problem.json",
+      "readme_path": "examples/palindrome_number/README.md",
+      "entrypoint": "Solution.isPalindrome(x)",
+      "public_test_path": "examples/palindrome_number/public_tests.json",
+      "hidden_test_path": "examples/palindrome_number/hidden_tests.json",
+      "oracle_path": null,
+      "judge_adapter_path": [
+        "src/ffjudge/runner.py",
+        "src/ffjudge/harness.py"
+      ],
+      "missing_information": [],
+      "semantic_inconsistencies": [],
+      "resolved_findings": [
+        "The canonical description now explicitly covers negative integers, zero, the minus sign, and leading-zero interpretation."
+      ],
+      "proposed_fix": "Applied a self-contained semantic description without changing tests or exact comparison.",
+      "rendered_prompt_summary": "Signed 32-bit integer input, ordinary decimal representation, strict bool output, boundaries, entrypoint, and all public examples.",
+      "frozen_in_v2": true
+    },
+    {
+      "problem_id": "lc-3988-exact-monotone-paths",
+      "canonical_problem_json_path": "examples/exact_monotone_paths/problem.json",
+      "readme_path": "examples/exact_monotone_paths/README.md",
+      "entrypoint": "Solution.constructGrid(m, n, k)",
+      "public_test_path": "examples/exact_monotone_paths/public_tests.json",
+      "hidden_test_path": "examples/exact_monotone_paths/hidden_tests.json",
+      "oracle_path": "src/ffjudge/oracles/exact_monotone_paths.py",
+      "judge_adapter_path": [
+        "src/ffjudge/runner.py",
+        "src/ffjudge/harness.py",
+        "src/ffjudge/checkers/exact_monotone_paths.py"
+      ],
+      "missing_information": [],
+      "semantic_inconsistencies": [],
+      "resolved_findings": [
+        "The former canonical description omitted the m-by-n shape, grid alphabet, open endpoints, allowed right/down moves, and exact meaning of infeasibility."
+      ],
+      "proposed_fix": "Applied the README/checker semantics to problem.json without changing feasibility labels or checker behavior.",
+      "rendered_prompt_summary": "Construction dimensions and alphabet, endpoint requirements, right/down path definition, exact path count, infeasible return, constraints, entrypoint, and public feasibility examples.",
+      "frozen_in_v2": true
+    },
+    {
+      "problem_id": "lc-3980-minimum-operations-binary-transform",
+      "canonical_problem_json_path": "examples/minimum_operations_binary_transform/problem.json",
+      "readme_path": "examples/minimum_operations_binary_transform/README.md",
+      "entrypoint": "Solution.minOperations(s1, s2)",
+      "public_test_path": "examples/minimum_operations_binary_transform/public_tests.json",
+      "hidden_test_path": "examples/minimum_operations_binary_transform/hidden_tests.json",
+      "oracle_path": "src/ffjudge/oracles/minimum_operations_binary_transform.py",
+      "judge_adapter_path": [
+        "src/ffjudge/runner.py",
+        "src/ffjudge/harness.py"
+      ],
+      "missing_information": [],
+      "semantic_inconsistencies": [],
+      "resolved_findings": [
+        "The former canonical description did not define either operation, their direction, their preconditions, their unit costs, repeatability, or the reachability rule."
+      ],
+      "proposed_fix": "Specified the directed 0-to-1 single-position operation and directed adjacent 11-to-00 operation in problem.json; oracle, tests, and judge remain unchanged.",
+      "rendered_prompt_summary": "Equal-length binary strings, both directed operations and preconditions, unit cost, repeatability, unreachable result, constraints, entrypoint, and four public examples.",
+      "frozen_in_v2": true
+    },
+    {
+      "problem_id": "lc-3312-sorted-gcd-pair-queries",
+      "canonical_problem_json_path": "examples/sorted_gcd_pair_queries/problem.json",
+      "readme_path": "examples/sorted_gcd_pair_queries/README.md",
+      "entrypoint": "Solution.gcdValues(nums, queries)",
+      "public_test_path": "examples/sorted_gcd_pair_queries/public_tests.json",
+      "hidden_test_path": "examples/sorted_gcd_pair_queries/hidden_tests.json",
+      "oracle_path": "src/ffjudge/oracles/sorted_gcd_pair_queries.py",
+      "judge_adapter_path": [
+        "src/ffjudge/runner.py",
+        "src/ffjudge/harness.py"
+      ],
+      "missing_information": [],
+      "semantic_inconsistencies": [],
+      "resolved_findings": [
+        "The canonical description now explicitly states i < j, multiset duplicate retention, nondecreasing order, zero-indexing, and output query-order preservation."
+      ],
+      "proposed_fix": "Clarified existing semantics without changing the oracle, valid-query contract, tests, or exact comparison.",
+      "rendered_prompt_summary": "Positive integer bounds, every i-less-than-j pair, sorted GCD multiset with duplicates, valid zero-indexed queries, preserved query order, entrypoint, and public examples.",
+      "frozen_in_v2": true
+    },
+    {
+      "problem_id": "lc-3962-maximum-subarray-sum-after-k-swaps",
+      "canonical_problem_json_path": "examples/maximum_subarray_sum_after_k_swaps/problem.json",
+      "readme_path": "examples/maximum_subarray_sum_after_k_swaps/README.md",
+      "entrypoint": "Solution.maxSum(nums, k)",
+      "public_test_path": "examples/maximum_subarray_sum_after_k_swaps/public_tests.json",
+      "hidden_test_path": "examples/maximum_subarray_sum_after_k_swaps/hidden_tests.json",
+      "oracle_path": "src/ffjudge/oracles/maximum_subarray_sum_after_k_swaps.py",
+      "judge_adapter_path": [
+        "src/ffjudge/runner.py",
+        "src/ffjudge/harness.py"
+      ],
+      "missing_information": [],
+      "semantic_inconsistencies": [],
+      "resolved_findings": [
+        "The canonical description now explicitly defines a swap, distinct arbitrary indices, repeated participation, fewer-than-k including zero swaps, and the non-empty post-swap subarray."
+      ],
+      "proposed_fix": "Clarified existing at-most-k swap semantics without changing the oracle, tests, judge, or limits.",
+      "rendered_prompt_summary": "Array and k bounds, arbitrary distinct-index swaps, repeatability, at-most rather than exactly k, non-empty contiguous objective, entrypoint, and public examples.",
+      "frozen_in_v2": true
+    }
+  ]
+}
+

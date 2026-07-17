@@ -4,7 +4,7 @@
   "difficulty": "hard",
   "role": "hard_optimization_candidate",
   "source_url": "https://leetcode.com/problems/maximum-subarray-sum-after-at-most-k-swaps/",
-  "description": "Maximize a non-empty contiguous subarray sum after at most k arbitrary index swaps.",
+  "description": "Given an integer array nums and an integer k, perform at most k swap operations and then choose a non-empty contiguous subarray. In one swap operation, choose any two distinct array indices and exchange their current values; indices need not be adjacent, and indices or values may participate in more than one operation. You may use fewer than k swaps, including zero swaps. Return the maximum possible sum of the chosen non-empty contiguous subarray after the swaps.",
   "input_contract": "nums has length 1 to 1500 with values from -100000 to 100000; k is between 0 and len(nums).",
   "output_contract": "Return the maximum achievable non-empty subarray sum as an integer.",
   "entrypoint": {

@@ -4,7 +4,7 @@
   "difficulty": "hard",
   "role": "hard_number_theory_candidate",
   "source_url": "https://leetcode.com/problems/sorted-gcd-pair-queries/",
-  "description": "Answer zero-indexed queries into the sorted multiset of GCD values from every pair of array positions.",
+  "description": "Given a positive-integer array nums, compute gcd(nums[i], nums[j]) once for every unordered pair of distinct positions i < j. Keep repeated GCD values arising from different position pairs, sort this multiset in nondecreasing order, and for each zero-indexed value queries[t], return the GCD at that position. Preserve the original order of queries in the returned list.",
   "input_contract": "nums has length 2 to 100000 with values from 1 to 50000; queries has length 1 to 100000 and contains valid zero-indexed pair positions.",
   "output_contract": "Return one integer GCD value for each query, preserving query order.",
   "entrypoint": {

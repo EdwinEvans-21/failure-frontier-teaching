@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "baseline_id": "failure-frontier-baseline-v1",
-  "baseline_manifest": "experiments/baseline_v1/baseline_manifest.json",
+  "baseline_id": "failure-frontier-baseline-v2",
+  "baseline_manifest": "experiments/baseline_v2/baseline_manifest.json",
   "mode": "live",
   "model": {
     "provider": "deepseek",

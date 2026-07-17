@@ -58,7 +58,12 @@ class PilotRunner:
         return candidate if candidate.is_absolute() else self.project_root / candidate
 
     def verify_baseline(self) -> None:
-        verifier = self.project_root / "tools" / "verify_baseline_manifest.py"
+        verifier_name = (
+            "verify_baseline_v2_manifest.py"
+            if self.config.baseline_id == "failure-frontier-baseline-v2"
+            else "verify_baseline_manifest.py"
+        )
+        verifier = self.project_root / "tools" / verifier_name
         completed = subprocess.run(
             [sys.executable, str(verifier), "--manifest",
              str(self._path(self.config.baseline_manifest))],

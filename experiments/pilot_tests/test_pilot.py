@@ -84,6 +84,11 @@ class PilotConfigurationTests(unittest.TestCase):
     def test_five_problem_config_uses_one_non_reasoning_model_policy(self):
         config = load_config(CONFIG)
         self.assertEqual(len(config.problems), 5)
+        self.assertEqual(config.baseline_id, "failure-frontier-baseline-v2")
+        self.assertEqual(
+            config.baseline_manifest,
+            "experiments/baseline_v2/baseline_manifest.json",
+        )
         self.assertFalse(config.model.reasoning_mode)
         self.assertEqual(config.execution.judge_phase, "hidden")
         self.assertEqual(config.teaching_material.token_match_tolerance, 0.05)
@@ -133,7 +138,7 @@ class PilotIntegrationTests(unittest.TestCase):
             model=replace(base.model, mock_responses_path=str(script)),
             execution=replace(base.execution, output_root=str(self.root / "runs")),
             prompts_dir=str(ROOT / "experiments" / "prompts"),
-            baseline_manifest=str(ROOT / "experiments" / "baseline_v1" / "baseline_manifest.json"),
+            baseline_manifest=str(ROOT / "experiments" / "baseline_v2" / "baseline_manifest.json"),
         )
 
     @staticmethod
@@ -307,7 +312,7 @@ class PilotIntegrationTests(unittest.TestCase):
         data["execution"]["output_root"] = str(self.root / "cli-runs")
         data["prompts_dir"] = str(ROOT / "experiments" / "prompts")
         data["baseline_manifest"] = str(
-            ROOT / "experiments" / "baseline_v1" / "baseline_manifest.json")
+            ROOT / "experiments" / "baseline_v2" / "baseline_manifest.json")
         config_path = self.root / "cli.yaml"
         config_path.write_text(json.dumps(data), encoding="utf-8")
         completed = subprocess.run(
