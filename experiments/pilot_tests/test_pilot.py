@@ -152,7 +152,12 @@ class PilotConfigurationTests(unittest.TestCase):
         self.assertFalse(config.model.reasoning_mode)
         self.assertEqual(config.execution.judge_phase, "hidden")
         self.assertEqual(config.teaching_material.token_match_tolerance, 0.10)
-        self.assertEqual(config.teaching_material.gg_max_output_tokens, 8192)
+        self.assertEqual(
+            config.teaching_material.gg_blueprint_max_output_tokens, 2048
+        )
+        self.assertEqual(config.teaching_material.gg_blueprint_repair_attempts, 1)
+        self.assertEqual(config.teaching_material.gg_material_max_output_tokens, 8192)
+        self.assertEqual(config.teaching_material.gg_material_revision_attempts, 2)
         snapshot = json.dumps(config.public_snapshot())
         self.assertNotIn("api_key\"", snapshot)
         self.assertIn("api_key_env", snapshot)
@@ -426,6 +431,8 @@ class PilotIntegrationTests(unittest.TestCase):
         model = MockModelClient(config.model)
         summary = PilotRunner(config, model, judge=FakeJudge(), project_root=ROOT).run("success-run")
         self.assertEqual(summary["teacher_ac_count"], 1)
+        self.assertEqual(summary["condition_comparison_eligible_count"], 0)
+        self.assertEqual(summary["teacher_success_episodes"], 1)
         students = [call for call in model.calls if call["role"] == "student_planning"]
         self.assertEqual(len(students), 3)
         self.assertEqual(len({call["system_prompt"] for call in students}), 1)
@@ -439,7 +446,7 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertFalse(result["api_accessed"])
         self.assertFalse(result["judge_accessed"])
         self.assertEqual(judge.calls, 0)
-        self.assertEqual(len(result["model_calls"]), 11)
+        self.assertEqual(len(result["model_calls"]), 15)
 
     def test_summary_marks_invalid_infrastructure_separately(self):
         records = [{
@@ -495,7 +502,7 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stderr)
         result = json.loads(completed.stdout)
         self.assertFalse(result["api_accessed"])
-        self.assertEqual(len(result["model_calls"]), 55)
+        self.assertEqual(len(result["model_calls"]), 75)
 
     def test_single_problem_smoke_is_isolated_from_formal_outputs(self):
         config = self.config({}, mode="smoke-test")

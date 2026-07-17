@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 import json
+import re
 
 from ffjudge.models import ProblemSpec
 
@@ -19,7 +20,7 @@ class PromptRenderer:
         rendered = template
         for key, value in values.items():
             rendered = rendered.replace("{{" + key + "}}", str(value))
-        if "{{" in rendered or "}}" in rendered:
+        if re.search(r"\{\{[A-Za-z_][A-Za-z0-9_]*\}\}", rendered):
             raise ValueError("unresolved prompt template variable")
         return rendered
 

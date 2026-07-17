@@ -29,8 +29,11 @@
   },
   "teaching_material": {
     "token_match_tolerance": 0.10,
-    "max_regeneration_attempts": 2,
-    "gg_max_output_tokens": 8192
+    "gg_generation_policy": "blueprint_render_v1",
+    "gg_blueprint_max_output_tokens": 2048,
+    "gg_blueprint_repair_attempts": 1,
+    "gg_material_max_output_tokens": 8192,
+    "gg_material_revision_attempts": 2
   },
   "execution": {
     "output_root": "experiments/runs",

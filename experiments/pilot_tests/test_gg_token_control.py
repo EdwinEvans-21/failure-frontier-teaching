@@ -149,7 +149,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             problems=(base.problems[0],),
             model=replace(base.model, mock_responses_path=str(script)),
             teaching_material=replace(
-                base.teaching_material, max_regeneration_attempts=attempts
+                base.teaching_material, gg_material_revision_attempts=attempts
             ),
             execution=replace(base.execution, output_root=str(self.root / "runs")),
             prompts_dir=str(ROOT / "experiments/prompts"),
@@ -165,6 +165,18 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         runner = PilotRunner(
             config, model, judge=NoJudge(), project_root=ROOT
         )
+        lower, upper = guidance_token_bounds(
+            target, config.teaching_material.token_match_tolerance
+        )
+        runner._validated_guidance_blueprint(
+            self.root / "problem/teaching_materials/general_guidance",
+            PROBLEM_ID,
+            FORMATTED_PROBLEM,
+            target,
+            lower,
+            upper,
+        )
+        model.calls.clear()
         result = runner._matched_guidance(
             self.root / "problem", PROBLEM_ID, FORMATTED_PROBLEM, target
         )
@@ -211,7 +223,9 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         version = match["versions"][0]
         self.assertEqual(version["state"], "MATCHED")
         self.assertIsNone(version["source_version"])
-        self.assertEqual(version["source_selection_reason"], "initial_generation")
+        self.assertEqual(
+            version["source_selection_reason"], "render_from_validated_blueprint"
+        )
         self.assertEqual(version["configured_max_tokens"], 8192)
         self.assertEqual(version["request_max_tokens"], 8192)
         self.assertEqual(version["accepted_lower_bound"], 1839)
@@ -283,7 +297,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertTrue(result["metrics"]["token_match_passed"])
         self.assertEqual(match["matched_version"], 1)
         self.assertEqual(len(model.calls), 2)
-        self.assertIn("66.7% longer", model.calls[1]["system_prompt"])
+        self.assertIn("scale 1.5000", model.calls[1]["system_prompt"])
         self.assertEqual(
             [call["max_output_tokens"] for call in model.calls], [8192, 8192]
         )
@@ -324,25 +338,25 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertEqual(match["versions"][0]["state"], "TRUNCATED_TOO_LONG")
         self.assertFalse(match["versions"][0]["is_complete_long_candidate"])
         self.assertTrue(match["versions"][0]["is_truncated_candidate"])
-        self.assertEqual(match["versions"][1]["operation"], "truncation_recovery")
+        self.assertEqual(match["versions"][1]["operation"], "recovery_render")
         self.assertIsNone(match["versions"][1]["source_version"])
         self.assertEqual(
             match["versions"][1]["source_selection_reason"],
-            "truncation_recovery_from_problem",
+            "rerender_from_blueprint_after_truncation",
         )
         self.assertTrue(match["truncation_recovery_used"])
         self.assertNotIn(truncated_marker, model.calls[1]["user_prompt"])
-        self.assertEqual(model.calls[1]["user_prompt"], FORMATTED_PROBLEM)
+        self.assertIn(FORMATTED_PROBLEM, model.calls[1]["user_prompt"])
+        self.assertIn("# Validated Blueprint", model.calls[1]["user_prompt"])
         recovery_prompt = model.calls[1]["system_prompt"]
         self.assertIn("exhausted the full output capacity", recovery_prompt)
-        self.assertIn("Do not perform open-ended exploration", recovery_prompt)
+        self.assertIn("Do not perform any new reasoning or algorithm search", recovery_prompt)
         self.assertIn("## Constraints", recovery_prompt)
         self.assertIn("## Approaches", recovery_prompt)
         self.assertIn("## Correctness", recovery_prompt)
         self.assertIn("## Implementation", recovery_prompt)
-        self.assertIn("3 bullets per section", recovery_prompt)
-        self.assertIn("2 sentences per bullet", recovery_prompt)
-        self.assertIn("2 algorithmic directions total", recovery_prompt)
+        self.assertIn("deterministic section budgets", recovery_prompt)
+        self.assertIn("at most two algorithmic directions", recovery_prompt)
         self.assertIn("Do not narrate your thought process", recovery_prompt)
         self.assertIn("Do not include code", recovery_prompt)
         self.assertEqual(
@@ -424,6 +438,62 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertIn("LONG SOURCE", model.calls[2]["user_prompt"])
         self.assertNotIn("FIRST OVER-COMPRESSION", model.calls[2]["user_prompt"])
 
+    def test_3980_regression_long_invalid_then_matched(self) -> None:
+        key = MockModelClient.key
+        missing_implementation = guidance("OVER-COMPRESSED").split(
+            "## Implementation Checks", 1
+        )[0].strip()
+        result, match, model, _ = self.direct({
+            key("general_guidance", PROBLEM_ID, "initial"): [
+                item(guidance("3980 LONG"), 3028)
+            ],
+            key("general_guidance_adjust", PROBLEM_ID, "compress_1"): [
+                item(missing_implementation, 575)
+            ],
+            key("general_guidance_adjust", PROBLEM_ID, "compress_2"): [
+                item(guidance("3980 MATCH"), 1180)
+            ],
+        }, target=1184)
+
+        self.assertTrue(result["metrics"]["token_match_passed"])
+        self.assertEqual((match["lower_bound"], match["upper_bound"]), (1066, 1302))
+        self.assertEqual(
+            [version["state"] for version in match["versions"]],
+            ["COMPLETE_TOO_LONG", "INVALID_CONTENT", "MATCHED"],
+        )
+        self.assertEqual(match["matched_version"], 2)
+        self.assertEqual(match["versions"][2]["source_material_version"], 0)
+        self.assertNotEqual(
+            match["versions"][1]["requested_retain_ratio"],
+            match["versions"][2]["requested_retain_ratio"],
+        )
+        self.assertIn("implementation coverage", model.calls[2]["system_prompt"])
+
+    def test_3962_regression_truncation_recovers_from_blueprint(self) -> None:
+        key = MockModelClient.key
+        result, match, model, _ = self.direct({
+            key("general_guidance", PROBLEM_ID, "initial"): [
+                item(guidance("3962 TRUNCATED"), 8192, finish_reason="length")
+            ],
+            key("general_guidance_adjust", PROBLEM_ID, "truncation_recovery_1"): [
+                item(guidance("3962 RECOVERED"), 4100)
+            ],
+        }, target=4092)
+
+        self.assertTrue(result["metrics"]["token_match_passed"])
+        self.assertEqual((match["lower_bound"], match["upper_bound"]), (3683, 4501))
+        self.assertEqual(
+            [version["state"] for version in match["versions"]],
+            ["TRUNCATED_TOO_LONG", "MATCHED"],
+        )
+        self.assertIsNone(match["versions"][1]["source_material_version"])
+        self.assertNotEqual(
+            match["versions"][0]["prompt_hash"],
+            match["versions"][1]["prompt_hash"],
+        )
+        self.assertNotIn("3962 TRUNCATED", model.calls[1]["user_prompt"])
+        self.assertTrue(match["versions"][1]["recovery_mode"])
+
     def test_intermediate_match_prevents_oscillation_call(self) -> None:
         key = MockModelClient.key
         _, match, model, _ = self.direct({
@@ -458,8 +528,10 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertTrue(result["metrics"]["token_match_failed"])
         self.assertEqual(result["response"].output_tokens, 698)
         self.assertEqual(match["selected_version"], 1)
-        self.assertEqual(match["selection_reason"],
-                         "fallback_closest_to_ff_target")
+        self.assertEqual(
+            match["selection_reason"],
+            "fallback_minimum_distance_to_registered_interval",
+        )
         self.assertTrue(match["fallback_used"])
         self.assertEqual(
             match["token_interval_outcome"], "fallback_outside_tolerance"
@@ -495,11 +567,11 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertEqual(match["selected_version"], 2)
         self.assertEqual(
             match["selection_reason"],
-            "fallback_closest_to_ff_target",
+            "fallback_minimum_distance_to_registered_interval",
         )
         self.assertEqual(
             match["fallback_selection_policy"],
-            "minimum_absolute_distance_to_ff_target",
+            "interval_distance_then_target_distance_then_prefer_at_or_above_target_then_version",
         )
         self.assertEqual(len(model.calls), 3)
 
@@ -512,16 +584,16 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             key("general_guidance_adjust", PROBLEM_ID, "truncation_recovery_1"): [
                 item(guidance("SHORT V1"), 1189)
             ],
-            key("general_guidance_adjust", PROBLEM_ID, "truncation_recovery_2"): [
+            key("general_guidance_adjust", PROBLEM_ID, "expand_2"): [
                 item(guidance("TRUNCATED V2"), 2697, finish_reason="length")
             ],
         }, target=2043)
         self.assertFalse(result["metrics"]["token_match_passed"])
-        self.assertEqual(match["selected_audit_version"], 0)
+        self.assertEqual(match["selected_audit_version"], 1)
         self.assertTrue(match["fallback_used"])
         self.assertEqual(
             match["selection_reason"],
-            "fallback_closest_to_ff_target",
+            "fallback_minimum_distance_to_registered_interval",
         )
         self.assertEqual(match["best_complete_long_version"], None)
         self.assertEqual(match["best_complete_short_version"], 1)
@@ -530,7 +602,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             ["TRUNCATED_TOO_LONG", "TOO_SHORT", "TRUNCATED_TOO_LONG"],
         )
         self.assertIsNone(match["versions"][2]["source_version"])
-        self.assertEqual(match["versions"][2]["operation"], "truncation_recovery")
+        self.assertEqual(match["versions"][2]["operation"], "expand_render")
         self.assertEqual(len(model.calls), 3)
 
     def test_finish_reason_length_inside_interval_is_never_matched(self) -> None:
@@ -586,7 +658,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             runner._matched_guidance(
                 self.root / "problem", PROBLEM_ID, FORMATTED_PROBLEM, 1000
             )
-        self.assertEqual(len(model.calls), 1)
+        self.assertEqual(len(model.calls), 2)
         self.assertFalse(list(self.root.rglob("content.md")))
 
     def test_prompts_are_isolated_from_teacher_ff_and_verdict(self) -> None:
@@ -615,30 +687,43 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             config, MockModelClient(config.model), judge=NoJudge(),
             project_root=ROOT,
         )
+        common = {
+            "blueprint": '{"validated":"BLUEPRINT_SENTINEL"}',
+            "target_tokens": 2043,
+            "lower_bound": 1839,
+            "upper_bound": 2247,
+            "section_budget": '{"constraints":306}',
+            "paragraph_budget": '{"max_paragraphs_per_section":3}',
+        }
         calls = [runner._rendered_call(
-            "general_guidance", PROBLEM_ID, "initial", FORMATTED_PROBLEM,
-            target_tokens=2043, lower_bound=1839, upper_bound=2247,
+            "general_guidance", PROBLEM_ID, "material_initial", FORMATTED_PROBLEM,
+            **common,
         )]
-        for direction in ("compress", "expand"):
-            calls.append(runner._rendered_call(
-                "general_guidance_adjust", PROBLEM_ID, f"{direction}_1",
-                FORMATTED_PROBLEM,
-                target_tokens=2043, lower_bound=1839, upper_bound=2247,
-                source_tokens=2500, retain_ratio_percent="81.7",
-                remove_ratio_percent="18.3", expand_ratio_percent="71.8",
-                general_guidance=guidance("SAFE SOURCE"), direction=direction,
-            ))
         calls.append(runner._rendered_call(
-            "general_guidance_adjust", PROBLEM_ID, "regenerate_1",
+            "general_guidance_adjust", PROBLEM_ID, "material_compress_1",
             FORMATTED_PROBLEM,
-            target_tokens=2043, lower_bound=1839, upper_bound=2247,
-            direction="regenerate",
+            source_tokens=2500, retain_ratio_percent="81.7",
+            remove_ratio_percent="18.3", expand_ratio_percent="0.0",
+            general_guidance=guidance("SAFE SOURCE"), direction="compress",
+            revision_feedback="", previous_outcomes="[]", **common,
         ))
         calls.append(runner._rendered_call(
-            "general_guidance_adjust", PROBLEM_ID, "truncation_recovery_1",
+            "general_guidance_adjust", PROBLEM_ID, "material_expand_1",
             FORMATTED_PROBLEM,
-            target_tokens=2043, lower_bound=1839, upper_bound=2247,
-            direction="truncation_recovery",
+            previous_candidate_tokens=1000, budget_scale="1.25",
+            direction="material_expand", **common,
+        ))
+        calls.append(runner._rendered_call(
+            "general_guidance_adjust", PROBLEM_ID, "material_repair_1",
+            FORMATTED_PROBLEM,
+            revision_feedback="missing implementation", direction="material_repair",
+            **common,
+        ))
+        calls.append(runner._rendered_call(
+            "general_guidance_adjust", PROBLEM_ID, "material_recovery_1",
+            FORMATTED_PROBLEM,
+            previous_candidate_tokens=8192, deduplication_instruction="",
+            direction="truncation_recovery", **common,
         ))
         forbidden = (
             "TEACHER_RESPONSE_SENTINEL", "TEACHER_CODE_SENTINEL",
@@ -649,14 +734,14 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             visible = call["system_prompt"] + "\n" + call["user_prompt"]
             self.assertFalse(any(item in visible for item in forbidden))
             self.assertIn(FORMATTED_PROBLEM, call["user_prompt"])
-        self.assertIn("Complete the response naturally", calls[0]["system_prompt"])
+        self.assertIn("validated blueprint", calls[0]["system_prompt"])
         self.assertNotIn("8192", calls[0]["system_prompt"])
         self.assertIn(
-            "The previous generation exhausted the full output capacity",
+            "previous material render exhausted the full output capacity",
             calls[-1]["system_prompt"],
         )
-        self.assertIn("3 bullets per section", calls[-1]["system_prompt"])
-        self.assertEqual(calls[-1]["user_prompt"], FORMATTED_PROBLEM)
+        self.assertIn("deterministic section budgets", calls[-1]["system_prompt"])
+        self.assertIn("# Validated Blueprint", calls[-1]["user_prompt"])
 
     def test_total_calls_never_exceed_initial_plus_adjustments(self) -> None:
         key = MockModelClient.key
@@ -680,20 +765,19 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             key("general_guidance", PROBLEM_ID, "initial"): [
                 item(guidance("LONG"), 3000)
             ],
-            key("general_guidance_adjust", PROBLEM_ID, "compress_1"): [
-                item(guidance("MATCH"), 1030)
-            ],
         }
         config = self.config(responses)
         model = MockModelClient(config.model)
         problem_dir = self.root / "problem"
         version0 = problem_dir / "teaching_materials/general_guidance/version_0"
         runner = PilotRunner(config, model, judge=NoJudge(), project_root=ROOT)
-        rendered = runner._rendered_call(
-            "general_guidance", PROBLEM_ID, "initial", FORMATTED_PROBLEM,
-            target_tokens=1000, lower_bound=900, upper_bound=1100,
-        )
-        rendered["system_prompt"] += "\nLEGACY GG PROMPT SCHEMA"
+        rendered = {
+            "role": "general_guidance",
+            "problem_id": PROBLEM_ID,
+            "condition": "initial",
+            "system_prompt": "LEGACY GG PROMPT SCHEMA",
+            "user_prompt": FORMATTED_PROBLEM,
+        }
         runner._call(
             version0, "general_guidance", PROBLEM_ID, "initial", rendered,
             max_output_tokens=1114,
@@ -704,35 +788,19 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         )
         self.assertEqual(len(model.calls), 1)
         resumed = PilotRunner(config, model, judge=NoJudge(), project_root=ROOT)
-        result = resumed._matched_guidance(
-            problem_dir, PROBLEM_ID, FORMATTED_PROBLEM, 1000
-        )
-        self.assertTrue(result["metrics"]["token_match_passed"])
-        self.assertEqual(len(model.calls), 2)
-        resumed_match = json.loads(
-            (problem_dir / "teaching_materials/general_guidance/match.json")
-            .read_text(encoding="utf-8")
-        )
-        self.assertEqual(resumed_match["max_output_tokens"], 8192)
+        with self.assertRaises(GGContentValidationError) as caught:
+            resumed._matched_guidance(
+                problem_dir, PROBLEM_ID, FORMATTED_PROBLEM, 1000
+            )
+        self.assertEqual(len(model.calls), 1)
         self.assertEqual(
-            resumed_match["versions"][0]["configured_max_tokens"], 8192
-        )
-        self.assertEqual(resumed_match["versions"][0]["request_max_tokens"], 1114)
-        self.assertTrue(resumed_match["versions"][0]["semantic_completeness_passed"])
-        self.assertIn(
-            "persisted_legacy_prompt_mismatch_reused",
-            resumed_match["compatibility_warnings"],
+            caught.exception.validation_error,
+            "legacy_gg_artifact_without_blueprint",
         )
         self.assertIn(
-            "persisted_legacy_version_schema_reconstructed",
-            resumed_match["compatibility_warnings"],
+            "legacy_gg_artifact_without_blueprint_not_resampled",
+            caught.exception.metrics["compatibility_warnings"],
         )
-        again = PilotRunner(config, model, judge=NoJudge(), project_root=ROOT)
-        result_again = again._matched_guidance(
-            problem_dir, PROBLEM_ID, FORMATTED_PROBLEM, 1000
-        )
-        self.assertEqual(result_again["metrics"], result["metrics"])
-        self.assertEqual(len(model.calls), 2)
 
     def test_resume_preserves_legacy_adjustment_source_metadata(self) -> None:
         key = MockModelClient.key
@@ -782,28 +850,15 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         )
 
         resumed = PilotRunner(config, model, judge=NoJudge(), project_root=ROOT)
-        result = resumed._matched_guidance(
-            problem_dir, PROBLEM_ID, FORMATTED_PROBLEM, 1000
-        )
-
-        self.assertTrue(result["metrics"]["token_match_passed"])
-        self.assertEqual(len(model.calls), 3)
-        match = json.loads(
-            (stage_root / "match.json").read_text(encoding="utf-8")
-        )
-        legacy_adjustment = match["versions"][1]
-        self.assertEqual(legacy_adjustment["operation"], "compress")
-        self.assertEqual(legacy_adjustment["source_version"], 0)
+        with self.assertRaises(GGContentValidationError) as caught:
+            resumed._matched_guidance(
+                problem_dir, PROBLEM_ID, FORMATTED_PROBLEM, 1000
+            )
+        self.assertEqual(len(model.calls), 2)
         self.assertEqual(
-            legacy_adjustment["source_selection_reason"],
-            "persisted_legacy_previous_version_source_inferred",
+            caught.exception.validation_error,
+            "legacy_gg_artifact_without_blueprint",
         )
-        self.assertIsNone(legacy_adjustment["retain_ratio_requested"])
-        self.assertIn(
-            "persisted_legacy_ratio_metadata_unavailable",
-            legacy_adjustment["compatibility_warnings"],
-        )
-        self.assertEqual(match["versions"][2]["source_version"], 0)
 
     def test_semantic_validation_accepts_complete_content_without_exact_headings(self) -> None:
         exact = validate_guidance_content(guidance("COMPLETE"))
@@ -903,9 +958,9 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
 
     def test_truncated_outside_interval_uses_ineligible_fallback_not_model_api(self) -> None:
         config = self.config(self.full_failure_responses([
-            (1356, "TRUNCATED V0", "length"),
-            (1400, "TRUNCATED V1", "length"),
-            (1380, "TRUNCATED V2", "length"),
+            (8192, "TRUNCATED V0", "length"),
+            (8192, "TRUNCATED V1", "length"),
+            (8192, "TRUNCATED V2", "length"),
         ], target=1000, conditions=[
             "initial", "truncation_recovery_1", "truncation_recovery_2"
         ]))
@@ -918,19 +973,28 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             (self.root / "runs/truncated-only/problems" / PROBLEM_ID / "record.json")
             .read_text(encoding="utf-8")
         )
-        self.assertTrue(record["valid_episode"])
+        self.assertFalse(record["valid_episode"])
         self.assertFalse(record["condition_comparison_eligible"])
-        self.assertTrue(record["token_match_failed"])
-        self.assertEqual(record["teaching_material"]["selected_version"], 0)
-        self.assertTrue(record["teaching_material"]["fallback_used"])
+        self.assertTrue(record["teaching_material"]["token_match_failed"])
+        self.assertIsNone(record["teaching_material"]["selected_version"])
+        self.assertFalse(record["teaching_material"]["fallback_used"])
         self.assertEqual(
             record["teaching_material"]["token_interval_outcome"],
-            "fallback_outside_tolerance",
+            "unmatched_no_fallback",
         )
         self.assertTrue(record["teaching_material"]["truncation_recovery_used"])
-        self.assertTrue(record["teaching_material"]["general_guidance_truncated"])
-        self.assertEqual(len(record["students"]), 3)
-        self.assertNotIn("model_output_validation", record)
+        match = json.loads(
+            (self.root / "runs/truncated-only/problems" / PROBLEM_ID /
+             "teaching_materials/general_guidance/match.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertTrue(match["versions"][2]["duplicate_prompt_prevented"])
+        self.assertNotEqual(
+            match["versions"][1]["prompt_hash"],
+            match["versions"][2]["prompt_hash"],
+        )
+        self.assertEqual(len(record["students"]), 0)
+        self.assertEqual(record["model_output_validation"], "gg_content_validation")
         self.assertNotIn("infrastructure_error", record)
 
     def full_failure_responses(
@@ -976,8 +1040,9 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertFalse(record["condition_comparison_eligible"])
         self.assertEqual(record["teaching_material"]["selected_version"], 1)
         self.assertTrue(record["teaching_material"]["fallback_used"])
+        self.assertTrue(record["exploratory_comparison_eligible"])
         self.assertEqual(summary["condition_comparison_ineligible_count"], 1)
-        self.assertEqual(summary["teacher_failure_count"], 0)
+        self.assertEqual(summary["teacher_failure_count"], 1)
         self.assertEqual(
             summary["token_matching"]["fallback_outside_tolerance_count"], 1
         )
@@ -994,8 +1059,13 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             config, model, judge=MarkerJudge(), project_root=ROOT
         ).run("matched")
         gg_calls = [call for call in model.calls
-                    if call["role"].startswith("general_guidance")]
+                    if call["role"] in {"general_guidance", "general_guidance_adjust"}]
         self.assertEqual(len(gg_calls), 2)
+        blueprint_calls = [
+            call for call in model.calls
+            if call["role"].startswith("general_guidance_blueprint")
+        ]
+        self.assertEqual(len(blueprint_calls), 1)
         self.assertEqual(summary["condition_comparison_eligible_count"], 1)
         self.assertEqual(summary["teacher_failure_count"], 1)
         self.assertEqual(
@@ -1043,7 +1113,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         )
         self.assertEqual(match["versions"][2]["source_version"], 0)
         gg_calls = [call for call in model.calls
-                    if call["role"].startswith("general_guidance")]
+                    if call["role"] in {"general_guidance", "general_guidance_adjust"}]
         self.assertIn("LONG_ANCHOR", gg_calls[2]["user_prompt"])
         self.assertNotIn("SHORT_ANCHOR", gg_calls[2]["user_prompt"])
 
@@ -1053,7 +1123,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             (1189, "SHORT V1", "stop"),
             (2697, "TRUNCATED V2", "length"),
         ], target=2043, conditions=[
-            "initial", "truncation_recovery_1", "truncation_recovery_2"
+            "initial", "truncation_recovery_1", "expand_2"
         ]))
         model = MockModelClient(config.model)
         summary = PilotRunner(
@@ -1065,7 +1135,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         )
         self.assertTrue(record["token_match_failed"])
         self.assertFalse(record["condition_comparison_eligible"])
-        self.assertEqual(record["teaching_material"]["selected_audit_version"], 0)
+        self.assertEqual(record["teaching_material"]["selected_audit_version"], 1)
         self.assertTrue(record["teaching_material"]["fallback_used"])
         self.assertEqual(
             record["teaching_material"]["token_interval_outcome"],
@@ -1076,7 +1146,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
 
     def test_alias_sections_match_without_exact_heading_retry(self) -> None:
         key = MockModelClient.key
-        config = self.config({
+        result, match, model, _ = self.direct({
             key("general_guidance", PROBLEM_ID, "initial"): [
                 item(guidance("OUTSIDE"), 1290)
             ],
@@ -1086,16 +1156,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             key("general_guidance_adjust", PROBLEM_ID, "compress_2"): [
                 item(guidance("EXACT MATCH"), 1230)
             ],
-        })
-        model = MockModelClient(config.model)
-        runner = PilotRunner(config, model, judge=NoJudge(), project_root=ROOT)
-        result = runner._matched_guidance(
-            self.root / "recent-sequence", PROBLEM_ID, FORMATTED_PROBLEM, 1168
-        )
-        match = json.loads(
-            (self.root / "recent-sequence/teaching_materials/general_guidance/match.json")
-            .read_text(encoding="utf-8")
-        )
+        }, target=1168)
         self.assertEqual((match["lower_bound"], match["upper_bound"]), (1052, 1284))
         self.assertEqual(match["max_output_tokens"], 8192)
         self.assertEqual(match["matched_version"], 1)
@@ -1108,15 +1169,12 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertEqual(len(model.calls), 2)
 
     def test_condition_comparison_eligibility_invariant(self) -> None:
-        self.assertTrue(condition_comparison_eligible({"valid_episode": True}))
-        for disqualifier in (
-            {"valid_episode": False},
-            {"valid_episode": True, "infrastructure_error": "judge"},
-            {"valid_episode": True, "protocol_output_invalid": True},
-            {"valid_episode": True, "token_match_failed": True},
-        ):
-            with self.subTest(record=disqualifier):
-                self.assertFalse(condition_comparison_eligible(disqualifier))
+        self.assertFalse(condition_comparison_eligible({"valid_episode": True}))
+        self.assertFalse(condition_comparison_eligible({
+            "branch": "teacher_success",
+            "teacher": {"verdict": "AC"},
+            "valid_episode": True,
+        }))
 
     def test_resume_rederives_condition_comparison_eligibility(self) -> None:
         config = self.config({})
@@ -1138,8 +1196,11 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         resumed = runner._run_problem("resume-run", config.problems[0])
 
         self.assertFalse(resumed["condition_comparison_eligible"])
+        self.assertEqual(resumed["eligibility_policy"], "teacher_failure_strict_v2")
+        self.assertEqual(resumed["eligibility_reason"], "invalid_episode")
         persisted = json.loads(record_path.read_text(encoding="utf-8"))
         self.assertFalse(persisted["condition_comparison_eligible"])
+        self.assertEqual(persisted["eligibility_reasons"][0], "invalid_episode")
         self.assertEqual(model.calls, [])
 
 

@@ -250,6 +250,24 @@ class MockModelClient:
         self.calls.append(dict(request))
         key = self.key(request["role"], request["problem_id"], request["condition"])
         scripted = self._responses.get(key, [])
+        if not scripted:
+            legacy_conditions = {
+                "material_initial": "initial",
+                "material_compress_1": "compress_1",
+                "material_compress_2": "compress_2",
+                "material_expand_1": "expand_1",
+                "material_expand_2": "expand_2",
+                "material_recovery_1": "truncation_recovery_1",
+                "material_recovery_2": "truncation_recovery_2",
+                "material_deduplicated_recovery_2": "truncation_recovery_2",
+                "material_repair_1": "regenerate_1",
+                "material_repair_2": "regenerate_2",
+            }
+            legacy_condition = legacy_conditions.get(request["condition"])
+            if legacy_condition is not None:
+                scripted = self._responses.get(
+                    self.key(request["role"], request["problem_id"], legacy_condition), []
+                )
         if not scripted and request["role"] in {"teacher_final", "student_final"}:
             legacy_role = request["role"].removesuffix("_final")
             scripted = self._responses.get(
@@ -284,6 +302,38 @@ class MockModelClient:
                 "## State or Invariant\nMaintain the required invariant.\n\n"
                 "## Complexity\nUse linear time and constant space."
             )
+        elif role in {
+            "general_guidance_blueprint",
+            "general_guidance_blueprint_repair",
+        }:
+            content = json.dumps({
+                "constraints": [
+                    {"point": "Respect the public input bounds.",
+                     "importance": "They determine the required complexity."},
+                    {"point": "Handle every public boundary case.",
+                     "importance": "Boundary behavior affects correctness."},
+                ],
+                "approaches": [
+                    {"name": "Bounded dynamic program",
+                     "core_idea": "Maintain the necessary state invariant.",
+                     "why_plausible": "The public constraints permit the state space.",
+                     "main_risk": "A transition or boundary may be mis-specified."},
+                ],
+                "correctness": [
+                    {"claim": "Each transition preserves the invariant.",
+                     "check": "Verify all transition cases."},
+                    {"claim": "The final state represents the requested answer.",
+                     "check": "Verify initialization and termination."},
+                ],
+                "implementation": [
+                    {"risk": "Index boundaries can be off by one.",
+                     "check": "Audit the first and last indices."},
+                    {"risk": "Initialization can omit a valid base state.",
+                     "check": "Test the smallest public input."},
+                    {"risk": "The chosen numeric type can overflow.",
+                     "check": "Bound every accumulated value."},
+                ],
+            })
         elif role in {"general_guidance", "general_guidance_adjust"}:
             content = (
                 "## Constraint Analysis\nInput size constraints require O(n) time "

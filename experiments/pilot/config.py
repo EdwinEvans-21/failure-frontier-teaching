@@ -28,8 +28,11 @@ class ModelConfig:
 @dataclass(frozen=True)
 class TeachingMaterialConfig:
     token_match_tolerance: float
-    max_regeneration_attempts: int
-    gg_max_output_tokens: int
+    gg_generation_policy: str
+    gg_blueprint_max_output_tokens: int
+    gg_blueprint_repair_attempts: int
+    gg_material_max_output_tokens: int
+    gg_material_revision_attempts: int
 
 
 @dataclass(frozen=True)
@@ -149,10 +152,16 @@ def _validate(config: PilotConfig) -> None:
         raise ValueError("model.top_p must be in (0, 1]")
     if not 0 <= config.teaching_material.token_match_tolerance < 1:
         raise ValueError("token_match_tolerance must be in [0, 1)")
-    if config.teaching_material.max_regeneration_attempts < 0:
-        raise ValueError("max_regeneration_attempts must be non-negative")
-    if config.teaching_material.gg_max_output_tokens <= 0:
-        raise ValueError("gg_max_output_tokens must be positive")
+    if config.teaching_material.gg_generation_policy != "blueprint_render_v1":
+        raise ValueError("gg_generation_policy must be blueprint_render_v1")
+    if config.teaching_material.gg_blueprint_max_output_tokens <= 0:
+        raise ValueError("gg_blueprint_max_output_tokens must be positive")
+    if config.teaching_material.gg_blueprint_repair_attempts != 1:
+        raise ValueError("gg_blueprint_repair_attempts must be exactly 1")
+    if config.teaching_material.gg_material_max_output_tokens <= 0:
+        raise ValueError("gg_material_max_output_tokens must be positive")
+    if config.teaching_material.gg_material_revision_attempts != 2:
+        raise ValueError("gg_material_revision_attempts must be exactly 2")
     if config.execution.judge_phase != "hidden":
         raise ValueError("pilot v1 formal submissions must use the hidden phase")
     if len(config.problems) != 5:

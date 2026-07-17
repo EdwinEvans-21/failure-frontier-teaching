@@ -17,6 +17,22 @@ from ffjudge.runner import DockerJudge, DockerUnavailableError
 
 from .code_extraction import extract_fenced_python_submission
 from .config import PilotConfig, ProblemConfig
+from .eligibility import (
+    ELIGIBILITY_POLICY,
+    analyze_historical_eligibility,
+    derive_comparison_eligibility,
+    finalize_comparison_eligibility,
+)
+from .gg_controller import (
+    BLUEPRINT_POLICY,
+    GG_GENERATION_POLICY,
+    duplicate_material_request,
+    material_paragraph_budgets,
+    material_section_budgets,
+    scaled_section_budgets,
+    select_material_fallback,
+    validate_blueprint_response,
+)
 from .model_client import ModelClient, ModelInfrastructureError, ModelResponse
 from .prompts import PromptRenderer
 from .storage import read_json, write_json, write_text
@@ -88,9 +104,16 @@ GG_CATEGORY_SIGNALS = {
 class GGContentValidationError(RuntimeError):
     """A successful model response that violates the GG content protocol."""
 
-    def __init__(self, message: str, *, validation_error: str) -> None:
+    def __init__(
+        self,
+        message: str,
+        *,
+        validation_error: str,
+        metrics: dict[str, Any] | None = None,
+    ) -> None:
         super().__init__(message)
         self.validation_error = validation_error
+        self.metrics = metrics or {}
 
 
 def coarse_verdict(verdict: Verdict) -> str:
@@ -354,14 +377,57 @@ class PilotRunner:
                                          teacher_planning="<teacher-planning>",
                                          teacher_raw_response="<teacher-response>",
                                          teacher_code="<teacher-code>", teacher_verdict="<coarse-verdict>"))
-        guidance = self._rendered_call(
-            "general_guidance", problem_id, "initial", problem,
+        blueprint = self._rendered_call(
+            "general_guidance_blueprint", problem_id, "blueprint_initial", problem,
             target_tokens="<failure-frontier-output-tokens>",
             lower_bound="<lower-bound>",
             upper_bound="<upper-bound>",
         )
-        guidance["max_output_tokens"] = self.config.teaching_material.gg_max_output_tokens
+        blueprint["max_output_tokens"] = (
+            self.config.teaching_material.gg_blueprint_max_output_tokens
+        )
+        calls.append(blueprint)
+        blueprint_repair = self._rendered_call(
+            "general_guidance_blueprint_repair", problem_id, "blueprint_repair", problem,
+            target_tokens="<failure-frontier-output-tokens>",
+            lower_bound="<lower-bound>",
+            upper_bound="<upper-bound>",
+            validation_errors='["<blueprint-validation-error>"]',
+        )
+        blueprint_repair["max_output_tokens"] = (
+            self.config.teaching_material.gg_blueprint_max_output_tokens
+        )
+        calls.append(blueprint_repair)
+        material_values = {
+            "blueprint": "<validated-blueprint>",
+            "target_tokens": "<failure-frontier-output-tokens>",
+            "lower_bound": "<lower-bound>",
+            "upper_bound": "<upper-bound>",
+            "section_budget": "<section-budget>",
+            "paragraph_budget": "<paragraph-budget>",
+            "revision_index": "<revision-index>",
+        }
+        guidance = self._rendered_call(
+            "general_guidance", problem_id, "material_initial", problem,
+            direction="material", **material_values,
+        )
+        guidance["max_output_tokens"] = (
+            self.config.teaching_material.gg_material_max_output_tokens
+        )
         calls.append(guidance)
+        for revision in range(1, self.config.teaching_material.gg_material_revision_attempts + 1):
+            revised = self._rendered_call(
+                "general_guidance_adjust", problem_id,
+                f"material_recovery_{revision}", problem,
+                direction="truncation_recovery",
+                previous_candidate_tokens="<previous-candidate-tokens>",
+                deduplication_instruction="",
+                **material_values,
+            )
+            revised["max_output_tokens"] = (
+                self.config.teaching_material.gg_material_max_output_tokens
+            )
+            calls.append(revised)
         for condition in STUDENT_CONDITIONS:
             for stage in ("planning", "final"):
                 calls.append(self._rendered_solver_call(
@@ -382,9 +448,7 @@ class PilotRunner:
         if self.config.execution.resume and record_path.is_file():
             saved_record = read_json(record_path)
             if not saved_record.get("infrastructure_error"):
-                saved_record["condition_comparison_eligible"] = (
-                    condition_comparison_eligible(saved_record)
-                )
+                finalize_comparison_eligibility(saved_record)
                 write_json(record_path, saved_record)
                 return saved_record
         record: dict[str, Any] = {
@@ -402,7 +466,10 @@ class PilotRunner:
             },
             "students": {},
             "valid_episode": True,
+            "branch": None,
             "condition_comparison_eligible": None,
+            "exploratory_comparison_eligible": None,
+            "eligibility_policy": ELIGIBILITY_POLICY,
             "artifacts": {},
         }
         try:
@@ -411,13 +478,16 @@ class PilotRunner:
                 problem, item, spec,
             )
             record["teacher"] = _solver_summary(teacher)
+            record["branch"] = (
+                "teacher_success"
+                if teacher["verdict"] == "AC"
+                else "teacher_failure"
+            )
             record["artifacts"]["teacher"] = teacher["artifact_paths"]
             if teacher["verdict"] == "JUDGE_ERROR":
                 record["valid_episode"] = False
                 record["infrastructure_error"] = "judge"
-                record["condition_comparison_eligible"] = (
-                    condition_comparison_eligible(record)
-                )
+                finalize_comparison_eligibility(record)
                 write_json(record_path, record)
                 return record
             if teacher["verdict"] == "AC":
@@ -458,14 +528,16 @@ class PilotRunner:
                 record["students"][condition] = _solver_summary(student)
                 record["artifacts"][f"student_{condition}"] = student["artifact_paths"]
         except GGContentValidationError as error:
+            record["teaching_material"].update(error.metrics)
             record["valid_episode"] = False
             record["model_output_validation"] = "gg_content_validation"
             record["protocol_output_invalid"] = True
             record["validation_error"] = error.validation_error
+            record["gg_generation_failed"] = True
         except ModelInfrastructureError:
             record["valid_episode"] = False
             record["infrastructure_error"] = "model_api"
-        record["condition_comparison_eligible"] = condition_comparison_eligible(record)
+        finalize_comparison_eligibility(record)
         write_json(record_path, record)
         return record
 
@@ -657,20 +729,76 @@ class PilotRunner:
         lower_bound, upper_bound = guidance_token_bounds(
             target_tokens, teaching.token_match_tolerance
         )
-        gg_max_output_tokens = teaching.gg_max_output_tokens
         stage_root = problem_dir / "teaching_materials" / "general_guidance"
-        responses: list[ModelResponse] = []
+        material_max_tokens = teaching.gg_material_max_output_tokens
+
+        if (
+            self.config.execution.resume
+            and any(stage_root.glob("version_*/model_call.json"))
+            and not (stage_root / "blueprint" / "selection.json").is_file()
+        ):
+            raise GGContentValidationError(
+                "legacy General Guidance artifacts have no Blueprint and are not resampled",
+                validation_error="legacy_gg_artifact_without_blueprint",
+                metrics={
+                    "gg_generation_policy": "legacy_pre_blueprint",
+                    "gg_generation_failed": True,
+                    "token_match_passed": False,
+                    "token_match_failed": True,
+                    "fallback_used": False,
+                    "fallback_candidate_used": False,
+                    "compatibility_warnings": [
+                        "legacy_gg_artifact_without_blueprint_not_resampled"
+                    ],
+                },
+            )
+
+        blueprint_result = self._validated_guidance_blueprint(
+            stage_root,
+            problem_id,
+            problem,
+            target_tokens,
+            lower_bound,
+            upper_bound,
+        )
+        blueprint = blueprint_result["blueprint"]
+        blueprint_version = blueprint_result["version"]
+        blueprint_json = json.dumps(
+            blueprint, ensure_ascii=False, indent=2, sort_keys=True
+        )
+        base_section_budget = material_section_budgets(target_tokens)
+        paragraph_budget = material_paragraph_budgets(target_tokens)
+
+        responses: dict[int, ModelResponse] = {}
         version_records: list[dict[str, Any]] = []
         matched_version: int | None = None
-        stop_reason = "maximum_adjustments_reached"
+        stop_reason = "maximum_material_revisions_reached"
 
-        for version in range(teaching.max_regeneration_attempts + 1):
+        for version in range(teaching.gg_material_revision_attempts + 1):
+            version_dir = stage_root / f"version_{version}"
+            persisted_version = version_dir / "version.json"
+            persisted_call = version_dir / "model_call.json"
+            if (
+                self.config.execution.resume
+                and persisted_version.is_file()
+                and persisted_call.is_file()
+            ):
+                old_record = read_json(persisted_version)
+                if old_record.get("gg_generation_policy") == GG_GENERATION_POLICY:
+                    saved_call = read_json(persisted_call)
+                    response = ModelResponse(**saved_call["response"])
+                    responses[version] = response
+                    version_records.append(old_record)
+                    if old_record.get("matched"):
+                        matched_version = version
+                        stop_reason = "first_strict_material_candidate_in_interval"
+                        break
+                    continue
+
             anchors = guidance_anchor_records(version_records)
             long_anchor = anchors["long"]
             short_anchor = anchors["short"]
-            initial_was_truncated = bool(
-                version_records and version_records[0]["is_truncated_candidate"]
-            )
+            previous = version_records[-1] if version_records else None
             source_version: int | None = None
             retain_ratio: float | None = None
             remove_ratio: float | None = None
@@ -678,35 +806,39 @@ class PilotRunner:
             ratio_strategy: str | None = None
             feedback_source_version: int | None = None
             revision_feedback: str | None = None
+            recovery_mode = False
+            recovery_reason: str | None = None
+            duplicate_prompt_prevented = False
+            section_budget = dict(base_section_budget)
+            budget_scale = 1.0
+            missing_feedback: list[str] = []
+            source_reason: str
+            source_content = ""
+
             if version == 0:
-                operation = "initial"
-                source_reason = "initial_generation"
+                operation = "initial_render"
+                prompt_type = "blueprint_render"
+                source_reason = "render_from_validated_blueprint"
                 role = "general_guidance"
-                condition = "initial"
+                condition = "material_initial"
                 rendered = self._rendered_call(
                     role, problem_id, condition, problem,
+                    direction="material",
+                    blueprint=blueprint_json,
                     target_tokens=target_tokens,
                     lower_bound=lower_bound,
                     upper_bound=upper_bound,
-                )
-            elif initial_was_truncated:
-                operation = "truncation_recovery"
-                source_reason = "truncation_recovery_from_problem"
-                role = "general_guidance_adjust"
-                condition = f"truncation_recovery_{version}"
-                rendered = self._rendered_call(
-                    role, problem_id, condition, problem,
-                    target_tokens=target_tokens,
-                    lower_bound=lower_bound,
-                    upper_bound=upper_bound,
-                    direction="truncation_recovery",
+                    section_budget=json.dumps(section_budget, sort_keys=True),
+                    paragraph_budget=json.dumps(paragraph_budget, sort_keys=True),
+                    revision_index=version,
                 )
             elif long_anchor is not None:
                 operation = "compress"
+                prompt_type = "material_edit_compress"
                 source_version = long_anchor["version"]
                 source_reason = "compress_best_complete_long_candidate"
                 role = "general_guidance_adjust"
-                condition = f"compress_{version}"
+                condition = f"material_compress_{version}"
                 previous_compression = guidance_latest_compression(
                     version_records, long_anchor["version"]
                 )
@@ -720,255 +852,266 @@ class PilotRunner:
                     revision_feedback = guidance_compression_feedback(
                         previous_compression, lower_bound, upper_bound
                     )
+                    missing_feedback = list(
+                        previous_compression.get("missing_categories", [])
+                    )
+                source_content = responses[source_version].content
                 rendered = self._rendered_call(
                     role, problem_id, condition, problem,
+                    blueprint=blueprint_json,
                     target_tokens=target_tokens,
                     lower_bound=lower_bound,
                     upper_bound=upper_bound,
+                    section_budget=json.dumps(section_budget, sort_keys=True),
+                    paragraph_budget=json.dumps(paragraph_budget, sort_keys=True),
                     source_tokens=long_anchor["completion_tokens"],
                     retain_ratio_percent=f"{retain_ratio * 100:.1f}",
                     remove_ratio_percent=f"{remove_ratio * 100:.1f}",
                     expand_ratio_percent="0.0",
-                    general_guidance=responses[source_version].content,
+                    general_guidance=source_content,
                     revision_feedback=revision_feedback or "",
+                    previous_outcomes=json.dumps(
+                        _material_outcomes(version_records), sort_keys=True
+                    ),
+                    revision_index=version,
                     direction="compress",
                 )
-            elif short_anchor is not None:
-                operation = "expand"
-                source_version = short_anchor["version"]
-                source_reason = "expand_best_complete_short_without_long_candidate"
+            elif previous is not None and previous["state"] == "TRUNCATED_TOO_LONG":
+                operation = "recovery_render"
+                prompt_type = "blueprint_truncation_recovery"
+                source_reason = "rerender_from_blueprint_after_truncation"
+                recovery_mode = True
+                recovery_reason = "previous_material_truncated"
                 role = "general_guidance_adjust"
-                condition = f"expand_{version}"
-                expand_ratio = max(
-                    0.0,
-                    target_tokens / short_anchor["completion_tokens"] - 1.0,
-                )
-                ratio_strategy = "target_over_complete_short"
+                condition = f"material_recovery_{version}"
                 rendered = self._rendered_call(
                     role, problem_id, condition, problem,
+                    blueprint=blueprint_json,
                     target_tokens=target_tokens,
                     lower_bound=lower_bound,
                     upper_bound=upper_bound,
-                    source_tokens=short_anchor["completion_tokens"],
-                    retain_ratio_percent="100.0",
-                    remove_ratio_percent="0.0",
-                    expand_ratio_percent=f"{expand_ratio * 100:.1f}",
-                    general_guidance=responses[source_version].content,
-                    direction="expand",
+                    section_budget=json.dumps(section_budget, sort_keys=True),
+                    paragraph_budget=json.dumps(paragraph_budget, sort_keys=True),
+                    previous_candidate_tokens=previous["completion_tokens"],
+                    revision_index=version,
+                    deduplication_instruction="",
+                    direction="truncation_recovery",
+                )
+            elif previous is not None and previous["state"] in {
+                "INVALID_CONTENT", "FORBIDDEN_CONTENT"
+            }:
+                operation = "repair_render"
+                prompt_type = "blueprint_content_repair"
+                source_reason = "rerender_from_blueprint_after_invalid_content"
+                recovery_mode = True
+                recovery_reason = "previous_material_invalid"
+                role = "general_guidance_adjust"
+                condition = f"material_repair_{version}"
+                missing_feedback = list(previous.get("missing_categories", []))
+                revision_feedback = guidance_material_repair_feedback(previous)
+                rendered = self._rendered_call(
+                    role, problem_id, condition, problem,
+                    blueprint=blueprint_json,
+                    target_tokens=target_tokens,
+                    lower_bound=lower_bound,
+                    upper_bound=upper_bound,
+                    section_budget=json.dumps(section_budget, sort_keys=True),
+                    paragraph_budget=json.dumps(paragraph_budget, sort_keys=True),
+                    revision_feedback=revision_feedback,
+                    revision_index=version,
+                    direction="material_repair",
+                )
+            elif short_anchor is not None:
+                operation = "expand_render"
+                prompt_type = "blueprint_length_repair"
+                source_reason = "rerender_from_blueprint_after_short_candidate"
+                role = "general_guidance_adjust"
+                condition = f"material_expand_{version}"
+                section_budget, budget_scale = scaled_section_budgets(
+                    target_tokens, short_anchor["completion_tokens"]
+                )
+                expand_ratio = budget_scale - 1.0
+                ratio_strategy = "scaled_blueprint_section_budgets"
+                rendered = self._rendered_call(
+                    role, problem_id, condition, problem,
+                    blueprint=blueprint_json,
+                    target_tokens=target_tokens,
+                    lower_bound=lower_bound,
+                    upper_bound=upper_bound,
+                    section_budget=json.dumps(section_budget, sort_keys=True),
+                    paragraph_budget=json.dumps(paragraph_budget, sort_keys=True),
+                    previous_candidate_tokens=short_anchor["completion_tokens"],
+                    budget_scale=f"{budget_scale:.4f}",
+                    revision_index=version,
+                    direction="material_expand",
                 )
             else:
-                operation = "regenerate"
-                source_reason = "regenerate_from_problem_no_complete_candidate"
+                operation = "repair_render"
+                prompt_type = "blueprint_content_repair"
+                source_reason = "rerender_from_blueprint_without_valid_anchor"
                 role = "general_guidance_adjust"
-                condition = f"regenerate_{version}"
+                condition = f"material_repair_{version}"
+                recovery_mode = True
+                recovery_reason = "no_complete_material_candidate"
+                revision_feedback = guidance_material_repair_feedback(previous or {})
                 rendered = self._rendered_call(
                     role, problem_id, condition, problem,
+                    blueprint=blueprint_json,
                     target_tokens=target_tokens,
                     lower_bound=lower_bound,
                     upper_bound=upper_bound,
-                    direction="regenerate",
+                    section_budget=json.dumps(section_budget, sort_keys=True),
+                    paragraph_budget=json.dumps(paragraph_budget, sort_keys=True),
+                    revision_feedback=revision_feedback,
+                    revision_index=version,
+                    direction="material_repair",
                 )
 
-            version_dir = stage_root / f"version_{version}"
-            compatibility_warnings: list[str] = []
-            record_operation = operation
-            record_source_version = source_version
-            record_source_reason = source_reason
-            record_retain_ratio = retain_ratio
-            record_remove_ratio = remove_ratio
-            record_expand_ratio = expand_ratio
-            record_ratio_strategy = ratio_strategy
-            record_feedback_source_version = feedback_source_version
-            record_revision_feedback = revision_feedback
-            record_anchor_long_version = (
-                None if long_anchor is None else long_anchor["version"]
+            prompt_hash = _hash(
+                rendered["system_prompt"] + "\0" + rendered["user_prompt"]
             )
-            record_anchor_short_version = (
-                None if short_anchor is None else short_anchor["version"]
+            previous_prompt_hash = (
+                None if previous is None else previous.get("prompt_hash")
             )
-            existing_call = version_dir / "model_call.json"
-            if self.config.execution.resume and existing_call.is_file():
-                saved = read_json(existing_call)
-                expected_prompt_hash = _hash(
+            if duplicate_material_request(
+                version_records,
+                prompt_hash=prompt_hash,
+                max_output_tokens=material_max_tokens,
+                source_material_version=source_version,
+                operation=operation,
+            ):
+                duplicate_prompt_prevented = True
+                operation = "recovery_render"
+                prompt_type = "blueprint_truncation_recovery_deduplicated"
+                source_version = None
+                source_reason = "duplicate_prompt_prevented_blueprint_recovery"
+                recovery_mode = True
+                recovery_reason = "duplicate_material_prompt"
+                role = "general_guidance_adjust"
+                condition = f"material_deduplicated_recovery_{version}"
+                rendered = self._rendered_call(
+                    role, problem_id, condition, problem,
+                    blueprint=blueprint_json,
+                    target_tokens=target_tokens,
+                    lower_bound=lower_bound,
+                    upper_bound=upper_bound,
+                    section_budget=json.dumps(section_budget, sort_keys=True),
+                    paragraph_budget=json.dumps(paragraph_budget, sort_keys=True),
+                    previous_candidate_tokens=(
+                        None if previous is None
+                        else previous["completion_tokens"]
+                    ),
+                    revision_index=version,
+                    deduplication_instruction=(
+                        "This request replaces a duplicate prompt. Use the fixed "
+                        f"recovery layout for revision {version}."
+                    ),
+                    direction="truncation_recovery",
+                )
+                prompt_hash = _hash(
                     rendered["system_prompt"] + "\0" + rendered["user_prompt"]
                 )
-                if saved.get("prompt_hash") != expected_prompt_hash:
-                    compatibility_warnings.append(
-                        "persisted_legacy_prompt_mismatch_reused"
-                    )
-                if (saved.get("role") != role or
-                        saved.get("condition") != condition):
-                    compatibility_warnings.append(
-                        "persisted_legacy_operation_mismatch_reused"
-                    )
-                existing_version = version_dir / "version.json"
-                old_record: dict[str, Any] = {}
-                if existing_version.is_file():
-                    old_record = read_json(existing_version)
-                    if "state" not in old_record:
-                        compatibility_warnings.append(
-                            "persisted_legacy_version_schema_reconstructed"
-                        )
-                saved_condition = str(saved.get("condition", ""))
-                inferred_operation = (
-                    "initial" if saved_condition == "initial" else
-                    "compress" if saved_condition.startswith("compress_") else
-                    "expand" if saved_condition.startswith("expand_") else
-                    "truncation_recovery"
-                    if saved_condition.startswith("truncation_recovery_") else
-                    "regenerate" if saved_condition.startswith("regenerate_") else
-                    operation
-                )
-                record_operation = str(
-                    old_record.get("operation", inferred_operation)
-                )
-                if "source_version" in old_record:
-                    record_source_version = old_record["source_version"]
-                elif "input_version" in old_record:
-                    record_source_version = old_record["input_version"]
-                elif record_operation in {"compress", "expand"} and version > 0:
-                    record_source_version = version - 1
-                    compatibility_warnings.append(
-                        "persisted_legacy_source_version_inferred"
-                    )
-                else:
-                    record_source_version = None
-                if "source_selection_reason" in old_record:
-                    record_source_reason = str(
-                        old_record["source_selection_reason"]
-                    )
-                elif record_operation == "initial":
-                    record_source_reason = "initial_generation"
-                elif record_operation == "regenerate":
-                    record_source_reason = (
-                        "persisted_legacy_regeneration_from_problem_inferred"
-                    )
-                else:
-                    record_source_reason = (
-                        "persisted_legacy_previous_version_source_inferred"
-                    )
-                record_retain_ratio = old_record.get(
-                    "retain_ratio_requested"
-                )
-                record_remove_ratio = old_record.get(
-                    "remove_ratio_requested"
-                )
-                record_expand_ratio = old_record.get(
-                    "expand_ratio_requested"
-                )
-                record_ratio_strategy = old_record.get("ratio_strategy")
-                record_feedback_source_version = old_record.get(
-                    "feedback_source_version"
-                )
-                record_revision_feedback = old_record.get("revision_feedback")
-                record_anchor_long_version = old_record.get(
-                    "anchor_long_version"
-                )
-                record_anchor_short_version = old_record.get(
-                    "anchor_short_version"
-                )
-                if (record_operation in {"compress", "expand"} and
-                        record_ratio_strategy is None):
-                    compatibility_warnings.append(
-                        "persisted_legacy_ratio_metadata_unavailable"
-                    )
-                if ("anchor_long_version" not in old_record or
-                        "anchor_short_version" not in old_record):
-                    compatibility_warnings.append(
-                        "persisted_legacy_anchor_metadata_unavailable"
-                    )
+
             response, call_path = self._call(
                 version_dir, role, problem_id, condition, rendered,
-                max_output_tokens=gg_max_output_tokens,
-                allow_persisted_max_tokens_mismatch=True,
-                allow_persisted_prompt_mismatch=True,
+                max_output_tokens=material_max_tokens,
             )
             if response.token_count_source not in {"api_usage", "mock_usage"}:
                 raise ModelInfrastructureError(
                     "General Guidance requires API completion_tokens; tokenizer fallback is not accepted"
                 )
-            responses.append(response)
+            responses[version] = response
             content_path = version_dir / "content.md"
             write_text(content_path, response.content)
             validation = validate_guidance_content(response.content)
             status = guidance_candidate_state(
                 response, lower_bound, upper_bound,
-                validation["semantic_completeness_passed"] and
-                not validation["structural_errors"],
+                validation["semantic_completeness_passed"],
+                forbidden_content=bool(validation["forbidden_content"]),
             )
             request_max_tokens = read_json(call_path).get("model", {}).get(
-                "max_output_tokens", gg_max_output_tokens
+                "max_output_tokens", material_max_tokens
             )
             record = guidance_version_record(
                 version=version,
-                operation=record_operation,
-                source_version=record_source_version,
-                source_selection_reason=record_source_reason,
+                operation=operation,
+                source_version=source_version,
+                source_selection_reason=source_reason,
                 response=response,
                 content_path=content_path,
                 target_tokens=target_tokens,
                 lower_bound=lower_bound,
                 upper_bound=upper_bound,
-                configured_max_tokens=gg_max_output_tokens,
+                configured_max_tokens=material_max_tokens,
                 request_max_tokens=request_max_tokens,
                 status=status,
                 validation=validation,
-                retain_ratio_requested=record_retain_ratio,
-                remove_ratio_requested=record_remove_ratio,
-                expand_ratio_requested=record_expand_ratio,
-                ratio_strategy=record_ratio_strategy,
-                feedback_source_version=record_feedback_source_version,
-                revision_feedback=record_revision_feedback,
-                anchor_long_version=record_anchor_long_version,
-                anchor_short_version=record_anchor_short_version,
-                compatibility_warnings=compatibility_warnings,
+                retain_ratio_requested=retain_ratio,
+                remove_ratio_requested=remove_ratio,
+                expand_ratio_requested=expand_ratio,
+                ratio_strategy=ratio_strategy,
+                feedback_source_version=feedback_source_version,
+                revision_feedback=revision_feedback,
+                anchor_long_version=(
+                    None if long_anchor is None else long_anchor["version"]
+                ),
+                anchor_short_version=(
+                    None if short_anchor is None else short_anchor["version"]
+                ),
+                compatibility_warnings=[],
             )
+            record.update({
+                "gg_generation_policy": GG_GENERATION_POLICY,
+                "prompt_type": prompt_type,
+                "prompt_hash": prompt_hash,
+                "blueprint_version": blueprint_version,
+                "source_blueprint_version": blueprint_version,
+                "source_material_version": source_version,
+                "recovery_mode": recovery_mode,
+                "recovery_reason": recovery_reason,
+                "section_budget": section_budget,
+                "paragraph_budget": paragraph_budget,
+                "budget_scale": budget_scale,
+                "requested_retain_ratio": retain_ratio,
+                "missing_categories_feedback": missing_feedback,
+                "previous_candidate_tokens": (
+                    None if previous is None
+                    else previous["completion_tokens"]
+                ),
+                "previous_prompt_hash": previous_prompt_hash,
+                "current_prompt_hash": prompt_hash,
+                "duplicate_prompt_prevented": duplicate_prompt_prevented,
+                "contains_forbidden_content": bool(
+                    validation["forbidden_content"]
+                ),
+            })
             version_records.append(record)
             write_json(version_dir / "version.json", record)
 
             if record["matched"]:
                 matched_version = version
-                stop_reason = "first_valid_candidate_in_interval"
+                stop_reason = "first_strict_material_candidate_in_interval"
                 break
 
-        valid_records = [item for item in version_records if item["valid_candidate"]]
-        any_tokens_in_interval = any(
-            lower_bound <= item["completion_tokens"] <= upper_bound
-            for item in version_records
-        )
         fallback_used = False
+        fallback_version: int | None = None
         if matched_version is not None:
             selected_version = matched_version
-            selection_reason = "first_valid_candidate_in_interval"
+            selection_reason = "first_strict_material_candidate_in_interval"
             passed = True
-        elif not any_tokens_in_interval:
-            selected = min(
-                version_records,
-                key=lambda item: (
-                    abs(item["completion_tokens"] - target_tokens),
-                    item["version"],
-                ),
-            )
-            selection_reason = "fallback_closest_to_ff_target"
-            selected_version = selected["version"]
-            passed = False
-            fallback_used = True
-        elif valid_records:
-            selected = min(
-                valid_records,
-                key=lambda item: (
-                    item["distance_to_target"],
-                    item["distance_to_interval"],
-                    item["version"],
-                ),
-            )
-            selected_version = selected["version"]
-            selection_reason = "closest_valid_candidate_for_audit"
-            passed = False
         else:
-            selected_version = None
-            selection_reason = "no_valid_candidate"
             passed = False
+            selected = select_material_fallback(
+                version_records, target_tokens, lower_bound, upper_bound
+            )
+            if selected is None:
+                selected_version = None
+                selection_reason = "no_complete_semantic_fallback_candidate"
+            else:
+                fallback_used = True
+                fallback_version = selected["version"]
+                selected_version = fallback_version
+                selection_reason = "fallback_minimum_distance_to_registered_interval"
 
         selected_record = (
             version_records[selected_version]
@@ -992,23 +1135,31 @@ class PilotRunner:
             )
         }
         final_anchors = guidance_anchor_records(version_records)
-        all_compatibility_warnings = sorted({
-            warning
-            for item in version_records
-            for warning in item["compatibility_warnings"]
-        })
+        complete_semantic_versions = [
+            item["version"] for item in version_records
+            if item["valid_candidate"]
+        ]
         match_record = {
             "target_tokens": target_tokens,
             "lower_bound": lower_bound,
             "upper_bound": upper_bound,
-            "max_output_tokens": gg_max_output_tokens,
+            "blueprint_status": blueprint_result["status"],
+            "blueprint_version": blueprint_version,
+            "blueprint_attempts_used": blueprint_result["attempts_used"],
+            "blueprint_completion_tokens": blueprint_result["completion_tokens"],
+            "max_output_tokens": material_max_tokens,
             "output_capacity_policy": {
                 "type": "fixed",
-                "max_output_tokens": gg_max_output_tokens,
+                "max_output_tokens": material_max_tokens,
             },
-            "max_regeneration_attempts": teaching.max_regeneration_attempts,
+            "max_material_revision_attempts": (
+                teaching.gg_material_revision_attempts
+            ),
             "attempts_used": len(version_records),
+            "material_attempts_used": len(version_records),
             "matched_version": matched_version,
+            "strict_matched_version": matched_version,
+            "fallback_version": fallback_version,
             "selected_version": selected_version,
             "selected_audit_version": selected_version,
             "best_complete_long_version": (
@@ -1026,14 +1177,31 @@ class PilotRunner:
             "token_interval_outcome": token_interval_outcome,
             "selected_within_token_interval": selected_within_token_interval,
             "fallback_used": fallback_used,
-            "fallback_selection_policy": "minimum_absolute_distance_to_ff_target",
+            "fallback_candidate_used": fallback_used,
+            "fallback_selection_policy": (
+                "interval_distance_then_target_distance_then_prefer_at_or_above_target_then_version"
+            ),
             "validation_policy": "semantic_completeness_v2",
+            "gg_generation_policy": GG_GENERATION_POLICY,
+            "strict_candidate_versions": [
+                item["version"] for item in version_records if item["matched"]
+            ],
+            "complete_semantic_candidate_versions": complete_semantic_versions,
+            "truncated_versions": [
+                item["version"] for item in version_records
+                if item["state"] == "TRUNCATED_TOO_LONG"
+            ],
+            "invalid_versions": [
+                item["version"] for item in version_records
+                if item["state"] in {"INVALID_CONTENT", "FORBIDDEN_CONTENT"}
+            ],
+            "gg_generation_failed": selected_version is None,
             "truncation_recovery_used": any(
-                item["operation"] == "truncation_recovery"
+                item["recovery_mode"]
                 for item in version_records
             ),
             "selected_validation": selected_validation,
-            "compatibility_warnings": all_compatibility_warnings,
+            "compatibility_warnings": [],
             "versions": version_records,
         }
         write_json(stage_root / "match.json", match_record)
@@ -1046,22 +1214,50 @@ class PilotRunner:
             raise GGContentValidationError(
                 "General Guidance produced no semantically complete candidate",
                 validation_error=validation_error,
+                metrics={
+                    "gg_generation_policy": GG_GENERATION_POLICY,
+                    "blueprint_status": blueprint_result["status"],
+                    "attempts_used": len(version_records),
+                    "selected_version": None,
+                    "matched_version": None,
+                    "fallback_used": False,
+                    "fallback_candidate_used": False,
+                    "gg_generation_failed": True,
+                    "token_match_passed": False,
+                    "token_match_failed": True,
+                    "token_interval_outcome": "unmatched_no_fallback",
+                    "general_guidance_tokens": None,
+                    "truncation_recovery_used": match_record[
+                        "truncation_recovery_used"
+                    ],
+                    "general_guidance_truncated": any(
+                        item["state"] == "TRUNCATED_TOO_LONG"
+                        for item in version_records
+                    ),
+                    "semantic_completeness_passed": False,
+                },
             )
         response = responses[selected_version]
         error = token_relative_error(target_tokens, response.output_tokens)
         return {
             "response": response,
             "metrics": {
+                "gg_generation_policy": GG_GENERATION_POLICY,
+                "blueprint_status": blueprint_result["status"],
+                "blueprint_version": blueprint_version,
+                "blueprint_attempts_used": blueprint_result["attempts_used"],
                 "target_tokens": target_tokens,
                 "lower_bound": lower_bound,
                 "upper_bound": upper_bound,
-                "max_output_tokens": gg_max_output_tokens,
+                "max_output_tokens": material_max_tokens,
                 "attempts_used": len(version_records),
                 "matched_version": matched_version,
                 "selected_version": selected_version,
                 "selected_audit_version": selected_version,
                 "selection_reason": selection_reason,
                 "fallback_used": fallback_used,
+                "fallback_candidate_used": fallback_used,
+                "gg_generation_failed": False,
                 "fallback_selection_policy": match_record[
                     "fallback_selection_policy"
                 ],
@@ -1084,6 +1280,173 @@ class PilotRunner:
                 **(selected_validation or {}),
             },
         }
+
+    def _validated_guidance_blueprint(
+        self,
+        stage_root: Path,
+        problem_id: str,
+        problem: str,
+        target_tokens: int,
+        lower_bound: int,
+        upper_bound: int,
+    ) -> dict[str, Any]:
+        teaching = self.config.teaching_material
+        blueprint_root = stage_root / "blueprint"
+        selection_path = blueprint_root / "selection.json"
+        if self.config.execution.resume and selection_path.is_file():
+            selection = read_json(selection_path)
+            if selection.get("status") == "BLUEPRINT_VALID":
+                blueprint = read_json(blueprint_root / "blueprint.json")
+                return {
+                    "status": "BLUEPRINT_VALID",
+                    "version": selection["selected_version"],
+                    "attempts_used": selection["attempts_used"],
+                    "completion_tokens": selection["completion_tokens"],
+                    "blueprint": blueprint,
+                }
+            raise GGContentValidationError(
+                "persisted Blueprint attempts are invalid and are not resampled",
+                validation_error="gg_blueprint_invalid",
+                metrics={
+                    "gg_generation_policy": GG_GENERATION_POLICY,
+                    "blueprint_status": selection.get("status"),
+                    "gg_generation_failed": True,
+                    "token_match_passed": False,
+                    "token_match_failed": True,
+                    "fallback_used": False,
+                    "fallback_candidate_used": False,
+                },
+            )
+
+        attempts: list[dict[str, Any]] = []
+        maximum = teaching.gg_blueprint_repair_attempts + 1
+        for version in range(maximum):
+            attempt_dir = blueprint_root / f"version_{version}"
+            validation_path = attempt_dir / "validation.json"
+            call_path = attempt_dir / "model_call.json"
+            if (
+                self.config.execution.resume
+                and validation_path.is_file()
+                and call_path.is_file()
+            ):
+                validation = read_json(validation_path)
+                call = read_json(call_path)
+                response = ModelResponse(**call["response"])
+            else:
+                if version == 0:
+                    role = "general_guidance_blueprint"
+                    condition = "blueprint_initial"
+                    rendered = self._rendered_call(
+                        role, problem_id, condition, problem,
+                        target_tokens=target_tokens,
+                        lower_bound=lower_bound,
+                        upper_bound=upper_bound,
+                    )
+                else:
+                    role = "general_guidance_blueprint_repair"
+                    condition = "blueprint_repair"
+                    rendered = self._rendered_call(
+                        role, problem_id, condition, problem,
+                        target_tokens=target_tokens,
+                        lower_bound=lower_bound,
+                        upper_bound=upper_bound,
+                        validation_errors=json.dumps(
+                            attempts[-1]["errors"], ensure_ascii=False
+                        ),
+                    )
+                response, call_path = self._call(
+                    attempt_dir,
+                    role,
+                    problem_id,
+                    condition,
+                    rendered,
+                    max_output_tokens=teaching.gg_blueprint_max_output_tokens,
+                )
+                validation = validate_blueprint_response(
+                    response.content, response.finish_reason
+                )
+                request_record = {
+                    "prompt_hash": read_json(call_path)["prompt_hash"],
+                    "role": role,
+                    "condition": condition,
+                    "max_output_tokens": teaching.gg_blueprint_max_output_tokens,
+                    "target_tokens": target_tokens,
+                    "lower_bound": lower_bound,
+                    "upper_bound": upper_bound,
+                    "prompt_type": (
+                        "compact_blueprint"
+                        if version == 0 else "compact_blueprint_repair"
+                    ),
+                }
+                write_json(attempt_dir / "request.json", request_record)
+                write_json(attempt_dir / "response.json", {
+                    "content": response.content,
+                    "completion_tokens": response.output_tokens,
+                    "finish_reason": response.finish_reason,
+                    "response_id": response.response_id,
+                })
+                write_json(validation_path, validation)
+                if validation["blueprint"] is not None:
+                    write_json(
+                        attempt_dir / "blueprint.json",
+                        validation["blueprint"],
+                    )
+            attempt_record = {
+                "version": version,
+                "status": validation["status"],
+                "errors": validation["errors"],
+                "forbidden_content": validation["forbidden_content"],
+                "completion_tokens": response.output_tokens,
+                "finish_reason": response.finish_reason,
+                "prompt_hash": read_json(call_path)["prompt_hash"],
+                "schema_policy": BLUEPRINT_POLICY,
+            }
+            attempts.append(attempt_record)
+            if validation["valid"]:
+                write_json(blueprint_root / "blueprint.json", validation["blueprint"])
+                write_json(blueprint_root / "validation.json", validation)
+                write_json(blueprint_root / "request.json", read_json(attempt_dir / "request.json"))
+                write_json(blueprint_root / "response.json", read_json(attempt_dir / "response.json"))
+                selection = {
+                    "status": "BLUEPRINT_VALID",
+                    "selected_version": version,
+                    "attempts_used": len(attempts),
+                    "completion_tokens": response.output_tokens,
+                    "schema_policy": BLUEPRINT_POLICY,
+                    "attempts": attempts,
+                }
+                write_json(selection_path, selection)
+                return {
+                    "status": "BLUEPRINT_VALID",
+                    "version": version,
+                    "attempts_used": len(attempts),
+                    "completion_tokens": response.output_tokens,
+                    "blueprint": validation["blueprint"],
+                }
+
+        selection = {
+            "status": attempts[-1]["status"],
+            "selected_version": None,
+            "attempts_used": len(attempts),
+            "completion_tokens": None,
+            "schema_policy": BLUEPRINT_POLICY,
+            "attempts": attempts,
+        }
+        write_json(selection_path, selection)
+        raise GGContentValidationError(
+            "General Guidance Blueprint validation failed",
+            validation_error="gg_blueprint_invalid",
+            metrics={
+                "gg_generation_policy": GG_GENERATION_POLICY,
+                "blueprint_status": selection["status"],
+                "blueprint_attempts_used": len(attempts),
+                "gg_generation_failed": True,
+                "token_match_passed": False,
+                "token_match_failed": True,
+                "fallback_used": False,
+                "fallback_candidate_used": False,
+            },
+        )
 
     def _rendered_call(self, role: str, problem_id: str, condition: str,
                        problem: str, **values: Any) -> dict[str, str]:
@@ -1109,14 +1472,37 @@ class PilotRunner:
                 teacher_code=values["teacher_code"],
                 teacher_verdict=values["teacher_verdict"],
             )
-        elif role == "general_guidance":
+        elif role == "general_guidance_blueprint":
             system = self.renderer.render(
-                self.renderer.template("general_guidance.md"),
+                self.renderer.template("general_guidance_blueprint.md"),
                 target_tokens=values["target_tokens"],
                 lower_bound=values["lower_bound"],
                 upper_bound=values["upper_bound"],
             )
             user = problem
+        elif role == "general_guidance_blueprint_repair":
+            system = self.renderer.render(
+                self.renderer.template("general_guidance_blueprint_repair.md"),
+                target_tokens=values["target_tokens"],
+                lower_bound=values["lower_bound"],
+                upper_bound=values["upper_bound"],
+                validation_errors=values["validation_errors"],
+            )
+            user = problem
+        elif role == "general_guidance":
+            system = self.renderer.render(
+                self.renderer.template("general_guidance_material.md"),
+                target_tokens=values["target_tokens"],
+                lower_bound=values["lower_bound"],
+                upper_bound=values["upper_bound"],
+                section_budget=values["section_budget"],
+                paragraph_budget=values["paragraph_budget"],
+            )
+            user = self.renderer.render(
+                self.renderer.template("general_guidance_material_user.md"),
+                formatted_problem=problem,
+                blueprint=values["blueprint"],
+            )
         elif role == "general_guidance_adjust":
             system = self.renderer.render(
                 self.renderer.template(f"general_guidance_{values['direction']}.md"),
@@ -1128,14 +1514,25 @@ class PilotRunner:
                 remove_ratio_percent=values.get("remove_ratio_percent", ""),
                 expand_ratio_percent=values.get("expand_ratio_percent", ""),
                 revision_feedback=values.get("revision_feedback", ""),
+                section_budget=values["section_budget"],
+                paragraph_budget=values["paragraph_budget"],
+                previous_candidate_tokens=values.get("previous_candidate_tokens", ""),
+                budget_scale=values.get("budget_scale", ""),
+                previous_outcomes=values.get("previous_outcomes", "[]"),
+                deduplication_instruction=values.get("deduplication_instruction", ""),
             )
-            if values["direction"] in {"regenerate", "truncation_recovery"}:
-                user = problem
+            if values["direction"] == "compress":
+                user = self.renderer.render(
+                    self.renderer.template("general_guidance_compress_user.md"),
+                    formatted_problem=problem,
+                    blueprint=values["blueprint"],
+                    general_guidance=values["general_guidance"],
+                )
             else:
                 user = self.renderer.render(
-                    self.renderer.template("general_guidance_adjust_user.md"),
+                    self.renderer.template("general_guidance_material_user.md"),
                     formatted_problem=problem,
-                    general_guidance=values["general_guidance"],
+                    blueprint=values["blueprint"],
                 )
         elif role == "student":
             system = self.renderer.template("student.md")
@@ -1275,13 +1672,8 @@ def token_relative_error(target: int, actual: int | None) -> float | None:
 
 
 def condition_comparison_eligible(record: dict[str, Any]) -> bool:
-    """Derive the final comparison gate from episode validity invariants."""
-    return (
-        record.get("valid_episode") is True and
-        not record.get("infrastructure_error") and
-        not record.get("protocol_output_invalid") and
-        not record.get("token_match_failed")
-    )
+    """Backward-compatible boolean view of the canonical eligibility policy."""
+    return derive_comparison_eligibility(record).condition_comparison_eligible
 
 
 def guidance_token_bounds(target: int, tolerance: float) -> tuple[int, int]:
@@ -1455,9 +1847,13 @@ def guidance_candidate_state(
     lower_bound: int,
     upper_bound: int,
     valid_content: bool,
+    *,
+    forbidden_content: bool = False,
 ) -> str:
     if response.finish_reason == "length":
         return "TRUNCATED_TOO_LONG"
+    if forbidden_content:
+        return "FORBIDDEN_CONTENT"
     if not valid_content:
         return "INVALID_CONTENT"
     if response.finish_reason != "stop":
@@ -1591,6 +1987,42 @@ def guidance_compression_feedback(
     return opening + allocation + length_warning
 
 
+def guidance_material_repair_feedback(previous: dict[str, Any]) -> str:
+    missing = list(previous.get("missing_categories", []))
+    structural = list(previous.get("structural_errors", []))
+    forbidden = list(previous.get("forbidden_content", []))
+    parts: list[str] = []
+    if missing:
+        parts.append("missing semantic categories: " + ", ".join(missing))
+    if structural:
+        parts.append("content validation errors: " + ", ".join(structural))
+    if forbidden:
+        parts.append("forbidden content: " + ", ".join(forbidden))
+    if not parts:
+        parts.append("the response did not satisfy semantic_completeness_v2")
+    return (
+        "The previous material was invalid because " + "; ".join(parts) + ". "
+        "Preserve all four semantic categories. For implementation, cover concrete "
+        "data structures, indexing, initialization, boundary handling, complexity "
+        "risks, and common coding mistakes using only units already in the blueprint."
+    )
+
+
+def _material_outcomes(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [
+        {
+            "version": item.get("version"),
+            "operation": item.get("operation"),
+            "completion_tokens": item.get("completion_tokens"),
+            "finish_reason": item.get("finish_reason"),
+            "state": item.get("state"),
+            "missing_categories": item.get("missing_categories", []),
+            "requested_retain_ratio": item.get("requested_retain_ratio"),
+        }
+        for item in records
+    ]
+
+
 def guidance_version_record(
     *,
     version: int,
@@ -1623,7 +2055,7 @@ def guidance_version_record(
     tokens = response.output_tokens
     valid_content = (
         validation["semantic_completeness_passed"] and
-        not validation["structural_errors"]
+        not validation["forbidden_content"]
     )
     valid_candidate = response.finish_reason == "stop" and valid_content
     return {
@@ -1728,29 +2160,68 @@ def _stage_metadata(
 
 
 def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
+    eligibility = [analyze_historical_eligibility(record) for record in records]
     valid = [record for record in records if record.get("valid_episode")]
-    comparable = [
-        record for record in valid
-        if record.get("condition_comparison_eligible", False)
+    teacher_successes = [
+        record for record, analysis in zip(records, eligibility)
+        if record.get("valid_episode") and analysis["branch"] == "teacher_success"
     ]
-    teacher_failures = [record for record in comparable
-                        if record.get("teacher", {}).get("verdict") != "AC"]
-    all_teacher_failures = [record for record in valid
-                            if record.get("teacher", {}).get("verdict") != "AC"]
+    all_teacher_failures = [
+        record for record, analysis in zip(records, eligibility)
+        if record.get("valid_episode") and analysis["branch"] == "teacher_failure"
+    ]
+    comparable = [
+        record for record, analysis in zip(records, eligibility)
+        if (
+            analysis["branch"] == "teacher_failure"
+            and analysis["protocol_condition_comparison_eligible"]
+        )
+    ]
+    exploratory = [
+        record for record, analysis in zip(records, eligibility)
+        if (
+            analysis["branch"] == "teacher_failure"
+            and analysis["protocol_exploratory_comparison_eligible"]
+        )
+    ]
+    teacher_failures = comparable
+    compatibility_warnings = [
+        {
+            "problem_id": record.get("problem_id"),
+            "warnings": analysis["compatibility_warnings"],
+            "runner_reported_condition_comparison_eligible": analysis[
+                "runner_reported_condition_comparison_eligible"
+            ],
+            "protocol_condition_comparison_eligible": analysis[
+                "protocol_condition_comparison_eligible"
+            ],
+        }
+        for record, analysis in zip(records, eligibility)
+        if analysis["compatibility_warnings"]
+    ]
     conditions = STUDENT_CONDITIONS
     summary: dict[str, Any] = {
         "run_id": run_id,
         "pilot_only": True,
         "interpretation": "Execution-chain pilot; not a statistical significance result.",
+        "eligibility_policy": ELIGIBILITY_POLICY,
         "problem_count": len(records),
+        "total_valid_episodes": len(valid),
+        "teacher_success_episodes": len(teacher_successes),
+        "teacher_failure_episodes": len(all_teacher_failures),
+        "strict_condition_comparison_eligible_episodes": len(comparable),
+        "fallback_exploratory_episodes": len(exploratory),
+        "ineligible_teacher_failure_episodes": (
+            len(all_teacher_failures) - len(comparable)
+        ),
         "valid_episode_count": len(valid),
         "invalid_episode_count": len(records) - len(valid),
         "condition_comparison_eligible_count": len(comparable),
         "condition_comparison_ineligible_count": len(valid) - len(comparable),
-        "teacher_ac_count": sum(
-            r.get("teacher", {}).get("verdict") == "AC" for r in comparable
-        ),
-        "teacher_failure_count": len(teacher_failures),
+        "teacher_ac_count": len(teacher_successes),
+        "teacher_failure_count": len(all_teacher_failures),
+        "eligibility_compatibility_warning_count": len(compatibility_warnings),
+        "eligibility_compatibility_warnings": compatibility_warnings,
         "student_ac_count": {},
         "student_breakthrough_on_teacher_failures": {},
         "baseline_fail_gg_fail_ff_success": [],
@@ -1831,8 +2302,14 @@ def summary_markdown(summary: dict[str, Any]) -> str:
         f"- Problems: {summary['problem_count']}",
         f"- Valid episodes: {summary['valid_episode_count']}",
         f"- Invalid episodes: {summary['invalid_episode_count']}",
-        f"- Condition-comparison eligible: {summary['condition_comparison_eligible_count']}",
-        f"- Condition-comparison ineligible: {summary['condition_comparison_ineligible_count']}",
+        f"- Teacher-success episodes: {summary['teacher_success_episodes']}",
+        f"- Teacher-failure episodes: {summary['teacher_failure_episodes']}",
+        "- Strict condition-comparison eligible: "
+        f"{summary['strict_condition_comparison_eligible_episodes']}",
+        "- Fallback exploratory eligible: "
+        f"{summary['fallback_exploratory_episodes']}",
+        "- Ineligible Teacher failures: "
+        f"{summary['ineligible_teacher_failure_episodes']}",
         f"- Teacher AC: {summary['teacher_ac_count']}",
         f"- Teacher failures: {summary['teacher_failure_count']}",
         "",
