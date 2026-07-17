@@ -44,12 +44,15 @@ is preserved with a validation warning and still proceeds to the one final
 call; it is never resampled.
 
 The final call receives the role's original visible input and only that role's
-own planning. It must return raw, syntax-complete Python source with no Markdown
-or code fence. Only this final response is eligible for extraction and at most
-one Judge submission. A syntax-complete final response may still be submitted
-when its API finish reason is `length`, while the truncation remains recorded;
-invalid or non-source output is a final-output validation failure and receives
-no rescue call.
+own planning. The prompt requires exactly one syntax-complete Python source file
+in exactly one `python` code fence, with no text outside the fence. Runtime
+extraction is deliberately more tolerant: if exactly one Python fence is
+present, surrounding text or non-Python material is ignored and only that
+fence's source is eligible for at most one Judge submission. A complete fenced
+response may still be submitted when its API finish reason is `length`, while
+the truncation remains recorded; a missing or unclosed Python fence, multiple
+Python fences, or invalid source is a final-output validation failure and
+receives no rescue call.
 
 All GG versions are preserved with their prompts, content, usage, finish
 reason, preferred-format signal, semantic coverage, validation findings,
@@ -116,8 +119,9 @@ does not create another model attempt.
   clients. Only network/infrastructure errors are retried.
 - `prompts.py` builds every role's problem view from `problem.json` and public
   tests only.
-- `code_extraction.py` accepts syntax-complete raw Python from the final stage
-  and never repairs, combines, or supplements output from planning.
+- `code_extraction.py` extracts the unique syntax-complete fenced Python block
+  from the final stage, tolerates surrounding response text, and never repairs,
+  combines, or supplements output from planning.
 - `orchestrator.py` owns branching, coarse verdict mapping, token matching,
   state files, artifact paths, resume, and summaries.
 - `DockerJudge` remains the only submission evaluator. A model receives only

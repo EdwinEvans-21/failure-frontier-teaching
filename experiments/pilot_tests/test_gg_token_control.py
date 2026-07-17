@@ -26,7 +26,11 @@ FORMATTED_PROBLEM = "PUBLIC PROBLEM STATEMENT"
 
 
 def solver(marker: str) -> str:
-    return f"MARKER = {marker!r}\nclass Solution:\n    pass"
+    return (
+        "```python\n"
+        f"MARKER = {marker!r}\nclass Solution:\n    pass\n"
+        "```"
+    )
 
 
 def guidance(marker: str) -> str:

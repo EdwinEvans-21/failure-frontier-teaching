@@ -15,7 +15,7 @@ import sys
 from ffjudge.models import JudgeResult, ProblemSpec, Verdict
 from ffjudge.runner import DockerJudge, DockerUnavailableError
 
-from .code_extraction import extract_raw_python_code
+from .code_extraction import extract_fenced_python_submission
 from .config import PilotConfig, ProblemConfig
 from .model_client import ModelClient, ModelInfrastructureError, ModelResponse
 from .prompts import PromptRenderer
@@ -526,7 +526,7 @@ class PilotRunner:
             final_rendered, max_output_tokens=solver.final_max_output_tokens,
         )
         write_text(stage_dir / "final" / "content.md", response.content)
-        extraction = extract_raw_python_code(response.content)
+        extraction = extract_fenced_python_submission(response.content)
         final_warnings = [] if extraction.ok else [
             f"final_output_validation:{extraction.error}"
         ]

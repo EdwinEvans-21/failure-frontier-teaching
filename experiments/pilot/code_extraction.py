@@ -32,12 +32,16 @@ def extract_single_python_code(response: str, *, truncated: bool = False,
     return ExtractionResult(True, code + "\n", None)
 
 
-def extract_raw_python_code(response: str) -> ExtractionResult:
-    code = response.strip()
+def extract_fenced_python_submission(response: str) -> ExtractionResult:
+    if not response.strip():
+        return ExtractionResult(False, None, "empty_final_response")
+    matches = PYTHON_BLOCK.findall(response)
+    if len(matches) != 1:
+        reason = "missing_python_code_block" if not matches else "multiple_python_code_blocks"
+        return ExtractionResult(False, None, reason)
+    code = matches[0].strip()
     if not code:
-        return ExtractionResult(False, None, "empty_python_source")
-    if "```" in code or re.search(r"(?m)^#{1,6}\s", code):
-        return ExtractionResult(False, None, "markdown_not_allowed")
+        return ExtractionResult(False, None, "empty_python_code_block")
     try:
         ast.parse(code)
     except SyntaxError:

@@ -276,7 +276,7 @@ class MockModelClient:
     @staticmethod
     def _default(role: str) -> dict[str, Any]:
         if role in {"teacher", "student", "teacher_final", "student_final"}:
-            content = "class Solution:\n    pass"
+            content = "```python\nclass Solution:\n    pass\n```"
         elif role in {"teacher_planning", "student_planning"}:
             content = (
                 "## Candidate Analysis\nCompare two bounded candidates.\n\n"

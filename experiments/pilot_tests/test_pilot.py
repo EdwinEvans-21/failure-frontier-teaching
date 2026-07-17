@@ -12,7 +12,7 @@ from difflib import unified_diff
 from ffjudge.models import JudgeResult, ProblemSpec, Verdict
 
 from experiments.pilot.code_extraction import (
-    extract_raw_python_code,
+    extract_fenced_python_submission,
     extract_single_python_code,
 )
 from experiments.pilot.config import load_config
@@ -38,7 +38,11 @@ def solver_response(marker: str) -> str:
 
 
 def final_response(marker: str) -> str:
-    return f"MARKER = {marker!r}\nclass Solution:\n    pass"
+    return (
+        "```python\n"
+        f"MARKER = {marker!r}\nclass Solution:\n    pass\n"
+        "```"
+    )
 
 
 def guidance_response(marker: str) -> str:
@@ -99,16 +103,34 @@ class PilotCodeExtractionTests(unittest.TestCase):
             "response_truncated",
         )
 
-    def test_final_stage_accepts_only_syntax_complete_raw_python(self):
-        raw = final_response("RAW")
-        self.assertTrue(extract_raw_python_code(raw).ok)
+    def test_final_stage_extracts_the_unique_complete_fenced_python_block(self):
+        fenced = final_response("FENCED")
+        self.assertTrue(extract_fenced_python_submission(fenced).ok)
+        with_extra_text = extract_fenced_python_submission(
+            solver_response("EXTRA_TEXT")
+        )
+        self.assertTrue(with_extra_text.ok)
+        self.assertIn("EXTRA_TEXT", with_extra_text.code or "")
+        with_other_material = extract_fenced_python_submission(
+            "preface\n```text\nignored\n```\n" + final_response("UNIQUE_PYTHON")
+        )
+        self.assertTrue(with_other_material.ok)
+        self.assertIn("UNIQUE_PYTHON", with_other_material.code or "")
         self.assertEqual(
-            extract_raw_python_code(solver_response("MARKDOWN")).error,
-            "markdown_not_allowed",
+            extract_fenced_python_submission(
+                "```python\nclass Solution:\n    def broken(\n```"
+            ).error,
+            "invalid_python_source",
         )
         self.assertEqual(
-            extract_raw_python_code("class Solution:\n    def broken(").error,
-            "invalid_python_source",
+            extract_fenced_python_submission(
+                "```python\na = 1\n```\n```python\nb = 2\n```"
+            ).error,
+            "multiple_python_code_blocks",
+        )
+        self.assertEqual(
+            extract_fenced_python_submission("class Solution:\n    pass").error,
+            "missing_python_code_block",
         )
 
 
@@ -261,7 +283,7 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertEqual(judge.calls, 1)
         self.assertIn("<planning unavailable>", model.calls[1]["user_prompt"])
 
-    def test_final_truncated_complete_raw_code_is_submitted_without_rescue(self):
+    def test_final_truncated_complete_fenced_code_is_submitted_without_rescue(self):
         key = MockModelClient.key
         final = {**self.item(final_response("AC_MARKER")), "finish_reason": "length"}
         result, model, judge = self.direct_solver({
@@ -273,20 +295,19 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertEqual(len(model.calls), 2)
         self.assertEqual(judge.calls, 1)
 
-    def test_markdown_final_is_format_failure_and_never_judged(self):
+    def test_final_with_text_outside_unique_fence_is_still_judged(self):
         key = MockModelClient.key
         result, model, judge = self.direct_solver({
             key("teacher_final", PROBLEM_ID, "teacher"): [
                 self.item(solver_response("AC_MARKER"))
             ],
         })
-        self.assertEqual(result["verdict"], "CE")
-        self.assertEqual(result["output_failure_category"],
-                         "final_output_validation")
-        self.assertFalse(result["final_code_extracted"])
-        self.assertEqual(result["judge_submissions"], 0)
+        self.assertEqual(result["verdict"], "AC")
+        self.assertIsNone(result["output_failure_category"])
+        self.assertTrue(result["final_code_extracted"])
+        self.assertEqual(result["judge_submissions"], 1)
         self.assertEqual(len(model.calls), 2)
-        self.assertEqual(judge.calls, 0)
+        self.assertEqual(judge.calls, 1)
 
     def test_planning_code_is_never_submitted_or_combined_with_final(self):
         key = MockModelClient.key

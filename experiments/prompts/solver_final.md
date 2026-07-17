@@ -4,6 +4,11 @@ You have already completed a bounded planning phase. Do not continue brainstormi
 
 This call has a hard output budget of {{final_max_output_tokens}} tokens.
 
-Your visible response must contain only the complete Python source code to submit.
+Your visible response must contain exactly one complete Python source file wrapped in exactly one `python` code fence, in this form:
 
-Do not use Markdown headings or code fences. Do not output an approach explanation, exploratory notes, alternative algorithms, patches, multiple programs, pseudocode, or requests for more information. The first character of the response must begin valid Python source, and every visible character must belong to that one Python program.
+```python
+class Solution:
+    ...
+```
+
+Do not output any text before or after that code fence. Do not output Markdown headings, an approach explanation, exploratory notes, alternative algorithms, patches, multiple programs, pseudocode, or requests for more information. The only visible content outside the Python source must be the opening and closing code-fence markers.
