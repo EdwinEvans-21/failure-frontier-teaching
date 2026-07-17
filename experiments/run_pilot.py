@@ -8,13 +8,14 @@ import json
 from experiments.pilot.config import load_config
 from experiments.pilot.model_client import DeepSeekCompatibleClient, MockModelClient
 from experiments.pilot.orchestrator import PilotRunner
+from experiments.pilot.api_check import run_api_compatibility_check
 
 
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description="Run the five-problem Failure-Frontier Teaching pilot")
     result.add_argument("--config", required=True)
     result.add_argument("--run-id")
-    result.add_argument("--mode", choices=["live", "mock", "dry-run"])
+    result.add_argument("--mode", choices=["live", "mock", "dry-run", "api-check"])
     result.add_argument("--mock-responses")
     result.add_argument("--output-root", help="override the artifact directory")
     return result
@@ -31,6 +32,16 @@ def main() -> None:
     if args.output_root:
         config = replace(config, execution=replace(
             config.execution, output_root=str(Path(args.output_root).resolve())))
+    if config.mode == "api-check":
+        if not args.output_root:
+            raise SystemExit("--output-root is required for api-check")
+        verifier = PilotRunner(config, None, judge=object())
+        verifier.verify_baseline()
+        client = DeepSeekCompatibleClient(config.model)
+        result = run_api_compatibility_check(
+            config, client, args.output_root, project_root=Path.cwd())
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        raise SystemExit(0 if result["passed"] else 1)
     if config.mode == "dry-run":
         model = None
     elif config.mode == "mock":

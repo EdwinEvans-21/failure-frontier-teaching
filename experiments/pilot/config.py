@@ -22,6 +22,7 @@ class ModelConfig:
     mock_responses_path: str | None = None
     tokenizer_name: str | None = None
     tokenizer_revision: str | None = None
+    thinking: dict[str, str] | None = None
 
 
 @dataclass(frozen=True)
@@ -115,10 +116,12 @@ def load_config(path: str | Path) -> PilotConfig:
 
 
 def _validate(config: PilotConfig) -> None:
-    if config.mode not in {"live", "mock", "dry-run"}:
-        raise ValueError("mode must be live, mock, or dry-run")
+    if config.mode not in {"live", "mock", "dry-run", "api-check"}:
+        raise ValueError("mode must be live, mock, dry-run, or api-check")
     if config.model.reasoning_mode:
         raise ValueError("pilot v1 requires non-reasoning mode")
+    if config.model.thinking != {"type": "disabled"}:
+        raise ValueError("non-reasoning mode requires thinking.type=disabled")
     if not config.model.model_name:
         raise ValueError("model.model_name must be configured")
     if config.model.max_output_tokens <= 0:
