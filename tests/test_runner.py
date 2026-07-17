@@ -56,6 +56,31 @@ class DockerJudgeTests(unittest.TestCase):
         tests_path.write_text(json.dumps(tests), encoding="utf-8")
         return directory, submission, problem, tests_path
 
+    def make_custom_inputs(
+        self, tests: list[dict]
+    ) -> tuple[tempfile.TemporaryDirectory, Path, Path, Path]:
+        custom_spec = ProblemSpec(
+            problem_id="construction",
+            title="Construction",
+            entrypoint=Entrypoint(
+                kind="class_method",
+                class_name="Solution",
+                method="constructGrid",
+            ),
+            comparison="custom",
+            checker="exact_monotone_paths",
+            limits=self.spec.limits,
+        )
+        directory = tempfile.TemporaryDirectory()
+        root = Path(directory.name)
+        submission = root / "solution.py"
+        problem = root / "problem.json"
+        tests_path = root / "tests.json"
+        submission.write_text("class Solution: pass\n", encoding="utf-8")
+        problem.write_text(json.dumps(custom_spec.to_dict()), encoding="utf-8")
+        tests_path.write_text(json.dumps(tests), encoding="utf-8")
+        return directory, submission, problem, tests_path
+
     def test_workspace_contains_only_current_input_and_no_expected(
             self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -72,6 +97,25 @@ class DockerJudgeTests(unittest.TestCase):
             self.assertEqual(payload["args"], case["args"])
             self.assertEqual(sorted(path.name for path in output.iterdir()),
                              ["case.json", "solution.py"])
+
+    def test_workspace_does_not_include_custom_oracle(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            submission = workspace / "source.py"
+            submission.write_text("pass\n", encoding="utf-8")
+            case = {
+                "args": [2, 2, 2],
+                "oracle": {"feasible": True},
+            }
+            output = workspace / "worker"
+            output.mkdir()
+            DockerJudge._prepare_workspace(output, submission, self.spec, case)
+            payload = json.loads(
+                (output / "case.json").read_text(encoding="utf-8")
+            )
+            self.assertNotIn("oracle", payload)
+            self.assertNotIn("feasible", json.dumps(payload))
+            self.assertEqual(payload["args"], [2, 2, 2])
 
     def test_docker_command_does_not_mount_tests_and_keeps_container_for_inspect(
             self) -> None:
@@ -234,6 +278,38 @@ class DockerJudgeTests(unittest.TestCase):
                         "expected": None
                     })
                 remove.assert_called_once()
+
+    def test_custom_checker_generates_final_verdict_on_host(self) -> None:
+        case = {"args": [2, 2, 2], "oracle": {"feasible": True}}
+        directory, submission, problem, tests_path = self.make_custom_inputs([case])
+        with directory:
+            accepted = FakeDockerJudge([
+                (WorkerResult("ok", 3, actual=["..", ".."]), False, False)
+            ])
+            wrong = FakeDockerJudge([
+                (WorkerResult("ok", 3, actual=[]), False, False)
+            ])
+            accepted_result = accepted.judge(
+                submission, problem, tests_path, phase="hidden"
+            )
+            wrong_result = wrong.judge(
+                submission, problem, tests_path, phase="hidden"
+            )
+            self.assertIs(accepted_result.verdict, Verdict.ACCEPTED)
+            self.assertIs(wrong_result.verdict, Verdict.WRONG_ANSWER)
+            self.assertEqual(
+                wrong_result.checker_failure_category,
+                "unexpected_empty",
+            )
+            feedback = wrong_result.model_feedback()
+            self.assertEqual(
+                feedback,
+                {
+                    "verdict": "WRONG_ANSWER",
+                    "phase": "hidden",
+                    "message": "A hidden case failed.",
+                },
+            )
 
 
 class ComparisonTests(unittest.TestCase):

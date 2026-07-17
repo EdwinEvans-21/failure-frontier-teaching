@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-3962-maximum-subarray-sum-after-k-swaps",
+  "title": "Maximum Subarray Sum After at Most K Swaps",
+  "difficulty": "hard",
+  "role": "hard_optimization_candidate",
+  "source_url": "https://leetcode.com/problems/maximum-subarray-sum-after-at-most-k-swaps/",
+  "description": "Maximize a non-empty contiguous subarray sum after at most k arbitrary index swaps.",
+  "input_contract": "nums has length 1 to 1500 with values from -100000 to 100000; k is between 0 and len(nums).",
+  "output_contract": "Return the maximum achievable non-empty subarray sum as an integer.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "maxSum"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 20.0,
+    "memory_mb": 128,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}

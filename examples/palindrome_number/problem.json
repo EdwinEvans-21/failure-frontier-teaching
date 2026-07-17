@@ -1,6 +1,12 @@
 {
-  "problem_id": "palindrome-number",
+  "problem_id": "lc-0009-palindrome-number",
   "title": "Palindrome Number",
+  "difficulty": "easy",
+  "role": "sanity_control",
+  "source_url": "https://leetcode.com/problems/palindrome-number/",
+  "description": "Determine whether the decimal representation of an integer reads the same from left to right and right to left.",
+  "input_contract": "One signed 32-bit integer x.",
+  "output_contract": "Return a bool; integer values such as 0 and 1 are not accepted as substitutes.",
   "entrypoint": {
     "kind": "class_method",
     "class_name": "Solution",
@@ -8,9 +14,9 @@
   },
   "comparison": "exact",
   "limits": {
-    "time_seconds": 2.0,
-    "memory_mb": 256,
+    "time_seconds": 0.5,
+    "memory_mb": 64,
     "cpus": 1.0,
-    "pids": 64
+    "pids": 32
   }
 }

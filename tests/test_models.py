@@ -43,6 +43,21 @@ class ProblemSpecTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 ProblemSpec.load(path)
 
+    def test_custom_comparison_requires_checker(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "problem.json"
+            path.write_text(
+                json.dumps({
+                    "problem_id": "construction",
+                    "title": "Construction",
+                    "entrypoint": {"kind": "function", "function": "solve"},
+                    "comparison": "custom",
+                }),
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                ProblemSpec.load(path)
+
     def test_result_round_trip(self) -> None:
         result = JudgeResult(
             verdict=Verdict.WRONG_ANSWER,
@@ -89,6 +104,22 @@ class ProblemSpecTests(unittest.TestCase):
         serialized = json.dumps(feedback)
         for secret in ("args", "expected", "actual", "stdout", "stderr"):
             self.assertNotIn(secret, serialized)
+
+    def test_hidden_model_feedback_omits_checker_category(self) -> None:
+        result = JudgeResult(
+            verdict=Verdict.WRONG_ANSWER,
+            phase="hidden",
+            passed=0,
+            total=1,
+            runtime_ms=4,
+            message="A hidden case failed.",
+            checker_failure_category="path_count_mismatch",
+        )
+        feedback = result.model_feedback()
+        self.assertNotIn("checker_failure_category", feedback)
+        serialized = json.dumps(feedback)
+        self.assertNotIn("path_count", serialized)
+        self.assertNotIn("feasible", serialized)
 
 
 if __name__ == "__main__":

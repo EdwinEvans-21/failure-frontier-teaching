@@ -1,8 +1,22 @@
 [
   {"args": [0], "expected": true},
-  {"args": [7], "expected": true},
-  {"args": [12321], "expected": true},
-  {"args": [123], "expected": false},
+  {"args": [-1], "expected": false},
   {"args": [1000021], "expected": false},
-  {"args": [-101], "expected": false}
+  {"args": [7], "expected": true},
+  {"args": [1234321], "expected": true},
+  {"args": [12321], "expected": true},
+  {"args": [1221], "expected": true},
+  {"args": [1001], "expected": true},
+  {"args": [123], "expected": false},
+  {"args": [123456], "expected": false},
+  {"args": [100], "expected": false},
+  {"args": [2147483640], "expected": false},
+  {"args": [1003001], "expected": true},
+  {"args": [1020301], "expected": false},
+  {"args": [-101], "expected": false},
+  {"args": [-2147447412], "expected": false},
+  {"args": [-2147483648], "expected": false},
+  {"args": [2147447412], "expected": true},
+  {"args": [2147447413], "expected": false},
+  {"args": [2147483647], "expected": false}
 ]

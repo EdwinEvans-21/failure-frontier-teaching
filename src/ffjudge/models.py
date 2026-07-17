@@ -61,6 +61,13 @@ class ProblemSpec:
     comparison: str = "exact"
     float_tolerance: float = 1e-6
     limits: Limits = Limits()
+    difficulty: str = ""
+    role: str = ""
+    source_url: str = ""
+    description: str = ""
+    input_contract: str = ""
+    output_contract: str = ""
+    checker: str = ""
 
     @classmethod
     def load(cls, path: str | Path) -> "ProblemSpec":
@@ -68,8 +75,12 @@ class ProblemSpec:
         data["entrypoint"] = Entrypoint.from_dict(data["entrypoint"])
         data["limits"] = Limits(**data.get("limits", {}))
         spec = cls(**data)
-        if spec.comparison not in {"exact", "unordered", "float"}:
+        if spec.comparison not in {"exact", "unordered", "float", "custom"}:
             raise ValueError(f"unsupported comparison mode: {spec.comparison}")
+        if spec.comparison == "custom" and not spec.checker:
+            raise ValueError("custom comparison requires 'checker'")
+        if spec.comparison != "custom" and spec.checker:
+            raise ValueError("checker is only valid for custom comparison")
         return spec
 
     def to_dict(self) -> dict[str, Any]:
@@ -85,6 +96,7 @@ class JudgeResult:
     runtime_ms: int
     message: str = ""
     case_index: int | None = None
+    checker_failure_category: str | None = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "JudgeResult":

@@ -13,9 +13,12 @@ import threading
 import time
 import uuid
 
+from .checkers import get_checker
 from .models import JudgeResult, ProblemSpec, Verdict
 
-OUTPUT_LIMIT_BYTES = 64 * 1024
+# A maximum-size exact result may contain 100,000 five-digit integers.  Keep
+# the stream bounded while retaining the complete worker protocol record.
+OUTPUT_LIMIT_BYTES = 1024 * 1024
 DOCKER_STARTUP_GRACE_SECONDS = 2.0
 WORKER_RESULT_PREFIX = b"FFJUDGE_WORKER_RESULT:"
 SAFE_ERROR_TYPES = {
@@ -225,8 +228,13 @@ class DockerJudge:
         total = len(tests)
         runtime_ms = 0
         for index, case in enumerate(tests):
-            if not isinstance(case, dict) or "expected" not in case:
-                raise ValueError(f"test case {index} must contain expected")
+            if not isinstance(case, dict):
+                raise ValueError(f"test case {index} must be an object")
+            required_field = "oracle" if spec.comparison == "custom" else "expected"
+            if required_field not in case:
+                raise ValueError(
+                    f"test case {index} must contain {required_field}"
+                )
             worker, oom_killed, outer_timeout = self._run_case(
                 submission, spec, case)
             if outer_timeout:
@@ -285,7 +293,34 @@ class DockerJudge:
                     runtime_ms,
                     "Worker returned an unsupported status.",
                 )
-            if not equivalent(worker.actual, case["expected"], spec):
+            checker_failure_category = None
+            if spec.comparison == "custom":
+                checker = get_checker(spec.checker)
+                checker_result = checker(
+                    worker.actual,
+                    case.get("args", []),
+                    case.get("kwargs", {}),
+                    case["oracle"],
+                )
+                if checker_result.failure_category in {
+                    "invalid_oracle_data",
+                    "oracle_contradiction",
+                }:
+                    return self._result(
+                        Verdict.INTERNAL_ERROR,
+                        phase,
+                        index,
+                        total,
+                        runtime_ms,
+                        "The trusted checker rejected its oracle data.",
+                        checker_failure_category=checker_result.failure_category,
+                    )
+                passed = checker_result.passed
+                checker_failure_category = checker_result.failure_category
+            else:
+                passed = equivalent(worker.actual, case["expected"], spec)
+
+            if not passed:
                 return self._result(
                     Verdict.WRONG_ANSWER,
                     phase,
@@ -294,6 +329,7 @@ class DockerJudge:
                     runtime_ms,
                     f"Case {index} failed."
                     if phase == "public" else "A hidden case failed.",
+                    checker_failure_category=checker_failure_category,
                 )
 
         return JudgeResult(
@@ -457,6 +493,7 @@ class DockerJudge:
         total: int,
         runtime_ms: int,
         message: str,
+        checker_failure_category: str | None = None,
     ) -> JudgeResult:
         return JudgeResult(
             verdict=verdict,
@@ -466,6 +503,7 @@ class DockerJudge:
             runtime_ms=runtime_ms,
             message=message,
             case_index=passed if phase == "public" else None,
+            checker_failure_category=checker_failure_category,
         )
 
     @staticmethod

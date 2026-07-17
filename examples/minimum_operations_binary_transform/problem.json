@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-3980-minimum-operations-binary-transform",
+  "title": "Minimum Operations to Transform Binary String",
+  "difficulty": "medium",
+  "role": "medium_dp_candidate",
+  "source_url": "https://leetcode.com/problems/minimum-operations-to-transform-binary-string/",
+  "description": "Transform one equal-length binary string into another using the minimum number of allowed bit and adjacent-pair operations.",
+  "input_contract": "Two non-empty equal-length binary strings s1 and s2 with length at most 100000.",
+  "output_contract": "Return the minimum operation count as an integer, or -1 when the target is unreachable.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "minOperations"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 1.0,
+    "memory_mb": 64,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}

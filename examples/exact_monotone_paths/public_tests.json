@@ -1,0 +1,6 @@
+[
+  {"args": [1, 1, 1], "oracle": {"feasible": true}},
+  {"args": [2, 2, 2], "oracle": {"feasible": true}},
+  {"args": [2, 2, 3], "oracle": {"feasible": false}},
+  {"args": [2, 3, 3], "oracle": {"feasible": true}}
+]

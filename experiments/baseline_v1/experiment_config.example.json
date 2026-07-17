@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "baseline_id": "failure-frontier-baseline-v1",
+  "model_id": "RESEARCHER_TO_SET",
+  "condition": "verdict_feedback",
+  "repetitions": 2,
+  "max_attempts": 3,
+  "prompt_template": "experiments/baseline_v1/initial_prompt.template.md",
+  "feedback_policy": {
+    "template": "verdict_feedback",
+    "model_view_only": true,
+    "teaching_rubric": null
+  },
+  "public_tests_policy": {
+    "run": true,
+    "show_model_view_result": true,
+    "show_case_details": false
+  },
+  "execution_policy": {
+    "fresh_workspace_per_run": true,
+    "inherit_context_between_runs": false,
+    "allow_model_local_tests": false,
+    "hidden_phase_after_public": true
+  },
+  "random_seed": 20250308,
+  "timeout_policy": {
+    "infrastructure_retry_limit": 2,
+    "same_submission_retry_does_not_increment_attempt": true,
+    "model_timeout_seconds": null
+  },
+  "model_sampling": {
+    "temperature": 0,
+    "provider_seed_enabled": true
+  },
+  "decision_status": {
+    "repetitions": "recommended_default_researcher_confirmation_required",
+    "max_attempts": "recommended_default_researcher_confirmation_required",
+    "public_tests_policy": "recommended_default_researcher_confirmation_required",
+    "model_sampling": "recommended_default_researcher_confirmation_required"
+  }
+}

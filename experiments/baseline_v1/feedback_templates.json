@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "allowed_model_view_fields": [
+    "verdict",
+    "phase",
+    "message"
+  ],
+  "forbidden_fields": [
+    "hidden_input",
+    "expected",
+    "actual",
+    "case_index",
+    "passed",
+    "total",
+    "oracle",
+    "checker_failure_category",
+    "stdout",
+    "stderr"
+  ],
+  "verdict_feedback": "Verdict: {{verdict}}\nPhase: {{phase}}\nMessage: {{sanitized_message}}\nReturn a complete revised submission.",
+  "teaching_feedback": "Verdict: {{verdict}}\nPhase: {{phase}}\nMessage: {{sanitized_message}}\nTeaching feedback: {{approved_conceptual_feedback}}\nReturn a complete revised submission.",
+  "infrastructure_feedback": null
+}

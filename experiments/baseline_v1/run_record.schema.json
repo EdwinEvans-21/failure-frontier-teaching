@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://failure-frontier.local/schemas/run_record-v1.json",
+  "title": "Failure-Frontier Run Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "baseline_id",
+    "problem_id",
+    "model_id",
+    "model_version",
+    "condition",
+    "repetition",
+    "attempt",
+    "prompt_hash",
+    "submission_hash",
+    "verdict",
+    "phase",
+    "model_feedback",
+    "runtime",
+    "infrastructure_error",
+    "retry_of",
+    "timestamps"
+  ],
+  "properties": {
+    "run_id": {"type": "string", "minLength": 1},
+    "baseline_id": {"const": "failure-frontier-baseline-v1"},
+    "problem_id": {"type": "string", "minLength": 1},
+    "model_id": {"type": "string", "minLength": 1},
+    "model_version": {"type": ["string", "null"]},
+    "condition": {
+      "enum": ["baseline", "verdict_feedback", "teaching_feedback"]
+    },
+    "repetition": {"type": "integer", "minimum": 1},
+    "attempt": {"type": "integer", "minimum": 1},
+    "prompt_hash": {"$ref": "#/$defs/sha256"},
+    "submission_hash": {"$ref": "#/$defs/sha256"},
+    "verdict": {
+      "enum": [
+        "ACCEPTED",
+        "WRONG_ANSWER",
+        "RUNTIME_ERROR",
+        "TIME_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED",
+        "SYNTAX_ERROR",
+        "INVALID_SUBMISSION",
+        "INTERNAL_ERROR"
+      ]
+    },
+    "phase": {"enum": ["public", "hidden", "infrastructure"]},
+    "model_feedback": {
+      "type": ["object", "null"],
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "verdict",
+            "phase",
+            "message",
+            "template_hash",
+            "disclosure_audit"
+          ],
+          "properties": {
+            "verdict": {"type": "string"},
+            "phase": {"type": "string"},
+            "message": {"type": "string", "maxLength": 8192},
+            "teaching_feedback": {"type": ["string", "null"], "maxLength": 8192},
+            "template_hash": {"$ref": "#/$defs/sha256"},
+            "disclosure_audit": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "hidden_input",
+                "expected_output",
+                "actual_output",
+                "case_index",
+                "pass_progress",
+                "oracle_detail"
+              ],
+              "properties": {
+                "hidden_input": {"const": false},
+                "expected_output": {"const": false},
+                "actual_output": {"const": false},
+                "case_index": {"const": false},
+                "pass_progress": {"const": false},
+                "oracle_detail": {"const": false}
+              }
+            }
+          }
+        }
+      ]
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["judge_runtime_ms", "wall_time_ms"],
+      "properties": {
+        "judge_runtime_ms": {"type": "integer", "minimum": 0},
+        "wall_time_ms": {"type": "integer", "minimum": 0},
+        "model_latency_ms": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "infrastructure_error": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["category", "retryable", "message"],
+          "properties": {
+            "category": {"type": "string"},
+            "retryable": {"type": "boolean"},
+            "message": {"type": "string"}
+          }
+        }
+      ]
+    },
+    "retry_of": {"type": ["string", "null"]},
+    "timestamps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["started_at", "completed_at"],
+      "properties": {
+        "started_at": {"type": "string", "format": "date-time"},
+        "completed_at": {"type": "string", "format": "date-time"}
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"condition": {"const": "baseline"}}},
+      "then": {"properties": {"model_feedback": {"type": "null"}}}
+    },
+    {
+      "if": {"properties": {"verdict": {"const": "INTERNAL_ERROR"}}},
+      "then": {
+        "properties": {
+          "phase": {"const": "infrastructure"},
+          "model_feedback": {"type": "null"},
+          "infrastructure_error": {"type": "object"}
+        }
+      },
+      "else": {"properties": {"infrastructure_error": {"type": "null"}}}
+    }
+  ]
+}

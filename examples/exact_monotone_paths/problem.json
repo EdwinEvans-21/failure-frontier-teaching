@@ -1,0 +1,23 @@
+{
+  "problem_id": "lc-3988-exact-monotone-paths",
+  "title": "Exact Monotone Paths",
+  "difficulty": "medium_upper",
+  "role": "medium_upper_construction_candidate",
+  "source_url": "https://leetcode.com/problems/exact-monotone-paths/",
+  "description": "Construct an obstacle grid with exactly k monotone paths, or return an empty list when no construction exists.",
+  "input_contract": "Integers m, n, k with 1 <= m, n <= 10 and 1 <= k <= 4.",
+  "output_contract": "Return list[str] using only '.' and '#', or [] when infeasible.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "constructGrid"
+  },
+  "comparison": "custom",
+  "checker": "exact_monotone_paths",
+  "limits": {
+    "time_seconds": 1.0,
+    "memory_mb": 64,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}
