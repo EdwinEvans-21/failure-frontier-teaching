@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "baseline_id": "failure-frontier-baseline-v1",
+  "baseline_manifest": "experiments/baseline_v1/baseline_manifest.json",
+  "mode": "live",
+  "model": {
+    "provider": "deepseek",
+    "model_name": "RESEARCHER_TO_SET",
+    "reasoning_mode": false,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "max_output_tokens": 8192,
+    "base_url": "https://api.deepseek.com/chat/completions",
+    "api_key_env": "DEEPSEEK_API_KEY",
+    "seed": null,
+    "network_retry_limit": 2,
+    "network_retry_backoff_seconds": 1.0,
+    "mock_responses_path": null,
+    "tokenizer_name": "RESEARCHER_TO_SET",
+    "tokenizer_revision": null
+  },
+  "teaching_material": {
+    "token_match_tolerance": 0.05,
+    "max_regeneration_attempts": 2
+  },
+  "execution": {
+    "output_root": "experiments/runs",
+    "judge_image": "ffjudge-python:latest",
+    "judge_phase": "hidden",
+    "resume": true
+  },
+  "prompts_dir": "experiments/prompts",
+  "problems": [
+    {
+      "problem": "examples/palindrome_number/problem.json",
+      "public_tests": "examples/palindrome_number/public_tests.json",
+      "hidden_tests": "examples/palindrome_number/hidden_tests.json"
+    },
+    {
+      "problem": "examples/exact_monotone_paths/problem.json",
+      "public_tests": "examples/exact_monotone_paths/public_tests.json",
+      "hidden_tests": "examples/exact_monotone_paths/hidden_tests.json"
+    },
+    {
+      "problem": "examples/minimum_operations_binary_transform/problem.json",
+      "public_tests": "examples/minimum_operations_binary_transform/public_tests.json",
+      "hidden_tests": "examples/minimum_operations_binary_transform/hidden_tests.json"
+    },
+    {
+      "problem": "examples/sorted_gcd_pair_queries/problem.json",
+      "public_tests": "examples/sorted_gcd_pair_queries/public_tests.json",
+      "hidden_tests": "examples/sorted_gcd_pair_queries/hidden_tests.json"
+    },
+    {
+      "problem": "examples/maximum_subarray_sum_after_k_swaps/problem.json",
+      "public_tests": "examples/maximum_subarray_sum_after_k_swaps/public_tests.json",
+      "hidden_tests": "examples/maximum_subarray_sum_after_k_swaps/hidden_tests.json"
+    }
+  ]
+}

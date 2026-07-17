@@ -1,0 +1,559 @@
+from __future__ import annotations
+
+from dataclasses import asdict
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+import hashlib
+import json
+import subprocess
+import sys
+
+from ffjudge.models import JudgeResult, ProblemSpec, Verdict
+from ffjudge.runner import DockerJudge, DockerUnavailableError
+
+from .code_extraction import extract_single_python_code
+from .config import PilotConfig, ProblemConfig
+from .model_client import ModelClient, ModelInfrastructureError, ModelResponse
+from .prompts import PromptRenderer
+from .storage import read_json, write_json, write_text
+
+
+VERDICT_MAP = {
+    Verdict.ACCEPTED: "AC",
+    Verdict.WRONG_ANSWER: "WA",
+    Verdict.SYNTAX_ERROR: "CE",
+    Verdict.INVALID_SUBMISSION: "CE",
+    Verdict.RUNTIME_ERROR: "RE",
+    Verdict.TIME_LIMIT_EXCEEDED: "TLE",
+    Verdict.MEMORY_LIMIT_EXCEEDED: "MLE",
+    Verdict.INTERNAL_ERROR: "JUDGE_ERROR",
+}
+STUDENT_CONDITIONS = ("success_only", "failure_frontier", "general_guidance")
+
+
+def coarse_verdict(verdict: Verdict) -> str:
+    return VERDICT_MAP[verdict]
+
+
+class PilotRunner:
+    def __init__(
+        self,
+        config: PilotConfig,
+        model: ModelClient | None,
+        *,
+        judge: Any | None = None,
+        project_root: str | Path = ".",
+    ) -> None:
+        self.config = config
+        self.model = model
+        self.project_root = Path(project_root).resolve()
+        self.renderer = PromptRenderer(self._path(config.prompts_dir))
+        self.judge = judge or DockerJudge(config.execution.judge_image)
+        self.run_dir: Path | None = None
+
+    def _path(self, path: str) -> Path:
+        candidate = Path(path)
+        return candidate if candidate.is_absolute() else self.project_root / candidate
+
+    def verify_baseline(self) -> None:
+        verifier = self.project_root / "tools" / "verify_baseline_manifest.py"
+        completed = subprocess.run(
+            [sys.executable, str(verifier), "--manifest",
+             str(self._path(self.config.baseline_manifest))],
+            cwd=self.project_root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if completed.returncode:
+            raise RuntimeError("baseline manifest verification failed")
+
+    def run(self, run_id: str | None = None) -> dict[str, Any]:
+        self.verify_baseline()
+        run_id = run_id or datetime.now(timezone.utc).strftime("pilot-%Y%m%dT%H%M%SZ")
+        self.run_dir = self._path(self.config.execution.output_root) / run_id
+        self.run_dir.mkdir(parents=True, exist_ok=True)
+        write_json(self.run_dir / "config.snapshot.yaml", self.config.public_snapshot())
+        write_json(self.run_dir / "run.state.json", {
+            "run_id": run_id,
+            "status": "running",
+            "started_at": _now(),
+        })
+        if self.config.mode == "dry-run":
+            result = self._dry_run(run_id)
+        else:
+            if self.model is None:
+                raise ValueError("live and mock modes require a model client")
+            records = [self._run_problem(run_id, item) for item in self.config.problems]
+            result = build_summary(run_id, records)
+            write_text(
+                self.run_dir / "results.jsonl",
+                "".join(json.dumps(record, ensure_ascii=False) + "\n" for record in records),
+            )
+            write_json(self.run_dir / "summary.json", result)
+            write_text(self.run_dir / "summary.md", summary_markdown(result))
+        write_json(self.run_dir / "run.state.json", {
+            "run_id": run_id,
+            "status": "completed",
+            "completed_at": _now(),
+        })
+        return result
+
+    def _dry_run(self, run_id: str) -> dict[str, Any]:
+        assert self.run_dir is not None
+        calls: list[dict[str, Any]] = []
+        for item in self.config.problems:
+            spec = ProblemSpec.load(self._path(item.problem))
+            problem = self.renderer.formatted_problem(
+                self._path(item.problem), self._path(item.public_tests))
+            calls.extend(self._dry_problem_calls(spec.problem_id, problem))
+        plan = {"run_id": run_id, "mode": "dry-run", "model_calls": calls,
+                "api_accessed": False, "judge_accessed": False}
+        write_json(self.run_dir / "dry_run_plan.json", plan)
+        return plan
+
+    def _dry_problem_calls(self, problem_id: str, problem: str) -> list[dict[str, Any]]:
+        calls = [self._rendered_call("teacher", problem_id, "teacher", problem)]
+        # Show every possible branch without using prior model output.
+        calls.append(self._rendered_call("success_teaching", problem_id, "success", problem,
+                                         teacher_raw_response="<teacher-response>",
+                                         teacher_code="<teacher-code>"))
+        calls.append(self._rendered_call("failure_frontier", problem_id, "failure", problem,
+                                         teacher_raw_response="<teacher-response>",
+                                         teacher_code="<teacher-code>", teacher_verdict="<coarse-verdict>"))
+        calls.append(self._rendered_call("general_guidance", problem_id, "guidance", problem,
+                                         target_tokens="<failure-frontier-output-tokens>"))
+        for condition in STUDENT_CONDITIONS:
+            calls.append(self._rendered_call("student", problem_id, condition, problem,
+                                             additional_material="<condition-specific-material>"))
+        return calls
+
+    def _run_problem(self, run_id: str, item: ProblemConfig) -> dict[str, Any]:
+        assert self.run_dir is not None
+        spec = ProblemSpec.load(self._path(item.problem))
+        problem = self.renderer.formatted_problem(
+            self._path(item.problem), self._path(item.public_tests))
+        problem_dir = self.run_dir / "problems" / spec.problem_id
+        record_path = problem_dir / "record.json"
+        if self.config.execution.resume and record_path.is_file():
+            saved_record = read_json(record_path)
+            if not saved_record.get("infrastructure_error"):
+                return saved_record
+        record: dict[str, Any] = {
+            "run_id": run_id,
+            "problem_id": spec.problem_id,
+            "teacher": {},
+            "teaching_material": {
+                "type": None,
+                "success_tokens": None,
+                "failure_frontier_tokens": None,
+                "general_guidance_tokens": None,
+                "token_relative_error": None,
+                "token_match_passed": None,
+            },
+            "students": {},
+            "valid_episode": True,
+            "artifacts": {},
+        }
+        try:
+            teacher = self._solver_stage(
+                problem_dir / "teacher", "teacher", spec.problem_id, "teacher",
+                problem, item, spec,
+            )
+            record["teacher"] = _solver_summary(teacher)
+            record["artifacts"]["teacher"] = teacher["artifact_paths"]
+            if teacher["verdict"] == "JUDGE_ERROR":
+                record["valid_episode"] = False
+                record["infrastructure_error"] = "judge"
+                write_json(record_path, record)
+                return record
+            if teacher["verdict"] == "AC":
+                material = self._success_material(problem_dir, spec.problem_id, problem, teacher)
+                record["teaching_material"].update({
+                    "type": "success",
+                    "success_tokens": material.output_tokens,
+                    "success_truncated": material.truncated,
+                })
+                record["artifacts"]["teaching_materials"] = str(
+                    problem_dir / "teaching_materials")
+                student_materials = {condition: material.content for condition in STUDENT_CONDITIONS}
+            else:
+                ff = self._failure_material(problem_dir, spec.problem_id, problem, teacher)
+                record["teaching_material"].update({
+                    "type": "failure",
+                    "failure_frontier_tokens": ff.output_tokens,
+                    "failure_frontier_truncated": ff.truncated,
+                })
+                gg = self._matched_guidance(problem_dir, spec.problem_id, problem, ff.output_tokens)
+                record["teaching_material"].update(gg["metrics"])
+                record["artifacts"]["teaching_materials"] = str(
+                    problem_dir / "teaching_materials")
+                if not gg["metrics"]["token_match_passed"]:
+                    record["token_match_failed"] = True
+                student_materials = {
+                    "success_only": "",
+                    "failure_frontier": ff.content,
+                    "general_guidance": gg["response"].content,
+                }
+            for condition in STUDENT_CONDITIONS:
+                student = self._solver_stage(
+                    problem_dir / f"student_{condition}", "student", spec.problem_id,
+                    condition, problem, item, spec,
+                    additional_material=student_materials[condition],
+                    success_branch=teacher["verdict"] == "AC",
+                )
+                record["students"][condition] = _solver_summary(student)
+                record["artifacts"][f"student_{condition}"] = student["artifact_paths"]
+        except ModelInfrastructureError:
+            record["valid_episode"] = False
+            record["infrastructure_error"] = "model_api"
+        write_json(record_path, record)
+        return record
+
+    def _solver_stage(
+        self, stage_dir: Path, role: str, problem_id: str, condition: str,
+        problem: str, item: ProblemConfig, spec: ProblemSpec, *,
+        additional_material: str = "", success_branch: bool = False,
+    ) -> dict[str, Any]:
+        state_path = stage_dir / "state.json"
+        if self.config.execution.resume and state_path.is_file():
+            state = read_json(state_path)
+            if (state.get("status") == "completed" and
+                    state.get("result", {}).get("verdict") != "JUDGE_ERROR"):
+                return state["result"]
+        rendered = self._rendered_call(
+            role, problem_id, condition, problem,
+            additional_material=additional_material,
+            success_branch=success_branch,
+        )
+        response, call_path = self._call(stage_dir, role, problem_id, condition, rendered)
+        extraction = extract_single_python_code(response.content,
+                                                 truncated=response.truncated)
+        submission_path = stage_dir / "submission.py"
+        judge_path = stage_dir / "judge.internal.json"
+        if not extraction.ok:
+            verdict = "CE"
+            judge_record = {
+                "submitted": False,
+                "failure_type": "OUTPUT_FORMAT_ERROR",
+                "extraction_error": extraction.error,
+            }
+        else:
+            write_text(submission_path, extraction.code or "")
+            try:
+                internal: JudgeResult = self.judge.judge(
+                    submission_path,
+                    self._path(item.problem),
+                    self._path(item.hidden_tests),
+                    phase=self.config.execution.judge_phase,
+                )
+                verdict = coarse_verdict(internal.verdict)
+                judge_record = {
+                    "submitted": True,
+                    "verdict": verdict,
+                    "internal_result": internal.to_dict(),
+                    "runtime_ms": internal.runtime_ms,
+                    "memory_limit_mb": spec.limits.memory_mb,
+                    "peak_memory_mb": None,
+                    "internal_sandbox_log_path": str(judge_path),
+                    "infrastructure_error": verdict == "JUDGE_ERROR",
+                }
+            except (DockerUnavailableError, OSError, ValueError) as error:
+                verdict = "JUDGE_ERROR"
+                judge_record = {
+                    "submitted": True,
+                    "verdict": verdict,
+                    "infrastructure_error": True,
+                    "error_category": type(error).__name__,
+                }
+        write_json(judge_path, judge_record)
+        result = {
+            "verdict": verdict,
+            "input_tokens": response.input_tokens,
+            "output_tokens": response.output_tokens,
+            "truncated": response.truncated,
+            "format_error": extraction.error,
+            "artifact_paths": {
+                "model_call": str(call_path),
+                "submission": str(submission_path) if extraction.ok else None,
+                "judge_internal": str(judge_path),
+            },
+            "raw_response": response.content,
+            "code": extraction.code,
+        }
+        write_json(state_path, {"status": "completed", "completed_at": _now(),
+                                "result": result})
+        return result
+
+    def _success_material(self, problem_dir: Path, problem_id: str, problem: str,
+                          teacher: dict[str, Any]) -> ModelResponse:
+        rendered = self._rendered_call(
+            "success_teaching", problem_id, "success", problem,
+            teacher_raw_response=teacher["raw_response"],
+            teacher_code=teacher["code"],
+        )
+        return self._call(problem_dir / "teaching_materials" / "success",
+                          "success_teaching", problem_id, "success", rendered)[0]
+
+    def _failure_material(self, problem_dir: Path, problem_id: str, problem: str,
+                          teacher: dict[str, Any]) -> ModelResponse:
+        rendered = self._rendered_call(
+            "failure_frontier", problem_id, "failure", problem,
+            teacher_raw_response=teacher["raw_response"],
+            teacher_code=teacher["code"] or "<no extractable code>",
+            teacher_verdict=teacher["verdict"],
+        )
+        return self._call(problem_dir / "teaching_materials" / "failure_frontier",
+                          "failure_frontier", problem_id, "failure", rendered)[0]
+
+    def _matched_guidance(self, problem_dir: Path, problem_id: str, problem: str,
+                          target_tokens: int | None) -> dict[str, Any]:
+        if target_tokens is None or target_tokens <= 0:
+            raise ModelInfrastructureError(
+                "reliable Failure Frontier completion token usage is required"
+            )
+        stage_root = problem_dir / "teaching_materials" / "general_guidance"
+        rendered = self._rendered_call(
+            "general_guidance", problem_id, "initial", problem,
+            target_tokens=target_tokens,
+        )
+        response = self._call(stage_root / "version_0", "general_guidance",
+                              problem_id, "initial", rendered)[0]
+        versions = [response]
+        for attempt in range(1, self.config.teaching_material.max_regeneration_attempts + 1):
+            error = token_relative_error(target_tokens, response.output_tokens)
+            if error is not None and error <= self.config.teaching_material.token_match_tolerance:
+                break
+            direction = "compress" if response.output_tokens is not None and response.output_tokens > target_tokens else "expand"
+            rendered = self._rendered_call(
+                "general_guidance_adjust", problem_id, f"{direction}_{attempt}", problem,
+                target_tokens=target_tokens,
+                general_guidance=response.content,
+                direction=direction,
+            )
+            response = self._call(stage_root / f"version_{attempt}",
+                                  "general_guidance_adjust", problem_id,
+                                  f"{direction}_{attempt}", rendered)[0]
+            versions.append(response)
+        error = token_relative_error(target_tokens, response.output_tokens)
+        passed = error is not None and error <= self.config.teaching_material.token_match_tolerance
+        write_json(stage_root / "match.json", {
+            "target_tokens": target_tokens,
+            "version_output_tokens": [item.output_tokens for item in versions],
+            "token_relative_error": error,
+            "token_match_passed": passed,
+        })
+        return {
+            "response": response,
+            "metrics": {
+                "general_guidance_tokens": response.output_tokens,
+                "token_relative_error": error,
+                "token_match_passed": passed,
+                "general_guidance_truncated": response.truncated,
+            },
+        }
+
+    def _rendered_call(self, role: str, problem_id: str, condition: str,
+                       problem: str, **values: Any) -> dict[str, str]:
+        if role == "teacher":
+            system = self.renderer.template("teacher.md")
+            user = problem
+        elif role == "success_teaching":
+            system = self.renderer.template("success_teaching.md")
+            user = self.renderer.render(
+                self.renderer.template("success_teaching_user.md"),
+                formatted_problem=problem,
+                teacher_raw_response=values["teacher_raw_response"],
+                teacher_code=values["teacher_code"],
+            )
+        elif role == "failure_frontier":
+            system = self.renderer.template("failure_frontier.md")
+            user = self.renderer.render(
+                self.renderer.template("failure_frontier_user.md"),
+                formatted_problem=problem,
+                teacher_raw_response=values["teacher_raw_response"],
+                teacher_code=values["teacher_code"],
+                teacher_verdict=values["teacher_verdict"],
+            )
+        elif role == "general_guidance":
+            system = self.renderer.render(self.renderer.template("general_guidance.md"),
+                                          target_tokens=values["target_tokens"])
+            user = problem
+        elif role == "general_guidance_adjust":
+            system = self.renderer.render(
+                self.renderer.template(f"general_guidance_{values['direction']}.md"),
+                target_tokens=values["target_tokens"],
+            )
+            user = self.renderer.render(
+                self.renderer.template("general_guidance_adjust_user.md"),
+                formatted_problem=problem,
+                general_guidance=values["general_guidance"],
+            )
+        elif role == "student":
+            system = self.renderer.template("student.md")
+            material = values.get("additional_material", "")
+            if condition == "success_only" and not values.get("success_branch"):
+                user = problem
+            else:
+                user = self.renderer.render(
+                    self.renderer.template("student_user_with_material.md"),
+                    formatted_problem=problem,
+                    additional_material=material,
+                )
+        else:
+            raise ValueError(f"unsupported role: {role}")
+        return {"role": role, "problem_id": problem_id, "condition": condition,
+                "system_prompt": system, "user_prompt": user}
+
+    def _call(self, stage_dir: Path, role: str, problem_id: str, condition: str,
+              rendered: dict[str, str]) -> tuple[ModelResponse, Path]:
+        artifact = stage_dir / "model_call.json"
+        if self.config.execution.resume and artifact.is_file():
+            saved = read_json(artifact)
+            if saved.get("status") == "completed":
+                return ModelResponse(**saved["response"]), artifact
+        assert self.model is not None
+        response = self.model.complete(**rendered)
+        payload = {
+            "status": "completed",
+            "role": role,
+            "problem_id": problem_id,
+            "condition": condition,
+            "system_prompt": rendered["system_prompt"],
+            "user_prompt": rendered["user_prompt"],
+            "response": asdict(response),
+            "model": {
+                "provider": self.config.model.provider,
+                "model_name": self.config.model.model_name,
+                "reasoning_mode": self.config.model.reasoning_mode,
+                "temperature": self.config.model.temperature,
+                "top_p": self.config.model.top_p,
+                "max_output_tokens": self.config.model.max_output_tokens,
+            },
+            "prompt_hash": _hash(rendered["system_prompt"] + "\0" + rendered["user_prompt"]),
+            "completed_at": _now(),
+        }
+        write_json(artifact, payload)
+        write_json(stage_dir / "call.state.json", {
+            "status": "completed",
+            "artifact": str(artifact),
+            "completed_at": payload["completed_at"],
+        })
+        return response, artifact
+
+
+def token_relative_error(target: int, actual: int | None) -> float | None:
+    if target <= 0 or actual is None:
+        return None
+    return abs(actual - target) / target
+
+
+def _solver_summary(result: dict[str, Any]) -> dict[str, Any]:
+    return {key: result[key] for key in (
+        "verdict", "input_tokens", "output_tokens", "truncated", "format_error"
+    )}
+
+
+def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
+    valid = [record for record in records if record.get("valid_episode")]
+    teacher_failures = [record for record in valid
+                        if record.get("teacher", {}).get("verdict") != "AC"]
+    conditions = STUDENT_CONDITIONS
+    summary: dict[str, Any] = {
+        "run_id": run_id,
+        "pilot_only": True,
+        "interpretation": "Execution-chain pilot; not a statistical significance result.",
+        "problem_count": len(records),
+        "valid_episode_count": len(valid),
+        "invalid_episode_count": len(records) - len(valid),
+        "teacher_ac_count": sum(r.get("teacher", {}).get("verdict") == "AC" for r in valid),
+        "teacher_failure_count": len(teacher_failures),
+        "student_ac_count": {},
+        "student_breakthrough_on_teacher_failures": {},
+        "baseline_fail_gg_fail_ff_success": [],
+        "baseline_fail_ff_fail_gg_success": [],
+        "truncated_call_count": 0,
+        "token_matching": {},
+    }
+    for condition in conditions:
+        summary["student_ac_count"][condition] = sum(
+            r.get("students", {}).get(condition, {}).get("verdict") == "AC" for r in valid)
+        summary["student_breakthrough_on_teacher_failures"][condition] = sum(
+            r.get("students", {}).get(condition, {}).get("verdict") == "AC"
+            for r in teacher_failures)
+    for record in teacher_failures:
+        students = record.get("students", {})
+        baseline = students.get("success_only", {}).get("verdict")
+        ff = students.get("failure_frontier", {}).get("verdict")
+        gg = students.get("general_guidance", {}).get("verdict")
+        if baseline != "AC" and gg != "AC" and ff == "AC":
+            summary["baseline_fail_gg_fail_ff_success"].append(record["problem_id"])
+        if baseline != "AC" and ff != "AC" and gg == "AC":
+            summary["baseline_fail_ff_fail_gg_success"].append(record["problem_id"])
+    calls = [record.get("teacher", {}) for record in records]
+    calls += [student for record in records for student in record.get("students", {}).values()]
+    material_truncations = []
+    for record in records:
+        material = record.get("teaching_material", {})
+        material_truncations.extend(
+            bool(material.get(key)) for key in (
+                "success_truncated", "failure_frontier_truncated",
+                "general_guidance_truncated"
+            )
+        )
+    summary["truncated_call_count"] = (
+        sum(bool(call.get("truncated")) for call in calls) +
+        sum(material_truncations)
+    )
+    failed_materials = [record["teaching_material"] for record in teacher_failures]
+    paired = [item for item in failed_materials
+              if item.get("failure_frontier_tokens") is not None and
+              item.get("general_guidance_tokens") is not None]
+    summary["token_matching"] = {
+        "pair_count": len(paired),
+        "average_failure_frontier_tokens": _average(
+            [item["failure_frontier_tokens"] for item in paired]),
+        "average_general_guidance_tokens": _average(
+            [item["general_guidance_tokens"] for item in paired]),
+        "average_relative_error": _average(
+            [item["token_relative_error"] for item in paired
+             if item.get("token_relative_error") is not None]),
+        "failed_count": sum(item.get("token_match_passed") is False for item in paired),
+    }
+    return summary
+
+
+def summary_markdown(summary: dict[str, Any]) -> str:
+    lines = [
+        "# Failure-Frontier Teaching Pilot Summary",
+        "",
+        "This is an execution-chain pilot for preliminary signals only; it does not support statistical significance claims.",
+        "",
+        f"- Problems: {summary['problem_count']}",
+        f"- Valid episodes: {summary['valid_episode_count']}",
+        f"- Invalid episodes: {summary['invalid_episode_count']}",
+        f"- Teacher AC: {summary['teacher_ac_count']}",
+        f"- Teacher failures: {summary['teacher_failure_count']}",
+        "",
+        "## Student AC counts",
+        "",
+    ]
+    for condition, count in summary["student_ac_count"].items():
+        lines.append(f"- {condition}: {count}")
+    lines.extend(["", "## Breakthroughs on Teacher failures", ""])
+    for condition, count in summary["student_breakthrough_on_teacher_failures"].items():
+        lines.append(f"- {condition}: {count}")
+    return "\n".join(lines) + "\n"
+
+
+def _average(values: list[float | int]) -> float | None:
+    return sum(values) / len(values) if values else None
+
+
+def _hash(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _now() -> str:
+    return datetime.now(timezone.utc).isoformat()
