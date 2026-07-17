@@ -65,11 +65,13 @@ receives no rescue call.
 
 All GG versions are preserved with their prompts, content, usage, finish
 reason, required-section status, semantic coverage, validation findings,
-interval distance, and target distance. Valid GG output must contain exactly
+interval distance, and target distance. The preferred GG structure contains
 `## Constraint Analysis`, `## Algorithmic Directions`,
 `## Correctness and Edge Cases`, and `## Implementation Checks`, once each and
-in that order. Every section must contain substantive, complete coverage, with
-no complete solution code or forbidden information. The first semantically
+in that order. Exact heading conformance is recorded as `preferred_structure`
+but does not determine candidate validity. Valid output must substantively
+cover constraints, approaches, correctness, and implementation, with no
+complete solution code or forbidden information. The first semantically
 complete `finish_reason=stop`
 response inside the interval is accepted immediately. A `finish_reason=length`
 response is always invalid and can never become a complete candidate, rewrite
@@ -98,9 +100,10 @@ independent mutable status flag.
 GG token-matching tolerance was changed from 5% to 10% before the formal Pilot
 and before the runner was frozen. Repeated smoke tests showed that bounded
 rewrites under a 5% tolerance could destabilize the structure of otherwise
-relevant guidance. GG validity now requires both the exact four-section protocol
-and substantive semantic coverage within every section. The formal Pilot has
-not yet run, and this change precedes the final runner freeze.
+relevant guidance. GG validity requires substantive coverage of all four
+semantic categories; exact four-section heading conformance is an independent
+audit signal. The formal Pilot has not yet run, and this change precedes the
+final runner freeze.
 
 The historical `smoke-3980-fenced-20260717T173113` artifacts remain unchanged.
 That run remains useful for infrastructure, two-stage solver, and fenced-final

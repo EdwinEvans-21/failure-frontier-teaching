@@ -727,7 +727,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         )
         self.assertEqual(match["versions"][2]["source_version"], 0)
 
-    def test_semantic_validation_requires_exact_complete_sections(self) -> None:
+    def test_semantic_validation_accepts_complete_content_without_exact_headings(self) -> None:
         exact = validate_guidance_content(guidance("COMPLETE"))
         self.assertTrue(exact["preferred_structure"])
         self.assertTrue(exact["required_sections_passed"])
@@ -737,20 +737,24 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         ])
         alias = validate_guidance_content(alias_guidance())
         self.assertFalse(alias["preferred_structure"])
-        self.assertFalse(alias["required_sections_passed"])
-        self.assertFalse(alias["semantic_completeness_passed"])
+        self.assertTrue(alias["required_sections_passed"])
+        self.assertTrue(alias["semantic_completeness_passed"])
         self.assertIn(
-            "required_sections_missing_or_invalid", alias["structural_errors"]
+            "preferred_sections_missing_or_reordered",
+            alias["structural_warnings"],
         )
+        self.assertEqual(alias["structural_errors"], [])
         unheaded = validate_guidance_content(unheaded_guidance())
         self.assertFalse(unheaded["preferred_structure"])
-        self.assertFalse(unheaded["semantic_completeness_passed"])
+        self.assertTrue(unheaded["required_sections_passed"])
+        self.assertTrue(unheaded["semantic_completeness_passed"])
         blocks = guidance("REORDERED").split("\n\n")
         reordered = validate_guidance_content("\n\n".join(
             [blocks[1], blocks[0], blocks[2], blocks[3]]
         ))
         self.assertFalse(reordered["preferred_structure"])
-        self.assertFalse(reordered["semantic_completeness_passed"])
+        self.assertTrue(reordered["required_sections_passed"])
+        self.assertTrue(reordered["semantic_completeness_passed"])
 
     def test_semantic_validation_rejects_missing_categories_code_and_truncation(self) -> None:
         missing = validate_guidance_content(
@@ -958,7 +962,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertEqual(record["teaching_material"]["selected_audit_version"], 1)
         self.assertEqual(summary["condition_comparison_ineligible_count"], 1)
 
-    def test_alias_sections_are_rejected_before_exact_section_match(self) -> None:
+    def test_alias_sections_match_without_exact_heading_retry(self) -> None:
         key = MockModelClient.key
         config = self.config({
             key("general_guidance", PROBLEM_ID, "initial"): [
@@ -982,14 +986,14 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         )
         self.assertEqual((match["lower_bound"], match["upper_bound"]), (1052, 1284))
         self.assertEqual(match["max_output_tokens"], 8192)
-        self.assertEqual(match["matched_version"], 2)
-        self.assertEqual(match["attempts_used"], 3)
+        self.assertEqual(match["matched_version"], 1)
+        self.assertEqual(match["attempts_used"], 2)
         self.assertFalse(match["versions"][1]["preferred_structure"])
-        self.assertFalse(match["versions"][1]["semantic_completeness_passed"])
-        self.assertFalse(match["versions"][1]["valid_candidate"])
-        self.assertTrue(match["versions"][2]["required_sections_passed"])
+        self.assertTrue(match["versions"][1]["required_sections_passed"])
+        self.assertTrue(match["versions"][1]["semantic_completeness_passed"])
+        self.assertTrue(match["versions"][1]["valid_candidate"])
         self.assertTrue(result["metrics"]["token_match_passed"])
-        self.assertEqual(len(model.calls), 3)
+        self.assertEqual(len(model.calls), 2)
 
     def test_condition_comparison_eligibility_invariant(self) -> None:
         self.assertTrue(condition_comparison_eligible({"valid_episode": True}))

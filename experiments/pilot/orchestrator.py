@@ -980,7 +980,7 @@ class PilotRunner:
             "stop_reason": stop_reason,
             "token_match_passed": passed,
             "token_match_failed": not passed,
-            "validation_policy": "semantic_completeness_v1",
+            "validation_policy": "semantic_completeness_v2",
             "selected_validation": selected_validation,
             "compatibility_warnings": all_compatibility_warnings,
             "versions": version_records,
@@ -1320,7 +1320,7 @@ def validate_guidance_content(content: str) -> dict[str, Any]:
         all(sections[position][1].strip() for position in exact_positions)
     )
     if not preferred_structure:
-        errors.append("required_sections_missing_or_invalid")
+        warnings.append("preferred_sections_missing_or_reordered")
 
     covered: set[str] = set()
     for heading, body in sections:
@@ -1374,11 +1374,12 @@ def validate_guidance_content(content: str) -> dict[str, Any]:
     missing = [category for category in GG_CATEGORIES if category not in covered]
     if missing:
         errors.append("semantic_categories_missing")
+    required_sections_passed = not missing
     return {
         "preferred_structure": preferred_structure,
-        "required_sections_passed": preferred_structure,
+        "required_sections_passed": required_sections_passed,
         "semantic_completeness_passed": (
-            preferred_structure and not missing and not forbidden and not truncated
+            required_sections_passed and not forbidden and not truncated
         ),
         "covered_categories": [item for item in GG_CATEGORIES if item in covered],
         "missing_categories": missing,
