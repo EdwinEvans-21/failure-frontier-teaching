@@ -30,8 +30,9 @@
   "teaching_material": {
     "token_match_tolerance": 0.10,
     "max_regeneration_attempts": 2,
-    "gg_token_headroom": 64,
-    "gg_min_max_tokens": 128
+    "gg_min_max_tokens": 128,
+    "gg_fixed_headroom": 256,
+    "gg_headroom_multiplier": 1.20
   },
   "execution": {
     "output_root": "experiments/runs",

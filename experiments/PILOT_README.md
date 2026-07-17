@@ -29,11 +29,22 @@ General Guidance length control accepts only the API's actual
 `completion_tokens` (or deterministic mock usage in tests), never a tokenizer
 fallback. The formal Pilot uses one 10% tolerance, defining an inclusive integer
 interval around the Failure Frontier token count with `ceil` for the lower bound
-and `floor` for the upper bound. There is no parallel 5% analysis. Every GG call
-uses a dynamic output limit equal to the interval upper bound plus configured
-headroom, subject to a configured minimum. Failure Frontier and Success Teaching
-material calls retain their independent 16384-token limit. GG's dynamic limit
-is not overridden by either solver-stage limit.
+and `floor` for the upper bound. There is no parallel 5% analysis. GG output
+capacity is intentionally larger than the accepted interval so the model can
+finish naturally. Every GG call uses:
+
+```text
+max(gg_min_max_tokens,
+    upper_bound + gg_fixed_headroom,
+    ceil(upper_bound * gg_headroom_multiplier))
+```
+
+The checked-in fixed headroom is 256 and the multiplier is 1.20. These values
+do not widen the accepted interval: a complete response above the 10% upper
+bound remains too long, and every `finish_reason=length` response remains
+invalid. Failure Frontier and Success Teaching material calls retain their
+independent 16384-token limit. GG's dynamic limit is not overridden by either
+solver-stage limit.
 
 A solver attempt uses the fixed `two_stage_v1` protocol: one bounded planning
 call followed by one mandatory final-submission call. Teacher, Baseline, FF,
@@ -62,7 +73,14 @@ substantive coverage of constraints, plausible approaches, correctness and edge
 cases, and implementation checks and risks, with no complete solution code or
 forbidden information. The first semantically complete `finish_reason=stop`
 response inside the interval is accepted immediately. A `finish_reason=length`
-response is always invalid. If all configured attempts fail, the closest
+response is always invalid and can never become a complete candidate, rewrite
+anchor, or final audit selection. The controller retains the closest complete
+overlong and complete short candidates. Once a complete overlong candidate
+exists, all later adjustments compress from that high-information anchor rather
+than expanding a short response. If such a compression overshoots short, a
+deterministic linear correction adjusts the requested retain ratio while still
+using the same long source. Expansion is allowed only when no complete overlong
+candidate has ever been observed. If all configured attempts fail, the closest
 semantically complete normally-finished version is selected only for audit
 display; this does not satisfy token matching, and the episode is excluded from
 formal condition comparison. A successful API response that fails content
@@ -75,6 +93,12 @@ relevant guidance. GG validity is therefore based on semantic coverage of the
 required material categories rather than exact reproduction of Markdown
 headings. The formal Pilot has not yet run, and this change precedes the final
 runner freeze.
+
+The historical `smoke-3980-fenced-20260717T173113` artifacts remain unchanged.
+That run remains useful for infrastructure, two-stage solver, and fenced-final
+extraction validation, but not for condition comparison. Its observed GG
+headroom and token-match failures motivated the controller update; the new
+policy applies only to future runs.
 
 For a clean Git worktree, set `execution.output_root` to a directory outside
 the repository. Run directories may contain full model prompts and responses

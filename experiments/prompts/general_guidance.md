@@ -11,6 +11,10 @@ Write the guidance so that the final response is between {{lower_bound}} and {{u
 The target length is {{target_tokens}} completion tokens.
 Do not exceed the upper bound. Do not use filler, repetition, code, or irrelevant explanation merely to reach the target length.
 
+Complete the response naturally and ensure it ends with a finished final section.
+The API output capacity is larger than the accepted token interval, but your response is still required to remain between the stated lower and upper token bounds.
+Do not continue writing merely because more output capacity is available.
+
 Organize the response around the following four semantic components:
 
 1. Constraint analysis

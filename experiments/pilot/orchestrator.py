@@ -88,6 +88,10 @@ GG_CATEGORY_SIGNALS = {
 class GGContentValidationError(RuntimeError):
     """A successful model response that violates the GG content protocol."""
 
+    def __init__(self, message: str, *, validation_error: str) -> None:
+        super().__init__(message)
+        self.validation_error = validation_error
+
 
 def coarse_verdict(verdict: Verdict) -> str:
     return VERDICT_MAP[verdict]
@@ -356,7 +360,7 @@ class PilotRunner:
             lower_bound="<lower-bound>",
             upper_bound="<upper-bound>",
         )
-        guidance["max_output_tokens"] = "<upper-bound-plus-headroom>"
+        guidance["max_output_tokens"] = "<fixed-or-proportional-headroom-capacity>"
         calls.append(guidance)
         for condition in STUDENT_CONDITIONS:
             for stage in ("planning", "final"):
@@ -447,11 +451,11 @@ class PilotRunner:
                 )
                 record["students"][condition] = _solver_summary(student)
                 record["artifacts"][f"student_{condition}"] = student["artifact_paths"]
-        except GGContentValidationError:
+        except GGContentValidationError as error:
             record["valid_episode"] = False
             record["model_output_validation"] = "gg_content_validation"
             record["protocol_output_invalid"] = True
-            record["validation_error"] = "gg_content_validation_failed"
+            record["validation_error"] = error.validation_error
         except ModelInfrastructureError:
             record["valid_episode"] = False
             record["infrastructure_error"] = "model_api"
@@ -646,9 +650,11 @@ class PilotRunner:
         lower_bound, upper_bound = guidance_token_bounds(
             target_tokens, teaching.token_match_tolerance
         )
-        dynamic_max_tokens = max(
+        dynamic_max_tokens = guidance_dynamic_max_tokens(
+            upper_bound,
             teaching.gg_min_max_tokens,
-            upper_bound + teaching.gg_token_headroom,
+            teaching.gg_fixed_headroom,
+            teaching.gg_headroom_multiplier,
         )
         stage_root = problem_dir / "teaching_materials" / "general_guidance"
         responses: list[ModelResponse] = []
@@ -657,9 +663,17 @@ class PilotRunner:
         stop_reason = "maximum_adjustments_reached"
 
         for version in range(teaching.max_regeneration_attempts + 1):
+            anchors = guidance_anchor_records(version_records)
+            long_anchor = anchors["long"]
+            short_anchor = anchors["short"]
+            source_version: int | None = None
+            retain_ratio: float | None = None
+            remove_ratio: float | None = None
+            expand_ratio: float | None = None
+            ratio_strategy: str | None = None
             if version == 0:
                 operation = "initial"
-                input_version = None
+                source_reason = "initial_generation"
                 role = "general_guidance"
                 condition = "initial"
                 rendered = self._rendered_call(
@@ -668,36 +682,169 @@ class PilotRunner:
                     lower_bound=lower_bound,
                     upper_bound=upper_bound,
                 )
-            else:
-                previous = responses[-1]
-                assert previous.output_tokens is not None
-                direction = (
-                    "compress" if previous.output_tokens >= target_tokens
-                    else "expand"
-                )
-                operation = direction
-                input_version = version - 1
+            elif long_anchor is not None:
+                operation = "compress"
+                source_version = long_anchor["version"]
+                source_reason = "compress_best_complete_long_candidate"
                 role = "general_guidance_adjust"
-                condition = f"{direction}_{version}"
-                retain = target_tokens / previous.output_tokens * 100
+                condition = f"compress_{version}"
+                retain_ratio, ratio_strategy = guidance_retain_ratio(
+                    target_tokens, long_anchor, short_anchor
+                )
+                remove_ratio = 1.0 - retain_ratio
                 rendered = self._rendered_call(
                     role, problem_id, condition, problem,
                     target_tokens=target_tokens,
                     lower_bound=lower_bound,
                     upper_bound=upper_bound,
-                    current_tokens=previous.output_tokens,
-                    retain_ratio_percent=f"{retain:.1f}",
-                    remove_ratio_percent=f"{max(0.0, 100 - retain):.1f}",
-                    expand_ratio_percent=f"{max(0.0, retain - 100):.1f}",
-                    general_guidance=previous.content,
-                    direction=direction,
+                    source_tokens=long_anchor["completion_tokens"],
+                    retain_ratio_percent=f"{retain_ratio * 100:.1f}",
+                    remove_ratio_percent=f"{remove_ratio * 100:.1f}",
+                    expand_ratio_percent="0.0",
+                    general_guidance=responses[source_version].content,
+                    direction="compress",
+                )
+            elif short_anchor is not None:
+                operation = "expand"
+                source_version = short_anchor["version"]
+                source_reason = "expand_best_complete_short_without_long_candidate"
+                role = "general_guidance_adjust"
+                condition = f"expand_{version}"
+                expand_ratio = max(
+                    0.0,
+                    target_tokens / short_anchor["completion_tokens"] - 1.0,
+                )
+                ratio_strategy = "target_over_complete_short"
+                rendered = self._rendered_call(
+                    role, problem_id, condition, problem,
+                    target_tokens=target_tokens,
+                    lower_bound=lower_bound,
+                    upper_bound=upper_bound,
+                    source_tokens=short_anchor["completion_tokens"],
+                    retain_ratio_percent="100.0",
+                    remove_ratio_percent="0.0",
+                    expand_ratio_percent=f"{expand_ratio * 100:.1f}",
+                    general_guidance=responses[source_version].content,
+                    direction="expand",
+                )
+            else:
+                operation = "regenerate"
+                source_reason = "regenerate_from_problem_no_complete_candidate"
+                role = "general_guidance_adjust"
+                condition = f"regenerate_{version}"
+                rendered = self._rendered_call(
+                    role, problem_id, condition, problem,
+                    target_tokens=target_tokens,
+                    lower_bound=lower_bound,
+                    upper_bound=upper_bound,
+                    direction="regenerate",
                 )
 
             version_dir = stage_root / f"version_{version}"
+            compatibility_warnings: list[str] = []
+            record_operation = operation
+            record_source_version = source_version
+            record_source_reason = source_reason
+            record_retain_ratio = retain_ratio
+            record_remove_ratio = remove_ratio
+            record_expand_ratio = expand_ratio
+            record_ratio_strategy = ratio_strategy
+            record_anchor_long_version = (
+                None if long_anchor is None else long_anchor["version"]
+            )
+            record_anchor_short_version = (
+                None if short_anchor is None else short_anchor["version"]
+            )
+            existing_call = version_dir / "model_call.json"
+            if self.config.execution.resume and existing_call.is_file():
+                saved = read_json(existing_call)
+                expected_prompt_hash = _hash(
+                    rendered["system_prompt"] + "\0" + rendered["user_prompt"]
+                )
+                if saved.get("prompt_hash") != expected_prompt_hash:
+                    compatibility_warnings.append(
+                        "persisted_legacy_prompt_mismatch_reused"
+                    )
+                if (saved.get("role") != role or
+                        saved.get("condition") != condition):
+                    compatibility_warnings.append(
+                        "persisted_legacy_operation_mismatch_reused"
+                    )
+                existing_version = version_dir / "version.json"
+                old_record: dict[str, Any] = {}
+                if existing_version.is_file():
+                    old_record = read_json(existing_version)
+                    if "state" not in old_record:
+                        compatibility_warnings.append(
+                            "persisted_legacy_version_schema_reconstructed"
+                        )
+                saved_condition = str(saved.get("condition", ""))
+                inferred_operation = (
+                    "initial" if saved_condition == "initial" else
+                    "compress" if saved_condition.startswith("compress_") else
+                    "expand" if saved_condition.startswith("expand_") else
+                    "regenerate" if saved_condition.startswith("regenerate_") else
+                    operation
+                )
+                record_operation = str(
+                    old_record.get("operation", inferred_operation)
+                )
+                if "source_version" in old_record:
+                    record_source_version = old_record["source_version"]
+                elif "input_version" in old_record:
+                    record_source_version = old_record["input_version"]
+                elif record_operation in {"compress", "expand"} and version > 0:
+                    record_source_version = version - 1
+                    compatibility_warnings.append(
+                        "persisted_legacy_source_version_inferred"
+                    )
+                else:
+                    record_source_version = None
+                if "source_selection_reason" in old_record:
+                    record_source_reason = str(
+                        old_record["source_selection_reason"]
+                    )
+                elif record_operation == "initial":
+                    record_source_reason = "initial_generation"
+                elif record_operation == "regenerate":
+                    record_source_reason = (
+                        "persisted_legacy_regeneration_from_problem_inferred"
+                    )
+                else:
+                    record_source_reason = (
+                        "persisted_legacy_previous_version_source_inferred"
+                    )
+                record_retain_ratio = old_record.get(
+                    "retain_ratio_requested"
+                )
+                record_remove_ratio = old_record.get(
+                    "remove_ratio_requested"
+                )
+                record_expand_ratio = old_record.get(
+                    "expand_ratio_requested"
+                )
+                record_ratio_strategy = old_record.get("ratio_strategy")
+                record_anchor_long_version = old_record.get(
+                    "anchor_long_version"
+                )
+                record_anchor_short_version = old_record.get(
+                    "anchor_short_version"
+                )
+                if (record_operation in {"compress", "expand"} and
+                        record_ratio_strategy is None):
+                    compatibility_warnings.append(
+                        "persisted_legacy_ratio_metadata_unavailable"
+                    )
+                if ("anchor_long_version" not in old_record or
+                        "anchor_short_version" not in old_record):
+                    compatibility_warnings.append(
+                        "persisted_legacy_anchor_metadata_unavailable"
+                    )
             response, call_path = self._call(
                 version_dir, role, problem_id, condition, rendered,
                 max_output_tokens=dynamic_max_tokens,
                 allow_persisted_max_tokens_mismatch=True,
+                allow_persisted_prompt_mismatch=True,
             )
             if response.token_count_source not in {"api_usage", "mock_usage"}:
                 raise ModelInfrastructureError(
@@ -707,7 +854,7 @@ class PilotRunner:
             content_path = version_dir / "content.md"
             write_text(content_path, response.content)
             validation = validate_guidance_content(response.content)
-            status = guidance_candidate_status(
+            status = guidance_candidate_state(
                 response, lower_bound, upper_bound,
                 validation["semantic_completeness_passed"] and
                 not validation["structural_errors"],
@@ -717,17 +864,25 @@ class PilotRunner:
             )
             record = guidance_version_record(
                 version=version,
-                operation=operation,
-                input_version=input_version,
+                operation=record_operation,
+                source_version=record_source_version,
+                source_selection_reason=record_source_reason,
                 response=response,
                 content_path=content_path,
                 target_tokens=target_tokens,
                 lower_bound=lower_bound,
                 upper_bound=upper_bound,
-                dynamic_max_tokens=dynamic_max_tokens,
+                dynamic_max_tokens=request_max_tokens,
                 request_max_tokens=request_max_tokens,
                 status=status,
                 validation=validation,
+                retain_ratio_requested=record_retain_ratio,
+                remove_ratio_requested=record_remove_ratio,
+                expand_ratio_requested=record_expand_ratio,
+                ratio_strategy=record_ratio_strategy,
+                anchor_long_version=record_anchor_long_version,
+                anchor_short_version=record_anchor_short_version,
+                compatibility_warnings=compatibility_warnings,
             )
             version_records.append(record)
             write_json(version_dir / "version.json", record)
@@ -735,9 +890,6 @@ class PilotRunner:
             if record["matched"]:
                 matched_version = version
                 stop_reason = "first_valid_candidate_in_interval"
-                break
-            if not response.content.strip():
-                stop_reason = "empty_content"
                 break
 
         valid_records = [item for item in version_records if item["valid_candidate"]]
@@ -773,27 +925,54 @@ class PilotRunner:
                 "structural_warnings", "forbidden_content", "obviously_truncated",
             )
         }
+        final_anchors = guidance_anchor_records(version_records)
+        all_compatibility_warnings = sorted({
+            warning
+            for item in version_records
+            for warning in item["compatibility_warnings"]
+        })
         match_record = {
             "target_tokens": target_tokens,
             "lower_bound": lower_bound,
             "upper_bound": upper_bound,
             "dynamic_max_tokens": dynamic_max_tokens,
+            "headroom_policy": {
+                "minimum": teaching.gg_min_max_tokens,
+                "fixed_headroom": teaching.gg_fixed_headroom,
+                "multiplier": teaching.gg_headroom_multiplier,
+            },
             "max_regeneration_attempts": teaching.max_regeneration_attempts,
             "attempts_used": len(version_records),
             "matched_version": matched_version,
             "selected_version": selected_version,
+            "selected_audit_version": selected_version,
+            "best_complete_long_version": (
+                None if final_anchors["long"] is None
+                else final_anchors["long"]["version"]
+            ),
+            "best_complete_short_version": (
+                None if final_anchors["short"] is None
+                else final_anchors["short"]["version"]
+            ),
             "selection_reason": selection_reason,
             "stop_reason": stop_reason,
             "token_match_passed": passed,
             "token_match_failed": not passed,
             "validation_policy": "semantic_completeness_v1",
             "selected_validation": selected_validation,
+            "compatibility_warnings": all_compatibility_warnings,
             "versions": version_records,
         }
         write_json(stage_root / "match.json", match_record)
         if selected_version is None:
+            validation_error = (
+                "gg_generation_truncated"
+                if any(item["is_truncated_candidate"] for item in version_records)
+                else "gg_content_validation_failed"
+            )
             raise GGContentValidationError(
-                "General Guidance produced no semantically complete candidate"
+                "General Guidance produced no semantically complete candidate",
+                validation_error=validation_error,
             )
         response = responses[selected_version]
         error = token_relative_error(target_tokens, response.output_tokens)
@@ -807,7 +986,14 @@ class PilotRunner:
                 "attempts_used": len(version_records),
                 "matched_version": matched_version,
                 "selected_version": selected_version,
+                "selected_audit_version": selected_version,
                 "selection_reason": selection_reason,
+                "best_complete_long_version": match_record[
+                    "best_complete_long_version"
+                ],
+                "best_complete_short_version": match_record[
+                    "best_complete_short_version"
+                ],
                 "general_guidance_tokens": response.output_tokens,
                 "token_relative_error": error,
                 "token_match_passed": passed,
@@ -855,16 +1041,19 @@ class PilotRunner:
                 target_tokens=values["target_tokens"],
                 lower_bound=values["lower_bound"],
                 upper_bound=values["upper_bound"],
-                current_tokens=values["current_tokens"],
-                retain_ratio_percent=values["retain_ratio_percent"],
-                remove_ratio_percent=values["remove_ratio_percent"],
-                expand_ratio_percent=values["expand_ratio_percent"],
+                source_tokens=values.get("source_tokens", ""),
+                retain_ratio_percent=values.get("retain_ratio_percent", ""),
+                remove_ratio_percent=values.get("remove_ratio_percent", ""),
+                expand_ratio_percent=values.get("expand_ratio_percent", ""),
             )
-            user = self.renderer.render(
-                self.renderer.template("general_guidance_adjust_user.md"),
-                formatted_problem=problem,
-                general_guidance=values["general_guidance"],
-            )
+            if values["direction"] == "regenerate":
+                user = problem
+            else:
+                user = self.renderer.render(
+                    self.renderer.template("general_guidance_adjust_user.md"),
+                    formatted_problem=problem,
+                    general_guidance=values["general_guidance"],
+                )
         elif role == "student":
             system = self.renderer.template("student.md")
             material = values.get("additional_material", "")
@@ -923,6 +1112,7 @@ class PilotRunner:
               rendered: dict[str, str], *,
               max_output_tokens: int | None = None,
               allow_persisted_max_tokens_mismatch: bool = False,
+              allow_persisted_prompt_mismatch: bool = False,
               ) -> tuple[ModelResponse, Path]:
         artifact = stage_dir / "model_call.json"
         effective_max_tokens = (
@@ -941,7 +1131,8 @@ class PilotRunner:
                 expected_prompt_hash = _hash(
                     rendered["system_prompt"] + "\0" + rendered["user_prompt"]
                 )
-                if saved.get("prompt_hash") != expected_prompt_hash:
+                if (not allow_persisted_prompt_mismatch and
+                        saved.get("prompt_hash") != expected_prompt_hash):
                     raise ModelInfrastructureError(
                         "persisted model call prompt hash differs from current request"
                     )
@@ -1006,6 +1197,21 @@ def guidance_token_bounds(target: int, tolerance: float) -> tuple[int, int]:
     return (
         math.ceil(target * (1 - tolerance)),
         math.floor(target * (1 + tolerance)),
+    )
+
+
+def guidance_dynamic_max_tokens(
+    upper_bound: int,
+    minimum: int,
+    fixed_headroom: int,
+    multiplier: float,
+) -> int:
+    if upper_bound <= 0 or minimum <= 0 or fixed_headroom < 0 or multiplier < 1:
+        raise ValueError("invalid General Guidance headroom policy")
+    return max(
+        minimum,
+        upper_bound + fixed_headroom,
+        math.ceil(upper_bound * multiplier),
     )
 
 
@@ -1161,15 +1367,17 @@ def validate_guidance_content(content: str) -> dict[str, Any]:
     }
 
 
-def guidance_candidate_status(
+def guidance_candidate_state(
     response: ModelResponse,
     lower_bound: int,
     upper_bound: int,
     valid_content: bool,
 ) -> str:
-    if response.finish_reason != "stop":
-        return "INVALID_FINISH_REASON"
+    if response.finish_reason == "length":
+        return "TRUNCATED_TOO_LONG"
     if not valid_content:
+        return "INVALID_CONTENT"
+    if response.finish_reason != "stop":
         return "INVALID_CONTENT"
     if response.output_tokens is None:
         raise ModelInfrastructureError(
@@ -1178,15 +1386,62 @@ def guidance_candidate_status(
     if response.output_tokens < lower_bound:
         return "TOO_SHORT"
     if response.output_tokens > upper_bound:
-        return "TOO_LONG"
+        return "COMPLETE_TOO_LONG"
     return "MATCHED"
+
+
+def guidance_anchor_records(
+    records: list[dict[str, Any]],
+) -> dict[str, dict[str, Any] | None]:
+    def closest(candidates: list[dict[str, Any]]) -> dict[str, Any] | None:
+        return min(
+            candidates,
+            key=lambda item: (item["distance_to_target"], item["version"]),
+            default=None,
+        )
+
+    return {
+        "long": closest([
+            item for item in records if item["is_complete_long_candidate"]
+        ]),
+        "short": closest([
+            item for item in records if item["is_complete_short_candidate"]
+        ]),
+        "matched": closest([
+            item for item in records if item["matched"]
+        ]),
+    }
+
+
+def guidance_retain_ratio(
+    target_tokens: int,
+    long_record: dict[str, Any],
+    short_record: dict[str, Any] | None,
+) -> tuple[float, str]:
+    long_tokens = long_record["completion_tokens"]
+    base_ratio = target_tokens / long_tokens
+    strategy = "target_over_complete_long"
+    ratio = base_ratio
+    if (short_record is not None and
+            short_record.get("source_version") == long_record["version"] and
+            short_record.get("retain_ratio_requested") is not None):
+        short_tokens = short_record["completion_tokens"]
+        previous = float(short_record["retain_ratio_requested"])
+        if short_tokens < target_tokens < long_tokens:
+            interpolation = (target_tokens - short_tokens) / (
+                long_tokens - short_tokens
+            )
+            ratio = previous + (1.0 - previous) * interpolation
+            strategy = "linear_correction_from_complete_long_and_short"
+    return min(0.98, max(0.50, ratio)), strategy
 
 
 def guidance_version_record(
     *,
     version: int,
     operation: str,
-    input_version: int | None,
+    source_version: int | None,
+    source_selection_reason: str,
     response: ModelResponse,
     content_path: Path,
     target_tokens: int,
@@ -1196,6 +1451,13 @@ def guidance_version_record(
     request_max_tokens: int,
     status: str,
     validation: dict[str, Any],
+    retain_ratio_requested: float | None,
+    remove_ratio_requested: float | None,
+    expand_ratio_requested: float | None,
+    ratio_strategy: str | None,
+    anchor_long_version: int | None,
+    anchor_short_version: int | None,
+    compatibility_warnings: list[str],
 ) -> dict[str, Any]:
     if response.output_tokens is None:
         raise ModelInfrastructureError(
@@ -1210,7 +1472,9 @@ def guidance_version_record(
     return {
         "version": version,
         "operation": operation,
-        "input_version": input_version,
+        "input_version": source_version,
+        "source_version": source_version,
+        "source_selection_reason": source_selection_reason,
         "prompt_tokens": response.input_tokens,
         "completion_tokens": tokens,
         "total_tokens": response.total_tokens,
@@ -1225,6 +1489,23 @@ def guidance_version_record(
         "matched": status == "MATCHED",
         "valid_candidate": valid_candidate,
         "status": status,
+        "state": status,
+        "accepted_lower_bound": lower_bound,
+        "accepted_upper_bound": upper_bound,
+        "is_complete_long_candidate": status == "COMPLETE_TOO_LONG",
+        "is_complete_short_candidate": status == "TOO_SHORT",
+        "is_truncated_candidate": status == "TRUNCATED_TOO_LONG",
+        "retain_ratio_requested": retain_ratio_requested,
+        "remove_ratio_requested": remove_ratio_requested,
+        "expand_ratio_requested": expand_ratio_requested,
+        "ratio_strategy": ratio_strategy,
+        "anchor_long_version": anchor_long_version,
+        "anchor_short_version": anchor_short_version,
+        "validation_error": (
+            "gg_generation_truncated"
+            if status == "TRUNCATED_TOO_LONG" else None
+        ),
+        "compatibility_warnings": compatibility_warnings,
         "preferred_structure": validation["preferred_structure"],
         "semantic_completeness_passed": validation[
             "semantic_completeness_passed"
