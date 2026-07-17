@@ -48,17 +48,17 @@ GG_SECTION_ALIASES = {
     "approaches": {
         "plausible approaches", "possible approaches", "possible algorithms",
         "algorithmic approach", "algorithmic directions", "candidate approaches",
-        "solution directions",
+        "solution directions", "approaches",
     },
     "correctness": {
         "edge cases and correctness", "correctness and edge cases",
         "correctness pitfalls and edge cases", "edge cases",
-        "correctness considerations", "validation considerations",
+        "correctness considerations", "validation considerations", "correctness",
     },
     "implementation": {
         "implementation checks", "implementation considerations",
         "implementation risks", "implementation notes", "coding considerations",
-        "complexity and implementation",
+        "complexity and implementation", "implementation",
     },
 }
 GG_CATEGORY_SIGNALS = {
@@ -668,6 +668,9 @@ class PilotRunner:
             anchors = guidance_anchor_records(version_records)
             long_anchor = anchors["long"]
             short_anchor = anchors["short"]
+            initial_was_truncated = bool(
+                version_records and version_records[0]["is_truncated_candidate"]
+            )
             source_version: int | None = None
             retain_ratio: float | None = None
             remove_ratio: float | None = None
@@ -685,6 +688,18 @@ class PilotRunner:
                     target_tokens=target_tokens,
                     lower_bound=lower_bound,
                     upper_bound=upper_bound,
+                )
+            elif initial_was_truncated:
+                operation = "truncation_recovery"
+                source_reason = "truncation_recovery_from_problem"
+                role = "general_guidance_adjust"
+                condition = f"truncation_recovery_{version}"
+                rendered = self._rendered_call(
+                    role, problem_id, condition, problem,
+                    target_tokens=target_tokens,
+                    lower_bound=lower_bound,
+                    upper_bound=upper_bound,
+                    direction="truncation_recovery",
                 )
             elif long_anchor is not None:
                 operation = "compress"
@@ -799,6 +814,8 @@ class PilotRunner:
                     "initial" if saved_condition == "initial" else
                     "compress" if saved_condition.startswith("compress_") else
                     "expand" if saved_condition.startswith("expand_") else
+                    "truncation_recovery"
+                    if saved_condition.startswith("truncation_recovery_") else
                     "regenerate" if saved_condition.startswith("regenerate_") else
                     operation
                 )
@@ -915,10 +932,27 @@ class PilotRunner:
                 break
 
         valid_records = [item for item in version_records if item["valid_candidate"]]
+        any_tokens_in_interval = any(
+            lower_bound <= item["completion_tokens"] <= upper_bound
+            for item in version_records
+        )
+        fallback_used = False
         if matched_version is not None:
             selected_version = matched_version
             selection_reason = "first_valid_candidate_in_interval"
             passed = True
+        elif not any_tokens_in_interval:
+            selected = min(
+                version_records,
+                key=lambda item: (
+                    abs(item["completion_tokens"] - target_tokens),
+                    item["version"],
+                ),
+            )
+            selection_reason = "fallback_closest_to_ff_target"
+            selected_version = selected["version"]
+            passed = False
+            fallback_used = True
         elif valid_records:
             selected = min(
                 valid_records,
@@ -939,6 +973,15 @@ class PilotRunner:
         selected_record = (
             version_records[selected_version]
             if selected_version is not None else None
+        )
+        selected_within_token_interval = bool(
+            selected_record is not None and
+            lower_bound <= selected_record["completion_tokens"] <= upper_bound
+        )
+        token_interval_outcome = (
+            "matched_within_tolerance" if passed else
+            "fallback_outside_tolerance" if fallback_used else
+            "unmatched_no_fallback"
         )
         selected_validation = None if selected_record is None else {
             key: selected_record[key] for key in (
@@ -980,7 +1023,15 @@ class PilotRunner:
             "stop_reason": stop_reason,
             "token_match_passed": passed,
             "token_match_failed": not passed,
+            "token_interval_outcome": token_interval_outcome,
+            "selected_within_token_interval": selected_within_token_interval,
+            "fallback_used": fallback_used,
+            "fallback_selection_policy": "minimum_absolute_distance_to_ff_target",
             "validation_policy": "semantic_completeness_v2",
+            "truncation_recovery_used": any(
+                item["operation"] == "truncation_recovery"
+                for item in version_records
+            ),
             "selected_validation": selected_validation,
             "compatibility_warnings": all_compatibility_warnings,
             "versions": version_records,
@@ -1010,6 +1061,10 @@ class PilotRunner:
                 "selected_version": selected_version,
                 "selected_audit_version": selected_version,
                 "selection_reason": selection_reason,
+                "fallback_used": fallback_used,
+                "fallback_selection_policy": match_record[
+                    "fallback_selection_policy"
+                ],
                 "best_complete_long_version": match_record[
                     "best_complete_long_version"
                 ],
@@ -1020,7 +1075,12 @@ class PilotRunner:
                 "token_relative_error": error,
                 "token_match_passed": passed,
                 "token_match_failed": not passed,
+                "token_interval_outcome": token_interval_outcome,
+                "selected_within_token_interval": selected_within_token_interval,
                 "general_guidance_truncated": response.truncated,
+                "truncation_recovery_used": match_record[
+                    "truncation_recovery_used"
+                ],
                 **(selected_validation or {}),
             },
         }
@@ -1069,7 +1129,7 @@ class PilotRunner:
                 expand_ratio_percent=values.get("expand_ratio_percent", ""),
                 revision_feedback=values.get("revision_feedback", ""),
             )
-            if values["direction"] == "regenerate":
+            if values["direction"] in {"regenerate", "truncation_recovery"}:
                 user = problem
             else:
                 user = self.renderer.render(
@@ -1738,6 +1798,18 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
               item.get("general_guidance_tokens") is not None]
     summary["token_matching"] = {
         "pair_count": len(paired),
+        "matched_within_tolerance_count": sum(
+            item.get("token_interval_outcome") == "matched_within_tolerance"
+            for item in paired
+        ),
+        "fallback_outside_tolerance_count": sum(
+            item.get("token_interval_outcome") == "fallback_outside_tolerance"
+            for item in paired
+        ),
+        "unmatched_no_fallback_count": sum(
+            item.get("token_interval_outcome") == "unmatched_no_fallback"
+            for item in paired
+        ),
         "average_failure_frontier_tokens": _average(
             [item["failure_frontier_tokens"] for item in paired]),
         "average_general_guidance_tokens": _average(
@@ -1772,6 +1844,15 @@ def summary_markdown(summary: dict[str, Any]) -> str:
     lines.extend(["", "## Breakthroughs on Teacher failures", ""])
     for condition, count in summary["student_breakthrough_on_teacher_failures"].items():
         lines.append(f"- {condition}: {count}")
+    token_matching = summary["token_matching"]
+    lines.extend([
+        "",
+        "## GG token interval outcomes",
+        "",
+        f"- Matched within tolerance: {token_matching['matched_within_tolerance_count']}",
+        f"- Fallback outside tolerance: {token_matching['fallback_outside_tolerance_count']}",
+        f"- Unmatched without fallback: {token_matching['unmatched_no_fallback_count']}",
+    ])
     return "\n".join(lines) + "\n"
 
 

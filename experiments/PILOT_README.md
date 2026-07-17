@@ -75,7 +75,11 @@ complete solution code or forbidden information. The first semantically
 complete `finish_reason=stop`
 response inside the interval is accepted immediately. A `finish_reason=length`
 response is always invalid and can never become a complete candidate, rewrite
-anchor, or final audit selection. The controller retains the closest complete
+anchor. If the initial response is truncated, every remaining allowed GG call
+uses the dedicated compact truncation-recovery prompt from the public problem
+only: exactly four compact sections, at most three bullets per section, at most
+two sentences per bullet, and at most two algorithmic directions. The
+controller retains the closest complete
 overlong and complete short candidates. Once a complete overlong candidate
 exists, all later adjustments compress from that high-information anchor rather
 than expanding a short response. If such a compression overshoots short, a
@@ -89,9 +93,17 @@ receive an explicit approximate 20% allocation instruction. Expansion is
 allowed only when no complete overlong candidate has ever been observed. If all
 configured attempts fail, the closest
 semantically complete normally-finished version is selected only for audit
-display; this does not satisfy token matching, and the episode is excluded from
-formal condition comparison. A successful API response that fails content
-validation is recorded as `gg_content_validation`, not as a network/API error.
+display when at least one generated token count entered the accepted interval.
+If no generated version entered the token interval, a deterministic Student
+material fallback instead selects the version with the smallest absolute token
+distance from the FF target, breaking ties in favor of the earlier version.
+This fallback adds no model call, does not satisfy token matching, and leaves
+the episode excluded from formal condition comparison. A successful
+API response that fails content validation without qualifying for this fallback
+is recorded as `gg_content_validation`, not as a network/API error.
+`match.json`, the per-problem teaching-material record, and the run summary
+separately record `matched_within_tolerance`, `fallback_outside_tolerance`, and
+`unmatched_no_fallback`; fallback output is never reported as a ±10% match.
 The top-level `condition_comparison_eligible` flag is derived at finalization:
 an episode is eligible only when it is valid and has no infrastructure error,
 protocol-output failure, or GG token-match failure. It is not maintained as an
