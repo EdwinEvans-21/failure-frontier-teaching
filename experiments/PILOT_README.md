@@ -31,20 +31,18 @@ fallback. The formal Pilot uses one 10% tolerance, defining an inclusive integer
 interval around the Failure Frontier token count with `ceil` for the lower bound
 and `floor` for the upper bound. There is no parallel 5% analysis. GG output
 capacity is intentionally larger than the accepted interval so the model can
-finish naturally. Every GG call uses:
+finish naturally. Every initial, compression, expansion, and fresh-regeneration
+GG call uses the same fixed capacity:
 
 ```text
-max(gg_min_max_tokens,
-    upper_bound + gg_fixed_headroom,
-    ceil(upper_bound * gg_headroom_multiplier))
+gg_max_output_tokens = 8192
 ```
 
-The checked-in fixed headroom is 256 and the multiplier is 1.20. These values
-do not widen the accepted interval: a complete response above the 10% upper
-bound remains too long, and every `finish_reason=length` response remains
-invalid. Failure Frontier and Success Teaching material calls retain their
-independent 16384-token limit. GG's dynamic limit is not overridden by either
-solver-stage limit.
+The API capacity no longer tracks the target or accepted upper bound. This does
+not widen the accepted interval: a complete response above the 10% upper bound
+remains too long, and every `finish_reason=length` response remains invalid.
+Failure Frontier and Success Teaching material calls retain their independent
+16384-token limit. GG's fixed limit is independent of both solver-stage limits.
 
 A solver attempt uses the fixed `two_stage_v1` protocol: one bounded planning
 call followed by one mandatory final-submission call. Teacher, Baseline, FF,
@@ -66,12 +64,13 @@ Python fences, or invalid source is a final-output validation failure and
 receives no rescue call.
 
 All GG versions are preserved with their prompts, content, usage, finish
-reason, preferred-format signal, semantic coverage, validation findings,
-interval distance, and target distance. Exact recommended Markdown headings are
-preferred structure, not a validity requirement. Validity instead requires
-substantive coverage of constraints, plausible approaches, correctness and edge
-cases, and implementation checks and risks, with no complete solution code or
-forbidden information. The first semantically complete `finish_reason=stop`
+reason, required-section status, semantic coverage, validation findings,
+interval distance, and target distance. Valid GG output must contain exactly
+`## Constraint Analysis`, `## Algorithmic Directions`,
+`## Correctness and Edge Cases`, and `## Implementation Checks`, once each and
+in that order. Every section must contain substantive, complete coverage, with
+no complete solution code or forbidden information. The first semantically
+complete `finish_reason=stop`
 response inside the interval is accepted immediately. A `finish_reason=length`
 response is always invalid and can never become a complete candidate, rewrite
 anchor, or final audit selection. The controller retains the closest complete
@@ -79,26 +78,35 @@ overlong and complete short candidates. Once a complete overlong candidate
 exists, all later adjustments compress from that high-information anchor rather
 than expanding a short response. If such a compression overshoots short, a
 deterministic linear correction adjusts the requested retain ratio while still
-using the same long source. Expansion is allowed only when no complete overlong
-candidate has ever been observed. If all configured attempts fail, the closest
+using the same long source. Compression is editing-only: it may delete, merge,
+abbreviate, condense, or minimally reorder existing material, but may not add
+new content. If a first compression is invalid, the next compression receives
+its missing-section feedback. Its retain ratio is deterministically corrected
+from the prior requested ratio and observed token length; missing sections
+receive an explicit approximate 20% allocation instruction. Expansion is
+allowed only when no complete overlong candidate has ever been observed. If all
+configured attempts fail, the closest
 semantically complete normally-finished version is selected only for audit
 display; this does not satisfy token matching, and the episode is excluded from
 formal condition comparison. A successful API response that fails content
 validation is recorded as `gg_content_validation`, not as a network/API error.
+The top-level `condition_comparison_eligible` flag is derived at finalization:
+an episode is eligible only when it is valid and has no infrastructure error,
+protocol-output failure, or GG token-match failure. It is not maintained as an
+independent mutable status flag.
 
 GG token-matching tolerance was changed from 5% to 10% before the formal Pilot
 and before the runner was frozen. Repeated smoke tests showed that bounded
 rewrites under a 5% tolerance could destabilize the structure of otherwise
-relevant guidance. GG validity is therefore based on semantic coverage of the
-required material categories rather than exact reproduction of Markdown
-headings. The formal Pilot has not yet run, and this change precedes the final
-runner freeze.
+relevant guidance. GG validity now requires both the exact four-section protocol
+and substantive semantic coverage within every section. The formal Pilot has
+not yet run, and this change precedes the final runner freeze.
 
 The historical `smoke-3980-fenced-20260717T173113` artifacts remain unchanged.
 That run remains useful for infrastructure, two-stage solver, and fenced-final
 extraction validation, but not for condition comparison. Its observed GG
-headroom and token-match failures motivated the controller update; the new
-policy applies only to future runs.
+headroom and token-match failures motivated later controller updates; current
+capacity policy applies only to future runs.
 
 For a clean Git worktree, set `execution.output_root` to a directory outside
 the repository. Run directories may contain full model prompts and responses

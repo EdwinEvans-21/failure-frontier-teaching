@@ -288,9 +288,9 @@ class MockModelClient:
             content = (
                 "## Constraint Analysis\nInput size constraints require O(n) time "
                 "complexity and bounded space complexity.\n\n"
-                "## Plausible Approaches\nCompare a greedy algorithm with dynamic "
+                "## Algorithmic Directions\nCompare a greedy algorithm with dynamic "
                 "programming as candidate approaches.\n\n"
-                "## Edge Cases\nUse an invariant for correctness and check edge "
+                "## Correctness and Edge Cases\nUse an invariant for correctness and check edge "
                 "cases and boundaries.\n\n"
                 "## Implementation Checks\nImplementation risks include indexing, "
                 "overflow, and data types."

@@ -15,14 +15,12 @@ Complete the response naturally and ensure it ends with a finished final section
 The API output capacity is larger than the accepted token interval, but your response is still required to remain between the stated lower and upper token bounds.
 Do not continue writing merely because more output capacity is available.
 
-Organize the response around the following four semantic components:
+Use exactly these four Markdown sections, exactly once and in this order:
 
-1. Constraint analysis
-2. Plausible algorithmic directions
-3. Edge cases and correctness considerations
-4. Implementation checks and risks
+## Constraint Analysis
+## Algorithmic Directions
+## Correctness and Edge Cases
+## Implementation Checks
 
-The preferred Markdown headings are `## Constraint Analysis`,
-`## Plausible Approaches`, `## Edge Cases`, and `## Implementation Checks` in
-that order. Equivalent headings or clearly separated prose are acceptable.
-Ensure that all four components are substantively covered.
+Every section is mandatory and must contain substantive, complete content.
+Do not delete, rename, merge, or leave any required section empty.

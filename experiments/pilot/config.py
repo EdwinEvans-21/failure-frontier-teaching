@@ -29,9 +29,7 @@ class ModelConfig:
 class TeachingMaterialConfig:
     token_match_tolerance: float
     max_regeneration_attempts: int
-    gg_min_max_tokens: int
-    gg_fixed_headroom: int
-    gg_headroom_multiplier: float
+    gg_max_output_tokens: int
 
 
 @dataclass(frozen=True)
@@ -153,12 +151,8 @@ def _validate(config: PilotConfig) -> None:
         raise ValueError("token_match_tolerance must be in [0, 1)")
     if config.teaching_material.max_regeneration_attempts < 0:
         raise ValueError("max_regeneration_attempts must be non-negative")
-    if config.teaching_material.gg_min_max_tokens <= 0:
-        raise ValueError("gg_min_max_tokens must be positive")
-    if config.teaching_material.gg_fixed_headroom < 0:
-        raise ValueError("gg_fixed_headroom must be non-negative")
-    if config.teaching_material.gg_headroom_multiplier < 1:
-        raise ValueError("gg_headroom_multiplier must be at least 1")
+    if config.teaching_material.gg_max_output_tokens <= 0:
+        raise ValueError("gg_max_output_tokens must be positive")
     if config.execution.judge_phase != "hidden":
         raise ValueError("pilot v1 formal submissions must use the hidden phase")
     if len(config.problems) != 5:

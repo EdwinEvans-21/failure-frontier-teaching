@@ -35,8 +35,8 @@ VERDICT_MAP = {
 STUDENT_CONDITIONS = ("success_only", "failure_frontier", "general_guidance")
 GG_REQUIRED_SECTIONS = (
     "## Constraint Analysis",
-    "## Plausible Approaches",
-    "## Edge Cases",
+    "## Algorithmic Directions",
+    "## Correctness and Edge Cases",
     "## Implementation Checks",
 )
 GG_CATEGORIES = ("constraints", "approaches", "correctness", "implementation")
@@ -360,7 +360,7 @@ class PilotRunner:
             lower_bound="<lower-bound>",
             upper_bound="<upper-bound>",
         )
-        guidance["max_output_tokens"] = "<fixed-or-proportional-headroom-capacity>"
+        guidance["max_output_tokens"] = self.config.teaching_material.gg_max_output_tokens
         calls.append(guidance)
         for condition in STUDENT_CONDITIONS:
             for stage in ("planning", "final"):
@@ -382,6 +382,10 @@ class PilotRunner:
         if self.config.execution.resume and record_path.is_file():
             saved_record = read_json(record_path)
             if not saved_record.get("infrastructure_error"):
+                saved_record["condition_comparison_eligible"] = (
+                    condition_comparison_eligible(saved_record)
+                )
+                write_json(record_path, saved_record)
                 return saved_record
         record: dict[str, Any] = {
             "run_id": run_id,
@@ -398,7 +402,7 @@ class PilotRunner:
             },
             "students": {},
             "valid_episode": True,
-            "condition_comparison_eligible": True,
+            "condition_comparison_eligible": None,
             "artifacts": {},
         }
         try:
@@ -411,6 +415,9 @@ class PilotRunner:
             if teacher["verdict"] == "JUDGE_ERROR":
                 record["valid_episode"] = False
                 record["infrastructure_error"] = "judge"
+                record["condition_comparison_eligible"] = (
+                    condition_comparison_eligible(record)
+                )
                 write_json(record_path, record)
                 return record
             if teacher["verdict"] == "AC":
@@ -436,7 +443,6 @@ class PilotRunner:
                     problem_dir / "teaching_materials")
                 if not gg["metrics"]["token_match_passed"]:
                     record["token_match_failed"] = True
-                    record["condition_comparison_eligible"] = False
                 student_materials = {
                     "success_only": "",
                     "failure_frontier": ff.content,
@@ -459,6 +465,7 @@ class PilotRunner:
         except ModelInfrastructureError:
             record["valid_episode"] = False
             record["infrastructure_error"] = "model_api"
+        record["condition_comparison_eligible"] = condition_comparison_eligible(record)
         write_json(record_path, record)
         return record
 
@@ -650,12 +657,7 @@ class PilotRunner:
         lower_bound, upper_bound = guidance_token_bounds(
             target_tokens, teaching.token_match_tolerance
         )
-        dynamic_max_tokens = guidance_dynamic_max_tokens(
-            upper_bound,
-            teaching.gg_min_max_tokens,
-            teaching.gg_fixed_headroom,
-            teaching.gg_headroom_multiplier,
-        )
+        gg_max_output_tokens = teaching.gg_max_output_tokens
         stage_root = problem_dir / "teaching_materials" / "general_guidance"
         responses: list[ModelResponse] = []
         version_records: list[dict[str, Any]] = []
@@ -671,6 +673,8 @@ class PilotRunner:
             remove_ratio: float | None = None
             expand_ratio: float | None = None
             ratio_strategy: str | None = None
+            feedback_source_version: int | None = None
+            revision_feedback: str | None = None
             if version == 0:
                 operation = "initial"
                 source_reason = "initial_generation"
@@ -688,10 +692,19 @@ class PilotRunner:
                 source_reason = "compress_best_complete_long_candidate"
                 role = "general_guidance_adjust"
                 condition = f"compress_{version}"
+                previous_compression = guidance_latest_compression(
+                    version_records, long_anchor["version"]
+                )
                 retain_ratio, ratio_strategy = guidance_retain_ratio(
-                    target_tokens, long_anchor, short_anchor
+                    target_tokens, long_anchor, short_anchor,
+                    previous_compression=previous_compression,
                 )
                 remove_ratio = 1.0 - retain_ratio
+                if previous_compression is not None:
+                    feedback_source_version = previous_compression["version"]
+                    revision_feedback = guidance_compression_feedback(
+                        previous_compression, lower_bound, upper_bound
+                    )
                 rendered = self._rendered_call(
                     role, problem_id, condition, problem,
                     target_tokens=target_tokens,
@@ -702,6 +715,7 @@ class PilotRunner:
                     remove_ratio_percent=f"{remove_ratio * 100:.1f}",
                     expand_ratio_percent="0.0",
                     general_guidance=responses[source_version].content,
+                    revision_feedback=revision_feedback or "",
                     direction="compress",
                 )
             elif short_anchor is not None:
@@ -749,6 +763,8 @@ class PilotRunner:
             record_remove_ratio = remove_ratio
             record_expand_ratio = expand_ratio
             record_ratio_strategy = ratio_strategy
+            record_feedback_source_version = feedback_source_version
+            record_revision_feedback = revision_feedback
             record_anchor_long_version = (
                 None if long_anchor is None else long_anchor["version"]
             )
@@ -824,6 +840,10 @@ class PilotRunner:
                     "expand_ratio_requested"
                 )
                 record_ratio_strategy = old_record.get("ratio_strategy")
+                record_feedback_source_version = old_record.get(
+                    "feedback_source_version"
+                )
+                record_revision_feedback = old_record.get("revision_feedback")
                 record_anchor_long_version = old_record.get(
                     "anchor_long_version"
                 )
@@ -842,7 +862,7 @@ class PilotRunner:
                     )
             response, call_path = self._call(
                 version_dir, role, problem_id, condition, rendered,
-                max_output_tokens=dynamic_max_tokens,
+                max_output_tokens=gg_max_output_tokens,
                 allow_persisted_max_tokens_mismatch=True,
                 allow_persisted_prompt_mismatch=True,
             )
@@ -860,7 +880,7 @@ class PilotRunner:
                 not validation["structural_errors"],
             )
             request_max_tokens = read_json(call_path).get("model", {}).get(
-                "max_output_tokens", dynamic_max_tokens
+                "max_output_tokens", gg_max_output_tokens
             )
             record = guidance_version_record(
                 version=version,
@@ -872,7 +892,7 @@ class PilotRunner:
                 target_tokens=target_tokens,
                 lower_bound=lower_bound,
                 upper_bound=upper_bound,
-                dynamic_max_tokens=request_max_tokens,
+                configured_max_tokens=gg_max_output_tokens,
                 request_max_tokens=request_max_tokens,
                 status=status,
                 validation=validation,
@@ -880,6 +900,8 @@ class PilotRunner:
                 remove_ratio_requested=record_remove_ratio,
                 expand_ratio_requested=record_expand_ratio,
                 ratio_strategy=record_ratio_strategy,
+                feedback_source_version=record_feedback_source_version,
+                revision_feedback=record_revision_feedback,
                 anchor_long_version=record_anchor_long_version,
                 anchor_short_version=record_anchor_short_version,
                 compatibility_warnings=compatibility_warnings,
@@ -920,7 +942,8 @@ class PilotRunner:
         )
         selected_validation = None if selected_record is None else {
             key: selected_record[key] for key in (
-                "preferred_structure", "semantic_completeness_passed",
+                "preferred_structure", "required_sections_passed",
+                "semantic_completeness_passed",
                 "covered_categories", "missing_categories", "structural_errors",
                 "structural_warnings", "forbidden_content", "obviously_truncated",
             )
@@ -935,11 +958,10 @@ class PilotRunner:
             "target_tokens": target_tokens,
             "lower_bound": lower_bound,
             "upper_bound": upper_bound,
-            "dynamic_max_tokens": dynamic_max_tokens,
-            "headroom_policy": {
-                "minimum": teaching.gg_min_max_tokens,
-                "fixed_headroom": teaching.gg_fixed_headroom,
-                "multiplier": teaching.gg_headroom_multiplier,
+            "max_output_tokens": gg_max_output_tokens,
+            "output_capacity_policy": {
+                "type": "fixed",
+                "max_output_tokens": gg_max_output_tokens,
             },
             "max_regeneration_attempts": teaching.max_regeneration_attempts,
             "attempts_used": len(version_records),
@@ -982,7 +1004,7 @@ class PilotRunner:
                 "target_tokens": target_tokens,
                 "lower_bound": lower_bound,
                 "upper_bound": upper_bound,
-                "dynamic_max_tokens": dynamic_max_tokens,
+                "max_output_tokens": gg_max_output_tokens,
                 "attempts_used": len(version_records),
                 "matched_version": matched_version,
                 "selected_version": selected_version,
@@ -1045,6 +1067,7 @@ class PilotRunner:
                 retain_ratio_percent=values.get("retain_ratio_percent", ""),
                 remove_ratio_percent=values.get("remove_ratio_percent", ""),
                 expand_ratio_percent=values.get("expand_ratio_percent", ""),
+                revision_feedback=values.get("revision_feedback", ""),
             )
             if values["direction"] == "regenerate":
                 user = problem
@@ -1191,27 +1214,22 @@ def token_relative_error(target: int, actual: int | None) -> float | None:
     return abs(actual - target) / target
 
 
+def condition_comparison_eligible(record: dict[str, Any]) -> bool:
+    """Derive the final comparison gate from episode validity invariants."""
+    return (
+        record.get("valid_episode") is True and
+        not record.get("infrastructure_error") and
+        not record.get("protocol_output_invalid") and
+        not record.get("token_match_failed")
+    )
+
+
 def guidance_token_bounds(target: int, tolerance: float) -> tuple[int, int]:
     if target <= 0 or not 0 <= tolerance < 1:
         raise ValueError("target and token tolerance must define a positive interval")
     return (
         math.ceil(target * (1 - tolerance)),
         math.floor(target * (1 + tolerance)),
-    )
-
-
-def guidance_dynamic_max_tokens(
-    upper_bound: int,
-    minimum: int,
-    fixed_headroom: int,
-    multiplier: float,
-) -> int:
-    if upper_bound <= 0 or minimum <= 0 or fixed_headroom < 0 or multiplier < 1:
-        raise ValueError("invalid General Guidance headroom policy")
-    return max(
-        minimum,
-        upper_bound + fixed_headroom,
-        math.ceil(upper_bound * multiplier),
     )
 
 
@@ -1279,11 +1297,12 @@ def validate_guidance_content(content: str) -> dict[str, Any]:
     if not text:
         return {
             "preferred_structure": False,
+            "required_sections_passed": False,
             "semantic_completeness_passed": False,
             "covered_categories": [],
             "missing_categories": list(GG_CATEGORIES),
             "structural_errors": ["empty_content"],
-            "structural_warnings": ["preferred_headings_not_used"],
+            "structural_warnings": [],
             "forbidden_content": [],
             "obviously_truncated": False,
         }
@@ -1301,7 +1320,7 @@ def validate_guidance_content(content: str) -> dict[str, Any]:
         all(sections[position][1].strip() for position in exact_positions)
     )
     if not preferred_structure:
-        warnings.append("preferred_headings_not_used")
+        errors.append("required_sections_missing_or_invalid")
 
     covered: set[str] = set()
     for heading, body in sections:
@@ -1357,7 +1376,10 @@ def validate_guidance_content(content: str) -> dict[str, Any]:
         errors.append("semantic_categories_missing")
     return {
         "preferred_structure": preferred_structure,
-        "semantic_completeness_passed": not missing and not forbidden and not truncated,
+        "required_sections_passed": preferred_structure,
+        "semantic_completeness_passed": (
+            preferred_structure and not missing and not forbidden and not truncated
+        ),
         "covered_categories": [item for item in GG_CATEGORIES if item in covered],
         "missing_categories": missing,
         "structural_errors": errors,
@@ -1417,23 +1439,95 @@ def guidance_retain_ratio(
     target_tokens: int,
     long_record: dict[str, Any],
     short_record: dict[str, Any] | None,
+    *,
+    previous_compression: dict[str, Any] | None = None,
 ) -> tuple[float, str]:
     long_tokens = long_record["completion_tokens"]
     base_ratio = target_tokens / long_tokens
     strategy = "target_over_complete_long"
     ratio = base_ratio
-    if (short_record is not None and
-            short_record.get("source_version") == long_record["version"] and
-            short_record.get("retain_ratio_requested") is not None):
-        short_tokens = short_record["completion_tokens"]
-        previous = float(short_record["retain_ratio_requested"])
-        if short_tokens < target_tokens < long_tokens:
-            interpolation = (target_tokens - short_tokens) / (
-                long_tokens - short_tokens
+    observation = previous_compression or short_record
+    if (observation is not None and
+            observation.get("source_version") == long_record["version"] and
+            observation.get("retain_ratio_requested") is not None and
+            observation.get("finish_reason") == "stop"):
+        observed_tokens = observation["completion_tokens"]
+        previous = float(observation["retain_ratio_requested"])
+        if observed_tokens < target_tokens < long_tokens:
+            interpolation = (target_tokens - observed_tokens) / (
+                long_tokens - observed_tokens
             )
             ratio = previous + (1.0 - previous) * interpolation
-            strategy = "linear_correction_from_complete_long_and_short"
+            strategy = (
+                "linear_correction_from_complete_long_and_short"
+                if observation.get("is_complete_short_candidate")
+                else "linear_correction_from_previous_invalid_compression"
+            )
+        elif observed_tokens > target_tokens:
+            ratio = previous * target_tokens / observed_tokens
+            strategy = "proportional_correction_from_previous_compression"
+        else:
+            ratio = previous
+            strategy = "retain_previous_ratio_for_content_repair"
     return min(0.98, max(0.50, ratio)), strategy
+
+
+def guidance_latest_compression(
+    records: list[dict[str, Any]], long_version: int,
+) -> dict[str, Any] | None:
+    candidates = [
+        item for item in records
+        if item.get("operation") == "compress" and
+        item.get("source_version") == long_version and
+        item.get("finish_reason") == "stop" and
+        item.get("retain_ratio_requested") is not None
+    ]
+    return max(candidates, key=lambda item: item["version"], default=None)
+
+
+def guidance_compression_feedback(
+    previous: dict[str, Any], lower_bound: int, upper_bound: int,
+) -> str:
+    missing = previous.get("missing_categories", [])
+    labels = {
+        "constraints": "constraint analysis",
+        "approaches": "algorithmic directions",
+        "correctness": "correctness and edge-case coverage",
+        "implementation": "substantive implementation coverage",
+    }
+    if missing:
+        reason = " and ".join(labels[item] for item in missing)
+        opening = (
+            "The previous compressed version was invalid because it omitted "
+            f"{reason}."
+        )
+    elif previous.get("structural_errors"):
+        opening = (
+            "The previous compressed version was invalid because it did not "
+            "satisfy the required four-section content protocol."
+        )
+    else:
+        opening = "The previous compressed version did not satisfy the target interval."
+    allocation = ""
+    if missing:
+        allocation_labels = {
+            "constraints": "constraint analysis",
+            "approaches": "algorithmic directions",
+            "correctness": "correctness and edge cases",
+            "implementation": "implementation checks",
+        }
+        named = " and ".join(allocation_labels[item] for item in missing)
+        allocation = (
+            "\n\nIn this revision, preserve all four required sections and allocate "
+            f"approximately 20% of the response to {named}."
+        )
+    length_warning = ""
+    tokens = previous["completion_tokens"]
+    if tokens < lower_bound:
+        length_warning = "\n\nDo not repeat the previous over-compression."
+    elif tokens > upper_bound:
+        length_warning = "\n\nReduce more decisively while preserving every section."
+    return opening + allocation + length_warning
 
 
 def guidance_version_record(
@@ -1447,7 +1541,7 @@ def guidance_version_record(
     target_tokens: int,
     lower_bound: int,
     upper_bound: int,
-    dynamic_max_tokens: int,
+    configured_max_tokens: int,
     request_max_tokens: int,
     status: str,
     validation: dict[str, Any],
@@ -1455,6 +1549,8 @@ def guidance_version_record(
     remove_ratio_requested: float | None,
     expand_ratio_requested: float | None,
     ratio_strategy: str | None,
+    feedback_source_version: int | None,
+    revision_feedback: str | None,
     anchor_long_version: int | None,
     anchor_short_version: int | None,
     compatibility_warnings: list[str],
@@ -1499,6 +1595,8 @@ def guidance_version_record(
         "remove_ratio_requested": remove_ratio_requested,
         "expand_ratio_requested": expand_ratio_requested,
         "ratio_strategy": ratio_strategy,
+        "feedback_source_version": feedback_source_version,
+        "revision_feedback": revision_feedback,
         "anchor_long_version": anchor_long_version,
         "anchor_short_version": anchor_short_version,
         "validation_error": (
@@ -1507,6 +1605,7 @@ def guidance_version_record(
         ),
         "compatibility_warnings": compatibility_warnings,
         "preferred_structure": validation["preferred_structure"],
+        "required_sections_passed": validation["required_sections_passed"],
         "semantic_completeness_passed": validation[
             "semantic_completeness_passed"
         ],
@@ -1516,7 +1615,7 @@ def guidance_version_record(
         "structural_warnings": validation["structural_warnings"],
         "forbidden_content": validation["forbidden_content"],
         "obviously_truncated": validation["obviously_truncated"],
-        "dynamic_max_tokens": dynamic_max_tokens,
+        "configured_max_tokens": configured_max_tokens,
         "request_max_tokens": request_max_tokens,
     }
 
@@ -1571,7 +1670,7 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
     valid = [record for record in records if record.get("valid_episode")]
     comparable = [
         record for record in valid
-        if record.get("condition_comparison_eligible", True)
+        if record.get("condition_comparison_eligible", False)
     ]
     teacher_failures = [record for record in comparable
                         if record.get("teacher", {}).get("verdict") != "AC"]

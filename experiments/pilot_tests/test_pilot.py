@@ -49,9 +49,9 @@ def guidance_response(marker: str) -> str:
     return (
         "## Constraint Analysis\nInput size constraints require O(n) time "
         "complexity and bounded space complexity.\n\n"
-        "## Plausible Approaches\nCompare a greedy algorithm with dynamic "
+        "## Algorithmic Directions\nCompare a greedy algorithm with dynamic "
         "programming as candidate approaches.\n\n"
-        "## Edge Cases\nUse an invariant for correctness and check edge "
+        "## Correctness and Edge Cases\nUse an invariant for correctness and check edge "
         "cases and boundaries.\n\n"
         "## Implementation Checks\nImplementation risks include indexing, "
         f"overflow, and data types. {marker}."
@@ -152,9 +152,7 @@ class PilotConfigurationTests(unittest.TestCase):
         self.assertFalse(config.model.reasoning_mode)
         self.assertEqual(config.execution.judge_phase, "hidden")
         self.assertEqual(config.teaching_material.token_match_tolerance, 0.10)
-        self.assertEqual(config.teaching_material.gg_min_max_tokens, 128)
-        self.assertEqual(config.teaching_material.gg_fixed_headroom, 256)
-        self.assertEqual(config.teaching_material.gg_headroom_multiplier, 1.20)
+        self.assertEqual(config.teaching_material.gg_max_output_tokens, 8192)
         snapshot = json.dumps(config.public_snapshot())
         self.assertNotIn("api_key\"", snapshot)
         self.assertIn("api_key_env", snapshot)
