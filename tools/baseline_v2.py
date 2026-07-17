@@ -268,4 +268,3 @@ def build_manifest(
         "formal_test_generators": generators,
         "frozen_files": files,
     }
-

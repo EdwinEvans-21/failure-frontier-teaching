@@ -15,4 +15,3 @@ README files are human documentation only. They are neither runtime sources of
 problem facts nor members of the baseline v2 frozen-file set. The v2 manifest
 uses an explicit semantic allowlist and rejects any frozen path whose basename,
 case-insensitively, is `README.md`.
-
