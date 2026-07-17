@@ -26,10 +26,7 @@ FORMATTED_PROBLEM = "PUBLIC PROBLEM STATEMENT"
 
 
 def solver(marker: str) -> str:
-    return (
-        "## Approach\nMock solver.\n\n## Code\n```python\n"
-        f"# {marker}\nclass Solution:\n    pass\n```"
-    )
+    return f"MARKER = {marker!r}\nclass Solution:\n    pass"
 
 
 def guidance(marker: str) -> str:
@@ -344,7 +341,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         runner = PilotRunner(config, model, judge=NoJudge(), project_root=ROOT)
         rendered = runner._rendered_call(
             "general_guidance", PROBLEM_ID, "initial", FORMATTED_PROBLEM,
-            target_tokens=1000, lower_bound=950, upper_bound=1050,
+            target_tokens=1000, lower_bound=900, upper_bound=1100,
         )
         runner._call(
             version0, "general_guidance", PROBLEM_ID, "initial", rendered,
@@ -504,9 +501,20 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertEqual(summary["condition_comparison_eligible_count"], 1)
         self.assertEqual(summary["teacher_failure_count"], 1)
         self.assertTrue(all(call["max_output_tokens"] == 1285 for call in gg_calls))
-        non_gg = [call for call in model.calls
-                  if not call["role"].startswith("general_guidance")]
-        self.assertTrue(all(call["max_output_tokens"] == 16384 for call in non_gg))
+        planning_calls = [call for call in model.calls
+                          if call["role"].endswith("_planning")]
+        final_calls = [call for call in model.calls
+                       if call["role"].endswith("_final")]
+        solver_calls = planning_calls + final_calls
+        material_calls = [call for call in model.calls
+                          if not call["role"].startswith("general_guidance") and
+                          call not in solver_calls]
+        self.assertTrue(all(call["max_output_tokens"] == 2048
+                            for call in planning_calls))
+        self.assertTrue(all(call["max_output_tokens"] == 8192
+                            for call in final_calls))
+        self.assertTrue(all(call["max_output_tokens"] == 16384
+                            for call in material_calls))
 
     def test_recent_smoke_sequence_accepts_semantic_alias_version(self) -> None:
         key = MockModelClient.key

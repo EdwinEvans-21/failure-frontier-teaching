@@ -250,6 +250,11 @@ class MockModelClient:
         self.calls.append(dict(request))
         key = self.key(request["role"], request["problem_id"], request["condition"])
         scripted = self._responses.get(key, [])
+        if not scripted and request["role"] in {"teacher_final", "student_final"}:
+            legacy_role = request["role"].removesuffix("_final")
+            scripted = self._responses.get(
+                self.key(legacy_role, request["problem_id"], request["condition"]), []
+            )
         item = scripted.pop(0) if scripted else self._default(request["role"])
         return ModelResponse(
             content=item["content"],
@@ -270,8 +275,15 @@ class MockModelClient:
 
     @staticmethod
     def _default(role: str) -> dict[str, Any]:
-        if role in {"teacher", "student"}:
-            content = "## Approach\nMock submission.\n\n## Code\n```python\nclass Solution:\n    pass\n```"
+        if role in {"teacher", "student", "teacher_final", "student_final"}:
+            content = "class Solution:\n    pass"
+        elif role in {"teacher_planning", "student_planning"}:
+            content = (
+                "## Candidate Analysis\nCompare two bounded candidates.\n\n"
+                "## Selected Algorithm\nChoose the best available algorithm.\n\n"
+                "## State or Invariant\nMaintain the required invariant.\n\n"
+                "## Complexity\nUse linear time and constant space."
+            )
         elif role in {"general_guidance", "general_guidance_adjust"}:
             content = (
                 "## Constraint Analysis\nInput size constraints require O(n) time "

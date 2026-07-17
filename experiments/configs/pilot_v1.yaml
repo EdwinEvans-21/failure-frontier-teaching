@@ -22,6 +22,11 @@
     "tokenizer_name": null,
     "tokenizer_revision": null
   },
+  "solver": {
+    "protocol": "two_stage_v1",
+    "planning_max_output_tokens": 2048,
+    "final_max_output_tokens": 8192
+  },
   "teaching_material": {
     "token_match_tolerance": 0.10,
     "max_regeneration_attempts": 2,

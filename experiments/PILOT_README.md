@@ -31,8 +31,25 @@ fallback. The formal Pilot uses one 10% tolerance, defining an inclusive integer
 interval around the Failure Frontier token count with `ceil` for the lower bound
 and `floor` for the upper bound. There is no parallel 5% analysis. Every GG call
 uses a dynamic output limit equal to the interval upper bound plus configured
-headroom, subject to a configured minimum. Teacher, Failure Frontier, Success
-Teaching, and Student calls retain the 16384-token solver output limit.
+headroom, subject to a configured minimum. Failure Frontier and Success Teaching
+material calls retain their independent 16384-token limit. GG's dynamic limit
+is not overridden by either solver-stage limit.
+
+A solver attempt uses the fixed `two_stage_v1` protocol: one bounded planning
+call followed by one mandatory final-submission call. Teacher, Baseline, FF,
+and GG solvers all receive a 2048-token planning limit and an 8192-token final
+limit. Planning may compare at most two directions and must select one, but its
+text is never submitted. Empty, structurally incomplete, or truncated planning
+is preserved with a validation warning and still proceeds to the one final
+call; it is never resampled.
+
+The final call receives the role's original visible input and only that role's
+own planning. It must return raw, syntax-complete Python source with no Markdown
+or code fence. Only this final response is eligible for extraction and at most
+one Judge submission. A syntax-complete final response may still be submitted
+when its API finish reason is `length`, while the truncation remains recorded;
+invalid or non-source output is a final-output validation failure and receives
+no rescue call.
 
 All GG versions are preserved with their prompts, content, usage, finish
 reason, preferred-format signal, semantic coverage, validation findings,
@@ -85,10 +102,11 @@ python -m experiments.run_pilot --config experiments/configs/pilot_v1.yaml
 Use `--output-root <directory>` to place artifacts outside the repository
 without changing the checked-in configuration.
 
-Reusing the same `--run-id` resumes completed stages. A model response already
-persisted successfully is never sampled again. `JUDGE_ERROR`, Docker failure,
-network failure, and rate limiting are infrastructure outcomes; judge retry
-reuses the identical submission and does not create another model attempt.
+Reusing the same `--run-id` resumes planning, final generation, and submission
+independently. A model response already persisted successfully is never sampled
+again. `JUDGE_ERROR`, Docker failure, network failure, and rate limiting are
+infrastructure outcomes; judge retry reuses the identical final submission and
+does not create another model attempt.
 
 ## Architecture and isolation
 
@@ -98,8 +116,8 @@ reuses the identical submission and does not create another model attempt.
   clients. Only network/infrastructure errors are retried.
 - `prompts.py` builds every role's problem view from `problem.json` and public
   tests only.
-- `code_extraction.py` accepts exactly one complete Python fenced block and
-  never repairs output.
+- `code_extraction.py` accepts syntax-complete raw Python from the final stage
+  and never repairs, combines, or supplements output from planning.
 - `orchestrator.py` owns branching, coarse verdict mapping, token matching,
   state files, artifact paths, resume, and summaries.
 - `DockerJudge` remains the only submission evaluator. A model receives only
@@ -115,11 +133,12 @@ and sandbox logs remain internal.
 ## Run artifacts
 
 Each run contains a redacted config snapshot, run state, per-problem Teacher,
-teaching-material, and Student directories, model-call records, extracted
-submissions, internal judge records, `results.jsonl`, `summary.json`, and
-`summary.md`. Each model-call record preserves prompts, raw response, token
-usage source, finish reason, truncation flag, request ID, model parameters,
-latency, and hashes. No API key or environment dump is written.
+teaching-material, and Student directories, separate `planning/` and `final/`
+model-call records and stage metadata, extracted final submissions, internal
+judge records, `results.jsonl`, `summary.json`, and `summary.md`. Each model-call
+record preserves prompts, raw response, token usage source, finish reason,
+truncation flag, request ID, model parameters, latency, and hashes. No API key
+or environment dump is written.
 
 The summary reports Teacher and Student AC counts, breakthroughs on Teacher
 failures, the two directional FF/GG signal lists, token-match measurements,

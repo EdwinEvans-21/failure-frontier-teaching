@@ -2,7 +2,11 @@
 
 {{formatted_problem}}
 
-# Successful Teacher Response
+# Teacher Planning
+
+{{teacher_planning}}
+
+# Teacher Final Response
 
 {{teacher_raw_response}}
 

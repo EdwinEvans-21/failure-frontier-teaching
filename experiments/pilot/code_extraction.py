@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import ast
 import re
 
 
@@ -15,8 +16,9 @@ class ExtractionResult:
     error: str | None
 
 
-def extract_single_python_code(response: str, *, truncated: bool = False) -> ExtractionResult:
-    if truncated:
+def extract_single_python_code(response: str, *, truncated: bool = False,
+                               allow_complete_when_truncated: bool = False) -> ExtractionResult:
+    if truncated and not allow_complete_when_truncated:
         return ExtractionResult(False, None, "response_truncated")
     matches = PYTHON_BLOCK.findall(response)
     if len(matches) != 1:
@@ -27,4 +29,17 @@ def extract_single_python_code(response: str, *, truncated: bool = False) -> Ext
     code = matches[0].strip()
     if not code:
         return ExtractionResult(False, None, "empty_python_code_block")
+    return ExtractionResult(True, code + "\n", None)
+
+
+def extract_raw_python_code(response: str) -> ExtractionResult:
+    code = response.strip()
+    if not code:
+        return ExtractionResult(False, None, "empty_python_source")
+    if "```" in code or re.search(r"(?m)^#{1,6}\s", code):
+        return ExtractionResult(False, None, "markdown_not_allowed")
+    try:
+        ast.parse(code)
+    except SyntaxError:
+        return ExtractionResult(False, None, "invalid_python_source")
     return ExtractionResult(True, code + "\n", None)

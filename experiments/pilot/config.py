@@ -34,6 +34,13 @@ class TeachingMaterialConfig:
 
 
 @dataclass(frozen=True)
+class SolverConfig:
+    protocol: str
+    planning_max_output_tokens: int
+    final_max_output_tokens: int
+
+
+@dataclass(frozen=True)
 class ExecutionConfig:
     output_root: str
     judge_image: str
@@ -55,6 +62,7 @@ class PilotConfig:
     baseline_manifest: str
     mode: str
     model: ModelConfig
+    solver: SolverConfig
     teaching_material: TeachingMaterialConfig
     execution: ExecutionConfig
     problems: tuple[ProblemConfig, ...]
@@ -99,6 +107,7 @@ def load_config(path: str | Path) -> PilotConfig:
     config_path = Path(path).resolve()
     data = _load_yaml_compatible(config_path)
     model = ModelConfig(**data["model"])
+    solver = SolverConfig(**data["solver"])
     teaching = TeachingMaterialConfig(**data["teaching_material"])
     execution = ExecutionConfig(**data["execution"])
     problems = tuple(ProblemConfig(**item) for item in data["problems"])
@@ -108,6 +117,7 @@ def load_config(path: str | Path) -> PilotConfig:
         baseline_manifest=data["baseline_manifest"],
         mode=data.get("mode", "live"),
         model=model,
+        solver=solver,
         teaching_material=teaching,
         execution=execution,
         problems=problems,
@@ -128,6 +138,12 @@ def _validate(config: PilotConfig) -> None:
         raise ValueError("model.model_name must be configured")
     if config.model.max_output_tokens <= 0:
         raise ValueError("model.max_output_tokens must be positive")
+    if config.solver.protocol != "two_stage_v1":
+        raise ValueError("solver.protocol must be two_stage_v1")
+    if config.solver.planning_max_output_tokens <= 0:
+        raise ValueError("planning_max_output_tokens must be positive")
+    if config.solver.final_max_output_tokens <= 0:
+        raise ValueError("final_max_output_tokens must be positive")
     if not 0 <= config.model.temperature <= 2:
         raise ValueError("model.temperature must be between 0 and 2")
     if not 0 < config.model.top_p <= 1:

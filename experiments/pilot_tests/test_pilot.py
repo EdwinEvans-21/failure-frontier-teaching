@@ -9,9 +9,12 @@ import subprocess
 import sys
 from difflib import unified_diff
 
-from ffjudge.models import JudgeResult, Verdict
+from ffjudge.models import JudgeResult, ProblemSpec, Verdict
 
-from experiments.pilot.code_extraction import extract_single_python_code
+from experiments.pilot.code_extraction import (
+    extract_raw_python_code,
+    extract_single_python_code,
+)
 from experiments.pilot.config import load_config
 from experiments.pilot.model_client import MockModelClient
 from experiments.pilot.orchestrator import (
@@ -32,6 +35,10 @@ def solver_response(marker: str) -> str:
         "## Approach\nDeterministic mock.\n\n## Code\n```python\n"
         f"# {marker}\nclass Solution:\n    pass\n```"
     )
+
+
+def final_response(marker: str) -> str:
+    return f"MARKER = {marker!r}\nclass Solution:\n    pass"
 
 
 def guidance_response(marker: str) -> str:
@@ -92,22 +99,25 @@ class PilotCodeExtractionTests(unittest.TestCase):
             "response_truncated",
         )
 
+    def test_final_stage_accepts_only_syntax_complete_raw_python(self):
+        raw = final_response("RAW")
+        self.assertTrue(extract_raw_python_code(raw).ok)
+        self.assertEqual(
+            extract_raw_python_code(solver_response("MARKDOWN")).error,
+            "markdown_not_allowed",
+        )
+        self.assertEqual(
+            extract_raw_python_code("class Solution:\n    def broken(").error,
+            "invalid_python_source",
+        )
+
 
 class PilotConfigurationTests(unittest.TestCase):
-    def test_all_four_solvers_share_the_same_exploration_limit(self):
-        constraint = (
-            "You may use at most 600 words for limited exploration and may "
-            "investigate at most two candidate directions. After that, you must "
-            "choose exactly one algorithm and submit its complete code."
-        )
-        teacher = (ROOT / "experiments/prompts/teacher.md").read_text(
-            encoding="utf-8"
-        )
-        student = (ROOT / "experiments/prompts/student.md").read_text(
-            encoding="utf-8"
-        )
-        self.assertEqual(teacher.count(constraint), 1)
-        self.assertEqual(student.count(constraint), 1)
+    def test_all_four_solvers_share_two_stage_limits(self):
+        config = load_config(CONFIG)
+        self.assertEqual(config.solver.protocol, "two_stage_v1")
+        self.assertEqual(config.solver.planning_max_output_tokens, 2048)
+        self.assertEqual(config.solver.final_max_output_tokens, 8192)
 
     def test_five_problem_config_uses_one_non_reasoning_model_policy(self):
         config = load_config(CONFIG)
@@ -179,7 +189,7 @@ class PilotIntegrationTests(unittest.TestCase):
     def failure_responses(self):
         key = MockModelClient.key
         return {
-            key("teacher", PROBLEM_ID, "teacher"): [self.item(solver_response("WA_MARKER"))],
+            key("teacher", PROBLEM_ID, "teacher"): [self.item(final_response("WA_MARKER"))],
             key("failure_frontier", PROBLEM_ID, "failure"): [
                 self.item("FAILURE FRONTIER MATERIAL", 100)
             ],
@@ -190,15 +200,110 @@ class PilotIntegrationTests(unittest.TestCase):
                 self.item(guidance_response("GENERAL GUIDANCE MATCHED"), 103)
             ],
             key("student", PROBLEM_ID, "success_only"): [
-                self.item(solver_response("WA_BASELINE"))
+                self.item(final_response("WA_BASELINE"))
             ],
             key("student", PROBLEM_ID, "failure_frontier"): [
-                self.item(solver_response("AC_MARKER"))
+                self.item(final_response("AC_MARKER"))
             ],
             key("student", PROBLEM_ID, "general_guidance"): [
-                self.item(solver_response("WA_GG"))
+                self.item(final_response("WA_GG"))
             ],
         }
+
+    def direct_solver(self, responses, *, judge=None):
+        config = self.config(responses)
+        model = MockModelClient(config.model)
+        active_judge = judge or FakeJudge()
+        runner = PilotRunner(config, model, judge=active_judge, project_root=ROOT)
+        item = config.problems[0]
+        spec = ProblemSpec.load(ROOT / item.problem)
+        result = runner._solver_stage(
+            self.root / "direct-solver", "teacher", PROBLEM_ID, "teacher",
+            "FORMATTED PROBLEM", item, spec,
+        )
+        return result, model, active_judge
+
+    def test_planning_truncation_continues_to_one_final_call(self):
+        key = MockModelClient.key
+        planning = (
+            "## Candidate Analysis\nCandidate.\n\n"
+            "## Selected Algorithm\nSelected.\n\n"
+            "## State or Invariant\nInvariant.\n\n"
+            "## Complexity\nO(n)."
+        )
+        result, model, judge = self.direct_solver({
+            key("teacher_planning", PROBLEM_ID, "teacher"): [
+                {**self.item(planning), "finish_reason": "length"}
+            ],
+            key("teacher_final", PROBLEM_ID, "teacher"): [
+                self.item(final_response("AC_MARKER"))
+            ],
+        })
+        self.assertTrue(result["planning_truncated"])
+        self.assertEqual(result["planning_calls"], 1)
+        self.assertEqual(result["final_calls"], 1)
+        self.assertEqual(result["judge_submissions"], 1)
+        self.assertEqual(judge.calls, 1)
+        self.assertEqual([call["max_output_tokens"] for call in model.calls],
+                         [2048, 8192])
+        self.assertIn("reached its fixed output budget", model.calls[1]["user_prompt"])
+
+    def test_empty_planning_is_warning_and_final_still_runs(self):
+        key = MockModelClient.key
+        result, model, judge = self.direct_solver({
+            key("teacher_planning", PROBLEM_ID, "teacher"): [self.item("", 1)],
+            key("teacher_final", PROBLEM_ID, "teacher"): [
+                self.item(final_response("AC_MARKER"))
+            ],
+        })
+        self.assertIn("planning_output_empty", result["planning_validation_warnings"])
+        self.assertEqual(len(model.calls), 2)
+        self.assertEqual(judge.calls, 1)
+        self.assertIn("<planning unavailable>", model.calls[1]["user_prompt"])
+
+    def test_final_truncated_complete_raw_code_is_submitted_without_rescue(self):
+        key = MockModelClient.key
+        final = {**self.item(final_response("AC_MARKER")), "finish_reason": "length"}
+        result, model, judge = self.direct_solver({
+            key("teacher_final", PROBLEM_ID, "teacher"): [final],
+        })
+        self.assertTrue(result["final_truncated"])
+        self.assertTrue(result["final_code_extracted"])
+        self.assertEqual(result["judge_submissions"], 1)
+        self.assertEqual(len(model.calls), 2)
+        self.assertEqual(judge.calls, 1)
+
+    def test_markdown_final_is_format_failure_and_never_judged(self):
+        key = MockModelClient.key
+        result, model, judge = self.direct_solver({
+            key("teacher_final", PROBLEM_ID, "teacher"): [
+                self.item(solver_response("AC_MARKER"))
+            ],
+        })
+        self.assertEqual(result["verdict"], "CE")
+        self.assertEqual(result["output_failure_category"],
+                         "final_output_validation")
+        self.assertFalse(result["final_code_extracted"])
+        self.assertEqual(result["judge_submissions"], 0)
+        self.assertEqual(len(model.calls), 2)
+        self.assertEqual(judge.calls, 0)
+
+    def test_planning_code_is_never_submitted_or_combined_with_final(self):
+        key = MockModelClient.key
+        planning_code = final_response("AC_MARKER")
+        result, model, judge = self.direct_solver({
+            key("teacher_planning", PROBLEM_ID, "teacher"): [
+                self.item(planning_code)
+            ],
+            key("teacher_final", PROBLEM_ID, "teacher"): [
+                self.item(final_response("WA_FINAL_ONLY"))
+            ],
+        })
+        self.assertEqual(result["verdict"], "WA")
+        self.assertNotIn("AC_MARKER", result["code"] or "")
+        self.assertIn("WA_FINAL_ONLY", result["code"] or "")
+        self.assertEqual(len(model.calls), 2)
+        self.assertEqual(judge.calls, 1)
 
     def test_failure_branch_token_matching_isolation_artifacts_and_resume(self):
         config = self.config(self.failure_responses())
@@ -218,12 +323,12 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertTrue(gg_calls)
         self.assertTrue(all("FAILURE FRONTIER MATERIAL" not in call["user_prompt"]
                             for call in gg_calls))
-        baseline = next(call for call in calls if call["role"] == "student" and
+        baseline = next(call for call in calls if call["role"] == "student_planning" and
                         call["condition"] == "success_only")
         self.assertNotIn("Additional Material", baseline["user_prompt"])
-        ff_student = next(call for call in calls if call["role"] == "student" and
+        ff_student = next(call for call in calls if call["role"] == "student_planning" and
                           call["condition"] == "failure_frontier")
-        gg_student = next(call for call in calls if call["role"] == "student" and
+        gg_student = next(call for call in calls if call["role"] == "student_planning" and
                           call["condition"] == "general_guidance")
         self.assertIn("FAILURE FRONTIER MATERIAL", ff_student["user_prompt"])
         self.assertNotIn("GENERAL GUIDANCE", ff_student["user_prompt"])
@@ -245,14 +350,14 @@ class PilotIntegrationTests(unittest.TestCase):
         runner = PilotRunner(config, MockModelClient(config.model),
                              judge=FakeJudge(), project_root=ROOT)
         formatted_problem = "FORMATTED_PROBLEM_SENTINEL"
-        ff = runner._rendered_call(
-            "student", PROBLEM_ID, "failure_frontier", formatted_problem,
+        ff = runner._rendered_solver_call(
+            "planning", "student", PROBLEM_ID, "failure_frontier", formatted_problem,
             additional_material="FF_MATERIAL_SENTINEL", success_branch=False)
-        gg = runner._rendered_call(
-            "student", PROBLEM_ID, "general_guidance", formatted_problem,
+        gg = runner._rendered_solver_call(
+            "planning", "student", PROBLEM_ID, "general_guidance", formatted_problem,
             additional_material="GG_MATERIAL_SENTINEL", success_branch=False)
-        baseline = runner._rendered_call(
-            "student", PROBLEM_ID, "success_only", formatted_problem,
+        baseline = runner._rendered_solver_call(
+            "planning", "student", PROBLEM_ID, "success_only", formatted_problem,
             additional_material="", success_branch=False)
         self.assertEqual(ff["system_prompt"], gg["system_prompt"])
         self.assertEqual(baseline["user_prompt"], formatted_problem)
@@ -273,22 +378,35 @@ class PilotIntegrationTests(unittest.TestCase):
             "-FF_MATERIAL_SENTINEL",
             "+GG_MATERIAL_SENTINEL",
         ])
+        ff_final = runner._rendered_solver_call(
+            "final", "student", PROBLEM_ID, "failure_frontier", formatted_problem,
+            additional_material="FF_MATERIAL_SENTINEL", success_branch=False,
+            planning_content="SAME_PLANNING", planning_status="SAME_STATUS")
+        gg_final = runner._rendered_solver_call(
+            "final", "student", PROBLEM_ID, "general_guidance", formatted_problem,
+            additional_material="GG_MATERIAL_SENTINEL", success_branch=False,
+            planning_content="SAME_PLANNING", planning_status="SAME_STATUS")
+        self.assertEqual(ff_final["system_prompt"], gg_final["system_prompt"])
+        self.assertEqual(
+            ff_final["user_prompt"].replace("FF_MATERIAL_SENTINEL", "<MATERIAL>"),
+            gg_final["user_prompt"].replace("GG_MATERIAL_SENTINEL", "<MATERIAL>"),
+        )
 
     def test_success_branch_gives_identical_material_to_all_students(self):
         key = MockModelClient.key
         responses = {
-            key("teacher", PROBLEM_ID, "teacher"): [self.item(solver_response("AC_MARKER"))],
+            key("teacher", PROBLEM_ID, "teacher"): [self.item(final_response("AC_MARKER"))],
             key("success_teaching", PROBLEM_ID, "success"): [self.item("SUCCESS NOTE")],
         }
         for condition in ("success_only", "failure_frontier", "general_guidance"):
             responses[key("student", PROBLEM_ID, condition)] = [
-                self.item(solver_response("AC_MARKER"))
+                self.item(final_response("AC_MARKER"))
             ]
         config = self.config(responses)
         model = MockModelClient(config.model)
         summary = PilotRunner(config, model, judge=FakeJudge(), project_root=ROOT).run("success-run")
         self.assertEqual(summary["teacher_ac_count"], 1)
-        students = [call for call in model.calls if call["role"] == "student"]
+        students = [call for call in model.calls if call["role"] == "student_planning"]
         self.assertEqual(len(students), 3)
         self.assertEqual(len({call["system_prompt"] for call in students}), 1)
         self.assertEqual(len({call["user_prompt"] for call in students}), 1)
@@ -301,7 +419,7 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertFalse(result["api_accessed"])
         self.assertFalse(result["judge_accessed"])
         self.assertEqual(judge.calls, 0)
-        self.assertEqual(len(result["model_calls"]), 7)
+        self.assertEqual(len(result["model_calls"]), 11)
 
     def test_summary_marks_invalid_infrastructure_separately(self):
         records = [{
@@ -318,24 +436,25 @@ class PilotIntegrationTests(unittest.TestCase):
     def test_infrastructure_resume_reuses_model_response_and_retries_judge(self):
         key = MockModelClient.key
         responses = {
-            key("teacher", PROBLEM_ID, "teacher"): [self.item(solver_response("AC_MARKER"))],
+            key("teacher", PROBLEM_ID, "teacher"): [self.item(final_response("AC_MARKER"))],
             key("success_teaching", PROBLEM_ID, "success"): [self.item("SUCCESS")],
         }
         for condition in ("success_only", "failure_frontier", "general_guidance"):
             responses[key("student", PROBLEM_ID, condition)] = [
-                self.item(solver_response("AC_MARKER"))
+                self.item(final_response("AC_MARKER"))
             ]
         config = self.config(responses)
         model = MockModelClient(config.model)
         judge = FlakyJudge()
         first = PilotRunner(config, model, judge=judge, project_root=ROOT).run("retry-run")
         self.assertEqual(first["invalid_episode_count"], 1)
-        self.assertEqual(len(model.calls), 1)
+        self.assertEqual(len(model.calls), 2)
         second = PilotRunner(config, model, judge=judge, project_root=ROOT).run("retry-run")
         self.assertEqual(second["invalid_episode_count"], 0)
-        self.assertEqual(len(model.calls), 5)
-        teacher_calls = [call for call in model.calls if call["role"] == "teacher"]
-        self.assertEqual(len(teacher_calls), 1)
+        self.assertEqual(len(model.calls), 9)
+        teacher_calls = [call for call in model.calls
+                         if call["role"] in ("teacher_planning", "teacher_final")]
+        self.assertEqual(len(teacher_calls), 2)
 
     def test_module_cli_dry_run_uses_no_api(self):
         data = json.loads(CONFIG.read_text(encoding="utf-8"))
@@ -356,7 +475,7 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stderr)
         result = json.loads(completed.stdout)
         self.assertFalse(result["api_accessed"])
-        self.assertEqual(len(result["model_calls"]), 35)
+        self.assertEqual(len(result["model_calls"]), 55)
 
     def test_single_problem_smoke_is_isolated_from_formal_outputs(self):
         config = self.config({}, mode="smoke-test")
@@ -368,7 +487,8 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertEqual(result["problem_id"], PROBLEM_ID)
         self.assertTrue(result["informal_smoke_test"])
         self.assertFalse(result["formal_pilot_data_generated"])
-        self.assertEqual(len([call for call in model.calls if call["role"] == "teacher"]), 1)
+        self.assertEqual(len([call for call in model.calls
+                              if call["role"] in ("teacher_planning", "teacher_final")]), 2)
         output = Path(result["output_directory"])
         self.assertTrue((output / "version.json").is_file())
         self.assertTrue((output / "smoke_result.json").is_file())

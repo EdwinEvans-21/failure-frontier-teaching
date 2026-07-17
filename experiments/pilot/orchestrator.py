@@ -15,7 +15,7 @@ import sys
 from ffjudge.models import JudgeResult, ProblemSpec, Verdict
 from ffjudge.runner import DockerJudge, DockerUnavailableError
 
-from .code_extraction import extract_single_python_code
+from .code_extraction import extract_raw_python_code
 from .config import PilotConfig, ProblemConfig
 from .model_client import ModelClient, ModelInfrastructureError, ModelResponse
 from .prompts import PromptRenderer
@@ -242,37 +242,55 @@ class PilotRunner:
         key = os.environ.get(self.config.model.api_key_env, "")
         persisted = b"".join(path.read_bytes() for path in self.run_dir.rglob("*")
                              if path.is_file())
-        teacher_calls = [call for call in calls if call.get("role") == "teacher"]
+        teacher_planning = [call for call in calls
+                            if call.get("role") == "teacher_planning"]
+        teacher_final = [call for call in calls
+                         if call.get("role") == "teacher_final"]
         expected_problem = self.renderer.formatted_problem(
             self._path(item.problem), self._path(item.public_tests))
         teacher_public_only = (
-            len(teacher_calls) == 1 and
-            teacher_calls[0].get("user_prompt") == expected_problem
+            len(teacher_planning) == 1 and len(teacher_final) == 1 and
+            teacher_planning[0].get("user_prompt") == expected_problem and
+            teacher_final[0].get("user_prompt", "").startswith(expected_problem) and
+            "# Additional Material" not in teacher_final[0].get("user_prompt", "")
         )
-        baseline_calls = [call for call in calls if call.get("role") == "student" and
+        baseline_planning = [call for call in calls
+                             if call.get("role") == "student_planning" and
+                             call.get("condition") == "success_only"]
+        baseline_final = [call for call in calls
+                          if call.get("role") == "student_final" and
                           call.get("condition") == "success_only"]
-        baseline_exact = bool(baseline_calls) and (
+        baseline_exact = bool(baseline_planning and baseline_final) and (
             record.get("teacher", {}).get("verdict") == "AC" or
-            baseline_calls[0].get("user_prompt") == expected_problem
+            (baseline_planning[0].get("user_prompt") == expected_problem and
+             baseline_final[0].get("user_prompt", "").startswith(expected_problem) and
+             "# Additional Material" not in baseline_final[0].get("user_prompt", ""))
         )
-        ff_calls = [call for call in calls if call.get("role") == "student" and
+        ff_calls = [call for call in calls if call.get("role") == "student_final" and
                     call.get("condition") == "failure_frontier"]
-        gg_calls = [call for call in calls if call.get("role") == "student" and
+        gg_calls = [call for call in calls if call.get("role") == "student_final" and
                     call.get("condition") == "general_guidance"]
         student_system_equal = bool(ff_calls and gg_calls) and (
             ff_calls[0].get("system_prompt") == gg_calls[0].get("system_prompt"))
-        student_calls = [call for call in calls if call.get("role") == "student"]
+        student_planning = [call for call in calls
+                            if call.get("role") == "student_planning"]
+        student_final = [call for call in calls
+                         if call.get("role") == "student_final"]
         success_student_prompts_equal = True
         if record.get("teacher", {}).get("verdict") == "AC":
-            success_student_prompts_equal = len(student_calls) == 3 and (
-                len({call.get("system_prompt") for call in student_calls}) == 1 and
-                len({call.get("user_prompt") for call in student_calls}) == 1
+            success_student_prompts_equal = (
+                len(student_planning) == 3 and len(student_final) == 3 and
+                len({call.get("system_prompt") for call in student_planning}) == 1 and
+                len({call.get("user_prompt") for call in student_planning}) == 1 and
+                len({call.get("system_prompt") for call in student_final}) == 1
             )
-        sentinel_ff = self._rendered_call(
-            "student", record["problem_id"], "failure_frontier", expected_problem,
+        sentinel_ff = self._rendered_solver_call(
+            "planning", "student", record["problem_id"], "failure_frontier",
+            expected_problem,
             additional_material="FF_MATERIAL_SENTINEL", success_branch=False)
-        sentinel_gg = self._rendered_call(
-            "student", record["problem_id"], "general_guidance", expected_problem,
+        sentinel_gg = self._rendered_solver_call(
+            "planning", "student", record["problem_id"], "general_guidance",
+            expected_problem,
             additional_material="GG_MATERIAL_SENTINEL", success_branch=False)
         framing_equal = (
             sentinel_ff["system_prompt"] == sentinel_gg["system_prompt"] and
@@ -286,7 +304,7 @@ class PilotRunner:
         return {
             "exactly_one_problem": record.get("problem_id") ==
                 ProblemSpec.load(self._path(item.problem)).problem_id,
-            "teacher_called_once": len(teacher_calls) == 1,
+            "teacher_called_once": len(teacher_planning) == 1 and len(teacher_final) == 1,
             "teacher_public_information_only": teacher_public_only,
             "all_reasoning_content_empty": reasoning_empty,
             "all_usage_complete": usage_valid,
@@ -316,12 +334,20 @@ class PilotRunner:
         return plan
 
     def _dry_problem_calls(self, problem_id: str, problem: str) -> list[dict[str, Any]]:
-        calls = [self._rendered_call("teacher", problem_id, "teacher", problem)]
+        calls = [
+            self._rendered_solver_call("planning", "teacher", problem_id, "teacher", problem),
+            self._rendered_solver_call(
+                "final", "teacher", problem_id, "teacher", problem,
+                planning_content="<teacher-planning>", planning_status="<planning-status>"
+            ),
+        ]
         # Show every possible branch without using prior model output.
         calls.append(self._rendered_call("success_teaching", problem_id, "success", problem,
+                                         teacher_planning="<teacher-planning>",
                                          teacher_raw_response="<teacher-response>",
                                          teacher_code="<teacher-code>"))
         calls.append(self._rendered_call("failure_frontier", problem_id, "failure", problem,
+                                         teacher_planning="<teacher-planning>",
                                          teacher_raw_response="<teacher-response>",
                                          teacher_code="<teacher-code>", teacher_verdict="<coarse-verdict>"))
         guidance = self._rendered_call(
@@ -333,8 +359,13 @@ class PilotRunner:
         guidance["max_output_tokens"] = "<upper-bound-plus-headroom>"
         calls.append(guidance)
         for condition in STUDENT_CONDITIONS:
-            calls.append(self._rendered_call("student", problem_id, condition, problem,
-                                             additional_material="<condition-specific-material>"))
+            for stage in ("planning", "final"):
+                calls.append(self._rendered_solver_call(
+                    stage, "student", problem_id, condition, problem,
+                    additional_material="<condition-specific-material>",
+                    planning_content="<role-planning>",
+                    planning_status="<planning-status>",
+                ))
         return calls
 
     def _run_problem(self, run_id: str, item: ProblemConfig) -> dict[str, Any]:
@@ -438,16 +469,74 @@ class PilotRunner:
             if (state.get("status") == "completed" and
                     state.get("result", {}).get("verdict") != "JUDGE_ERROR"):
                 return state["result"]
-        rendered = self._rendered_call(
-            role, problem_id, condition, problem,
-            additional_material=additional_material,
-            success_branch=success_branch,
+        submission_record = stage_dir / "submission.json"
+        if self.config.execution.resume and submission_record.is_file():
+            saved_submission = read_json(submission_record)
+            if (saved_submission.get("status") == "completed" and
+                    saved_submission.get("result", {}).get("verdict") !=
+                    "JUDGE_ERROR"):
+                result = saved_submission["result"]
+                write_json(state_path, {"status": "completed", "completed_at": _now(),
+                                        "result": result})
+                return result
+
+        solver = self.config.solver
+        planning_rendered = self._rendered_solver_call(
+            "planning", role, problem_id, condition, problem,
+            additional_material=additional_material, success_branch=success_branch,
         )
-        response, call_path = self._call(stage_dir, role, problem_id, condition, rendered)
-        extraction = extract_single_python_code(response.content,
-                                                 truncated=response.truncated)
-        submission_path = stage_dir / "submission.py"
+        planning, planning_call = self._call(
+            stage_dir / "planning", f"{role}_planning", problem_id, condition,
+            planning_rendered, max_output_tokens=solver.planning_max_output_tokens,
+        )
+        planning_warnings = _planning_warnings(planning)
+        write_text(stage_dir / "planning" / "content.md", planning.content)
+        write_json(stage_dir / "planning" / "stage.json", _stage_metadata(
+            "planning", solver.planning_max_output_tokens, planning,
+            planning_call, planning_warnings,
+        ))
+        if not planning.content.strip():
+            planning_status = (
+                "The planning output was empty or unusable. Solve the problem using "
+                "the original task information and submit the best complete solution "
+                "without further open-ended brainstorming."
+            )
+            planning_content = "<planning unavailable>"
+        elif planning.truncated:
+            planning_status = (
+                "The planning phase reached its fixed output budget and may be "
+                "incomplete. Do not continue the exploration. Use the best available "
+                "direction and submit one complete solution."
+            )
+            planning_content = planning.content
+        else:
+            planning_status = (
+                "The planning phase completed. Do not continue exploration; use the "
+                "best available direction and submit one complete solution."
+            )
+            planning_content = planning.content
+
+        final_rendered = self._rendered_solver_call(
+            "final", role, problem_id, condition, problem,
+            additional_material=additional_material, success_branch=success_branch,
+            planning_content=planning_content, planning_status=planning_status,
+        )
+        response, call_path = self._call(
+            stage_dir / "final", f"{role}_final", problem_id, condition,
+            final_rendered, max_output_tokens=solver.final_max_output_tokens,
+        )
+        write_text(stage_dir / "final" / "content.md", response.content)
+        extraction = extract_raw_python_code(response.content)
+        final_warnings = [] if extraction.ok else [
+            f"final_output_validation:{extraction.error}"
+        ]
+        write_json(stage_dir / "final" / "stage.json", _stage_metadata(
+            "final", solver.final_max_output_tokens, response, call_path,
+            final_warnings,
+        ))
+        submission_path = stage_dir / "final" / "extracted_solution.py"
         judge_path = stage_dir / "judge.internal.json"
+        judge_submissions = 0
         if not extraction.ok:
             verdict = "CE"
             judge_record = {
@@ -458,6 +547,7 @@ class PilotRunner:
         else:
             write_text(submission_path, extraction.code or "")
             try:
+                judge_submissions = 1
                 internal: JudgeResult = self.judge.judge(
                     submission_path,
                     self._path(item.problem),
@@ -494,10 +584,31 @@ class PilotRunner:
                 "model_call": str(call_path),
                 "submission": str(submission_path) if extraction.ok else None,
                 "judge_internal": str(judge_path),
+                "planning_model_call": str(planning_call),
+                "planning_content": str(stage_dir / "planning" / "content.md"),
+                "planning_stage": str(stage_dir / "planning" / "stage.json"),
+                "final_model_call": str(call_path),
+                "final_content": str(stage_dir / "final" / "content.md"),
+                "final_stage": str(stage_dir / "final" / "stage.json"),
+                "submission_record": str(submission_record),
             },
             "raw_response": response.content,
             "code": extraction.code,
+            "planning_response": planning.content,
+            "solver_protocol": solver.protocol,
+            "planning_calls": 1,
+            "final_calls": 1,
+            "judge_submissions": judge_submissions,
+            "planning_truncated": planning.truncated,
+            "final_truncated": response.truncated,
+            "final_code_extracted": extraction.ok,
+            "final_verdict": verdict,
+            "planning_validation_warnings": planning_warnings,
+            "output_failure_category": (
+                None if extraction.ok else "final_output_validation"
+            ),
         }
+        write_json(submission_record, {"status": "completed", "result": result})
         write_json(state_path, {"status": "completed", "completed_at": _now(),
                                 "result": result})
         return result
@@ -506,6 +617,7 @@ class PilotRunner:
                           teacher: dict[str, Any]) -> ModelResponse:
         rendered = self._rendered_call(
             "success_teaching", problem_id, "success", problem,
+            teacher_planning=teacher["planning_response"],
             teacher_raw_response=teacher["raw_response"],
             teacher_code=teacher["code"],
         )
@@ -516,6 +628,7 @@ class PilotRunner:
                           teacher: dict[str, Any]) -> ModelResponse:
         rendered = self._rendered_call(
             "failure_frontier", problem_id, "failure", problem,
+            teacher_planning=teacher["planning_response"],
             teacher_raw_response=teacher["raw_response"],
             teacher_code=teacher["code"] or "<no extractable code>",
             teacher_verdict=teacher["verdict"],
@@ -714,6 +827,7 @@ class PilotRunner:
             user = self.renderer.render(
                 self.renderer.template("success_teaching_user.md"),
                 formatted_problem=problem,
+                teacher_planning=values["teacher_planning"],
                 teacher_raw_response=values["teacher_raw_response"],
                 teacher_code=values["teacher_code"],
             )
@@ -722,6 +836,7 @@ class PilotRunner:
             user = self.renderer.render(
                 self.renderer.template("failure_frontier_user.md"),
                 formatted_problem=problem,
+                teacher_planning=values["teacher_planning"],
                 teacher_raw_response=values["teacher_raw_response"],
                 teacher_code=values["teacher_code"],
                 teacher_verdict=values["teacher_verdict"],
@@ -766,6 +881,44 @@ class PilotRunner:
         return {"role": role, "problem_id": problem_id, "condition": condition,
                 "system_prompt": system, "user_prompt": user}
 
+    def _rendered_solver_call(
+        self, stage: str, role: str, problem_id: str, condition: str,
+        problem: str, *, additional_material: str = "",
+        success_branch: bool = False, planning_content: str = "",
+        planning_status: str = "",
+    ) -> dict[str, str]:
+        if role == "teacher" or (condition == "success_only" and not success_branch):
+            solver_input = problem
+        else:
+            solver_input = self.renderer.render(
+                self.renderer.template("student_user_with_material.md"),
+                formatted_problem=problem,
+                additional_material=additional_material,
+            )
+        if stage == "planning":
+            system = self.renderer.render(
+                self.renderer.template("solver_planning.md"),
+                planning_max_output_tokens=self.config.solver.planning_max_output_tokens,
+            )
+            user = solver_input
+        elif stage == "final":
+            system = self.renderer.render(
+                self.renderer.template("solver_final.md"),
+                final_max_output_tokens=self.config.solver.final_max_output_tokens,
+            )
+            user = self.renderer.render(
+                self.renderer.template("solver_final_user.md"),
+                solver_input=solver_input,
+                planning_status=planning_status,
+                planning_content=planning_content,
+            )
+        else:
+            raise ValueError(f"unsupported solver stage: {stage}")
+        return {
+            "role": f"{role}_{stage}", "problem_id": problem_id,
+            "condition": condition, "system_prompt": system, "user_prompt": user,
+        }
+
     def _call(self, stage_dir: Path, role: str, problem_id: str, condition: str,
               rendered: dict[str, str], *,
               max_output_tokens: int | None = None,
@@ -784,6 +937,22 @@ class PilotRunner:
                         effective_max_tokens):
                     raise ModelInfrastructureError(
                         "persisted model call max_output_tokens differs from current request"
+                    )
+                expected_prompt_hash = _hash(
+                    rendered["system_prompt"] + "\0" + rendered["user_prompt"]
+                )
+                if saved.get("prompt_hash") != expected_prompt_hash:
+                    raise ModelInfrastructureError(
+                        "persisted model call prompt hash differs from current request"
+                    )
+                saved_model = saved.get("model", {})
+                if (saved_model.get("model_name") != self.config.model.model_name or
+                        saved_model.get("reasoning_mode") !=
+                        self.config.model.reasoning_mode or
+                        saved_model.get("temperature") != self.config.model.temperature or
+                        saved_model.get("top_p") != self.config.model.top_p):
+                    raise ModelInfrastructureError(
+                        "persisted model call configuration differs from current request"
                     )
                 return ModelResponse(**saved["response"]), artifact
         assert self.model is not None
@@ -1073,8 +1242,48 @@ def guidance_version_record(
 
 def _solver_summary(result: dict[str, Any]) -> dict[str, Any]:
     return {key: result[key] for key in (
-        "verdict", "input_tokens", "output_tokens", "truncated", "format_error"
+        "verdict", "input_tokens", "output_tokens", "truncated", "format_error",
+        "solver_protocol", "planning_calls", "final_calls", "judge_submissions",
+        "planning_truncated", "final_truncated", "final_code_extracted",
+        "final_verdict", "planning_validation_warnings", "output_failure_category",
     )}
+
+
+def _planning_warnings(response: ModelResponse) -> list[str]:
+    warnings: list[str] = []
+    text = response.content.strip()
+    if not text:
+        warnings.append("planning_output_empty")
+    required = (
+        "## Candidate Analysis", "## Selected Algorithm",
+        "## State or Invariant", "## Complexity",
+    )
+    if text and any(section not in text for section in required):
+        warnings.append("planning_structure_incomplete")
+    if "```" in text:
+        warnings.append("planning_code_fence_present")
+    if response.truncated:
+        warnings.append("planning_truncated")
+    return warnings
+
+
+def _stage_metadata(
+    stage: str, max_tokens: int, response: ModelResponse,
+    call_path: Path, warnings: list[str],
+) -> dict[str, Any]:
+    call = read_json(call_path)
+    return {
+        "stage": stage,
+        "max_output_tokens": max_tokens,
+        "input_tokens": response.input_tokens,
+        "output_tokens": response.output_tokens,
+        "finish_reason": response.finish_reason,
+        "truncated": response.truncated,
+        "content_empty": not response.content.strip(),
+        "validation_warnings": warnings,
+        "response_id": response.response_id,
+        "prompt_hash": call.get("prompt_hash"),
+    }
 
 
 def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
