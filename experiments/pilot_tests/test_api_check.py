@@ -136,7 +136,7 @@ class ApiCompatibilityCheckTests(unittest.TestCase):
                 max_output_tokens=1229,
             )
         self.assertEqual(opener.calls[0]["payload"]["max_tokens"], 1229)
-        self.assertEqual(self.config.model.max_output_tokens, 8192)
+        self.assertEqual(self.config.model.max_output_tokens, 16384)
 
     def test_missing_completion_tokens_fails_without_estimation(self):
         result, _ = self.run_check(response_payload(completion_tokens=None))

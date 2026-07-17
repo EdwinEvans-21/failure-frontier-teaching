@@ -5,6 +5,8 @@ The additional material may be incomplete, uncertain, or imperfect, so evaluate 
 You do not have access to hidden tests, reference solutions, judge internals, or any information outside this prompt.
 Analyze the constraints, choose an appropriate algorithm, and produce exactly one complete solution.
 
+You may use at most 600 words for limited exploration and may investigate at most two candidate directions. After that, you must choose exactly one algorithm and submit its complete code.
+
 Your response must use the following format:
 
 ## Approach

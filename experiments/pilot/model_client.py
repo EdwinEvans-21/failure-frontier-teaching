@@ -274,10 +274,14 @@ class MockModelClient:
             content = "## Approach\nMock submission.\n\n## Code\n```python\nclass Solution:\n    pass\n```"
         elif role in {"general_guidance", "general_guidance_adjust"}:
             content = (
-                "## Constraint Analysis\nMock constraints.\n\n"
-                "## Plausible Approaches\nMock approaches.\n\n"
-                "## Edge Cases\nMock edge cases.\n\n"
-                "## Implementation Checks\nMock implementation checks."
+                "## Constraint Analysis\nInput size constraints require O(n) time "
+                "complexity and bounded space complexity.\n\n"
+                "## Plausible Approaches\nCompare a greedy algorithm with dynamic "
+                "programming as candidate approaches.\n\n"
+                "## Edge Cases\nUse an invariant for correctness and check edge "
+                "cases and boundaries.\n\n"
+                "## Implementation Checks\nImplementation risks include indexing, "
+                "overflow, and data types."
             )
         else:
             content = "## Core Insight\nDeterministic mock teaching material."

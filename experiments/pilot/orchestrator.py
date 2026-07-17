@@ -8,6 +8,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import subprocess
 import sys
 
@@ -38,6 +39,54 @@ GG_REQUIRED_SECTIONS = (
     "## Edge Cases",
     "## Implementation Checks",
 )
+GG_CATEGORIES = ("constraints", "approaches", "correctness", "implementation")
+GG_SECTION_ALIASES = {
+    "constraints": {
+        "constraint analysis", "constraints and observations", "key constraints",
+        "constraints", "problem constraints",
+    },
+    "approaches": {
+        "plausible approaches", "possible approaches", "possible algorithms",
+        "algorithmic approach", "algorithmic directions", "candidate approaches",
+        "solution directions",
+    },
+    "correctness": {
+        "edge cases and correctness", "correctness and edge cases",
+        "correctness pitfalls and edge cases", "edge cases",
+        "correctness considerations", "validation considerations",
+    },
+    "implementation": {
+        "implementation checks", "implementation considerations",
+        "implementation risks", "implementation notes", "coding considerations",
+        "complexity and implementation",
+    },
+}
+GG_CATEGORY_SIGNALS = {
+    "constraints": (
+        r"\bconstraints?\b", r"\binput size\b", r"\btime complexity\b",
+        r"\bspace complexity\b", r"\bupper bound\b", r"\blower bound\b",
+        r"\bO\s*\([^\n)]*\)",
+    ),
+    "approaches": (
+        r"\balgorithms?\b", r"\bapproach(?:es)?\b", r"\bdynamic programming\b",
+        r"\bgreedy\b", r"\bbinary search\b", r"\bdata structure\b",
+        r"\brecurrence\b", r"\bstate transition\b", r"\bcandidate direction\b",
+    ),
+    "correctness": (
+        r"\bcorrectness\b", r"\bproof\b", r"\binvariant\b", r"\bedge cases?\b",
+        r"\bboundar(?:y|ies)\b", r"\bdegenerate\b", r"\bimpossible\b",
+        r"\bwhy\b", r"\bpitfalls?\b",
+    ),
+    "implementation": (
+        r"\bimplementation\b", r"\bcoding\b", r"\boff-by-one\b",
+        r"\boverflow\b", r"\bindex(?:ing)?\b", r"\bmemory\b",
+        r"\bdata types?\b", r"\btests?\b", r"\brisks?\b", r"\bchecks?\b",
+    ),
+}
+
+
+class GGContentValidationError(RuntimeError):
+    """A successful model response that violates the GG content protocol."""
 
 
 def coarse_verdict(verdict: Verdict) -> str:
@@ -367,6 +416,11 @@ class PilotRunner:
                 )
                 record["students"][condition] = _solver_summary(student)
                 record["artifacts"][f"student_{condition}"] = student["artifact_paths"]
+        except GGContentValidationError:
+            record["valid_episode"] = False
+            record["model_output_validation"] = "gg_content_validation"
+            record["protocol_output_invalid"] = True
+            record["validation_error"] = "gg_content_validation_failed"
         except ModelInfrastructureError:
             record["valid_episode"] = False
             record["infrastructure_error"] = "model_api"
@@ -527,10 +581,11 @@ class PilotRunner:
                 )
 
             version_dir = stage_root / f"version_{version}"
-            response = self._call(
+            response, call_path = self._call(
                 version_dir, role, problem_id, condition, rendered,
                 max_output_tokens=dynamic_max_tokens,
-            )[0]
+                allow_persisted_max_tokens_mismatch=True,
+            )
             if response.token_count_source not in {"api_usage", "mock_usage"}:
                 raise ModelInfrastructureError(
                     "General Guidance requires API completion_tokens; tokenizer fallback is not accepted"
@@ -538,11 +593,14 @@ class PilotRunner:
             responses.append(response)
             content_path = version_dir / "content.md"
             write_text(content_path, response.content)
-            valid_content, structural_errors = validate_guidance_content(
-                response.content
-            )
+            validation = validate_guidance_content(response.content)
             status = guidance_candidate_status(
-                response, lower_bound, upper_bound, valid_content
+                response, lower_bound, upper_bound,
+                validation["semantic_completeness_passed"] and
+                not validation["structural_errors"],
+            )
+            request_max_tokens = read_json(call_path).get("model", {}).get(
+                "max_output_tokens", dynamic_max_tokens
             )
             record = guidance_version_record(
                 version=version,
@@ -554,9 +612,9 @@ class PilotRunner:
                 lower_bound=lower_bound,
                 upper_bound=upper_bound,
                 dynamic_max_tokens=dynamic_max_tokens,
+                request_max_tokens=request_max_tokens,
                 status=status,
-                valid_content=valid_content,
-                structural_errors=structural_errors,
+                validation=validation,
             )
             version_records.append(record)
             write_json(version_dir / "version.json", record)
@@ -591,6 +649,17 @@ class PilotRunner:
             selection_reason = "no_valid_candidate"
             passed = False
 
+        selected_record = (
+            version_records[selected_version]
+            if selected_version is not None else None
+        )
+        selected_validation = None if selected_record is None else {
+            key: selected_record[key] for key in (
+                "preferred_structure", "semantic_completeness_passed",
+                "covered_categories", "missing_categories", "structural_errors",
+                "structural_warnings", "forbidden_content", "obviously_truncated",
+            )
+        }
         match_record = {
             "target_tokens": target_tokens,
             "lower_bound": lower_bound,
@@ -604,12 +673,14 @@ class PilotRunner:
             "stop_reason": stop_reason,
             "token_match_passed": passed,
             "token_match_failed": not passed,
+            "validation_policy": "semantic_completeness_v1",
+            "selected_validation": selected_validation,
             "versions": version_records,
         }
         write_json(stage_root / "match.json", match_record)
         if selected_version is None:
-            raise ModelInfrastructureError(
-                "General Guidance produced no complete structurally valid candidate"
+            raise GGContentValidationError(
+                "General Guidance produced no semantically complete candidate"
             )
         response = responses[selected_version]
         error = token_relative_error(target_tokens, response.output_tokens)
@@ -629,6 +700,7 @@ class PilotRunner:
                 "token_match_passed": passed,
                 "token_match_failed": not passed,
                 "general_guidance_truncated": response.truncated,
+                **(selected_validation or {}),
             },
         }
 
@@ -696,7 +768,9 @@ class PilotRunner:
 
     def _call(self, stage_dir: Path, role: str, problem_id: str, condition: str,
               rendered: dict[str, str], *,
-              max_output_tokens: int | None = None) -> tuple[ModelResponse, Path]:
+              max_output_tokens: int | None = None,
+              allow_persisted_max_tokens_mismatch: bool = False,
+              ) -> tuple[ModelResponse, Path]:
         artifact = stage_dir / "model_call.json"
         effective_max_tokens = (
             self.config.model.max_output_tokens
@@ -705,7 +779,9 @@ class PilotRunner:
         if self.config.execution.resume and artifact.is_file():
             saved = read_json(artifact)
             if saved.get("status") == "completed":
-                if saved.get("model", {}).get("max_output_tokens") != effective_max_tokens:
+                if (not allow_persisted_max_tokens_mismatch and
+                        saved.get("model", {}).get("max_output_tokens") !=
+                        effective_max_tokens):
                     raise ModelInfrastructureError(
                         "persisted model call max_output_tokens differs from current request"
                     )
@@ -772,29 +848,148 @@ def guidance_distance_to_interval(actual: int, lower: int, upper: int) -> int:
     return 0
 
 
-def validate_guidance_content(content: str) -> tuple[bool, list[str]]:
-    text = content.strip()
-    errors: list[str] = []
+def _normalized_heading(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", value.lower()).strip()
+
+
+def _guidance_sections(text: str) -> list[tuple[str, str]]:
+    matches = list(re.finditer(r"(?m)^#{1,6}\s+(.+?)\s*$", text))
+    return [
+        (
+            _normalized_heading(match.group(1)),
+            text[match.end():matches[index + 1].start()
+                 if index + 1 < len(matches) else len(text)].strip(),
+        )
+        for index, match in enumerate(matches)
+    ]
+
+
+def _signal_count(category: str, text: str) -> int:
+    return sum(
+        bool(re.search(pattern, text, flags=re.IGNORECASE))
+        for pattern in GG_CATEGORY_SIGNALS[category]
+    )
+
+
+def _substantive(text: str, minimum_words: int = 5) -> bool:
+    return len(re.findall(r"\b[\w-]+\b", text)) >= minimum_words
+
+
+def _obviously_incomplete(text: str, sections: list[tuple[str, str]]) -> bool:
     if not text:
-        return False, ["empty_content"]
-    positions = [text.find(section) for section in GG_REQUIRED_SECTIONS]
-    if any(position < 0 for position in positions):
-        errors.append("missing_required_section")
-    elif positions != sorted(positions) or len(set(positions)) != len(positions):
-        errors.append("required_sections_out_of_order")
-    else:
-        for index, position in enumerate(positions):
-            body_start = position + len(GG_REQUIRED_SECTIONS[index])
-            body_end = positions[index + 1] if index + 1 < len(positions) else len(text)
-            if not text[body_start:body_end].strip():
-                errors.append(f"empty_section_{index}")
-    if "```" in text:
-        errors.append("code_fence_not_allowed")
+        return True
+    if text.count("```") % 2:
+        return True
+    if sections and not sections[-1][1].strip():
+        return True
     last_line = text.splitlines()[-1].strip()
     if (last_line.startswith("#") or last_line in {"-", "*", "+"} or
-            last_line.endswith((":", ",", ";", "-", "(", "["))):
+            re.match(r"^(?:[-*+]\s*|\d+[.)]\s*)$", last_line) or
+            last_line.endswith((":", ",", ";", "-", "(", "[", "{"))):
+        return True
+    if re.search(
+        r"\b(?:and|or|because|therefore|which|that|with|without|to|such as)\s*$",
+        last_line, flags=re.IGNORECASE,
+    ):
+        return True
+    return False
+
+
+def validate_guidance_content(content: str) -> dict[str, Any]:
+    """Return auditable GG format signals and semantic protocol validity."""
+    text = content.strip()
+    errors: list[str] = []
+    warnings: list[str] = []
+    forbidden: list[str] = []
+    if not text:
+        return {
+            "preferred_structure": False,
+            "semantic_completeness_passed": False,
+            "covered_categories": [],
+            "missing_categories": list(GG_CATEGORIES),
+            "structural_errors": ["empty_content"],
+            "structural_warnings": ["preferred_headings_not_used"],
+            "forbidden_content": [],
+            "obviously_truncated": False,
+        }
+
+    sections = _guidance_sections(text)
+    exact_headings = tuple(_normalized_heading(item) for item in GG_REQUIRED_SECTIONS)
+    actual_headings = tuple(heading for heading, _ in sections)
+    exact_positions = [
+        actual_headings.index(heading) if heading in actual_headings else -1
+        for heading in exact_headings
+    ]
+    preferred_structure = (
+        all(position >= 0 for position in exact_positions) and
+        exact_positions == sorted(exact_positions) and
+        all(sections[position][1].strip() for position in exact_positions)
+    )
+    if not preferred_structure:
+        warnings.append("preferred_headings_not_used")
+
+    covered: set[str] = set()
+    for heading, body in sections:
+        for category, aliases in GG_SECTION_ALIASES.items():
+            if (heading in aliases and _substantive(body) and
+                    _signal_count(category, body) >= 1):
+                covered.add(category)
+
+    # Heading-free and unconventional prose is accepted only when a localized
+    # paragraph has multiple independent signals for a category.  This avoids
+    # treating one accidental keyword in the whole response as coverage.
+    paragraphs = [
+        re.sub(r"^\s*(?:[-*+]\s+|\d+[.)]\s+)", "", block).strip()
+        for block in re.split(r"\n\s*\n", text)
+        if block.strip() and not block.lstrip().startswith("#")
+    ]
+    for category in GG_CATEGORIES:
+        if category in covered:
+            continue
+        if any(
+            _substantive(paragraph, minimum_words=8) and
+            _signal_count(category, paragraph) >= 2
+            for paragraph in paragraphs
+        ):
+            covered.add(category)
+
+    if re.search(r"```", text):
+        forbidden.append("code_fence")
+        errors.append("code_fence_not_allowed")
+    if re.search(
+        r"(?ms)^\s*(?:class\s+\w+[^\n]*:|def\s+\w+\s*\([^\n]*\)\s*:)[^\n]*\n"
+        r"(?:[ \t]+\S.*\n?){2,}",
+        text,
+    ):
+        forbidden.append("complete_solution_code")
+        errors.append("complete_solution_code_not_allowed")
+    leakage_patterns = {
+        "hidden_test_claim": r"\b(?:I|we)\s+(?:know|saw|inspected).{0,30}\bhidden tests?\b",
+        "oracle_or_judge_claim": r"\b(?:oracle|judge internals?)\s+(?:shows?|reveals?|contains?)\b",
+        "prior_attempt_reference": r"\b(?:teacher response|failure frontier|judge verdict)\b",
+        "sentinel_leak": r"\b(?:TEACHER|VERDICT|FF|HIDDEN_TEST|JUDGE)_[A-Z_]*SENTINEL\b",
+    }
+    for label, pattern in leakage_patterns.items():
+        if re.search(pattern, text, flags=re.IGNORECASE | re.DOTALL):
+            forbidden.append(label)
+            errors.append(f"forbidden_{label}")
+
+    truncated = _obviously_incomplete(text, sections)
+    if truncated:
         errors.append("obviously_incomplete_ending")
-    return not errors, errors
+    missing = [category for category in GG_CATEGORIES if category not in covered]
+    if missing:
+        errors.append("semantic_categories_missing")
+    return {
+        "preferred_structure": preferred_structure,
+        "semantic_completeness_passed": not missing and not forbidden and not truncated,
+        "covered_categories": [item for item in GG_CATEGORIES if item in covered],
+        "missing_categories": missing,
+        "structural_errors": errors,
+        "structural_warnings": warnings,
+        "forbidden_content": forbidden,
+        "obviously_truncated": truncated,
+    }
 
 
 def guidance_candidate_status(
@@ -829,15 +1024,19 @@ def guidance_version_record(
     lower_bound: int,
     upper_bound: int,
     dynamic_max_tokens: int,
+    request_max_tokens: int,
     status: str,
-    valid_content: bool,
-    structural_errors: list[str],
+    validation: dict[str, Any],
 ) -> dict[str, Any]:
     if response.output_tokens is None:
         raise ModelInfrastructureError(
             "reliable General Guidance completion token usage is required"
         )
     tokens = response.output_tokens
+    valid_content = (
+        validation["semantic_completeness_passed"] and
+        not validation["structural_errors"]
+    )
     valid_candidate = response.finish_reason == "stop" and valid_content
     return {
         "version": version,
@@ -857,8 +1056,18 @@ def guidance_version_record(
         "matched": status == "MATCHED",
         "valid_candidate": valid_candidate,
         "status": status,
-        "structural_errors": structural_errors,
+        "preferred_structure": validation["preferred_structure"],
+        "semantic_completeness_passed": validation[
+            "semantic_completeness_passed"
+        ],
+        "covered_categories": validation["covered_categories"],
+        "missing_categories": validation["missing_categories"],
+        "structural_errors": validation["structural_errors"],
+        "structural_warnings": validation["structural_warnings"],
+        "forbidden_content": validation["forbidden_content"],
+        "obviously_truncated": validation["obviously_truncated"],
         "dynamic_max_tokens": dynamic_max_tokens,
+        "request_max_tokens": request_max_tokens,
     }
 
 

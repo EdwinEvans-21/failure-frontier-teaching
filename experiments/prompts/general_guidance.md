@@ -11,9 +11,14 @@ Write the guidance so that the final response is between {{lower_bound}} and {{u
 The target length is {{target_tokens}} completion tokens.
 Do not exceed the upper bound. Do not use filler, repetition, code, or irrelevant explanation merely to reach the target length.
 
-Use the following sections:
+Organize the response around the following four semantic components:
 
-## Constraint Analysis
-## Plausible Approaches
-## Edge Cases
-## Implementation Checks
+1. Constraint analysis
+2. Plausible algorithmic directions
+3. Edge cases and correctness considerations
+4. Implementation checks and risks
+
+The preferred Markdown headings are `## Constraint Analysis`,
+`## Plausible Approaches`, `## Edge Cases`, and `## Implementation Checks` in
+that order. Equivalent headings or clearly separated prose are acceptable.
+Ensure that all four components are substantively covered.

@@ -11,6 +11,7 @@ from ffjudge.models import JudgeResult, Verdict
 from experiments.pilot.config import load_config
 from experiments.pilot.model_client import MockModelClient, ModelInfrastructureError
 from experiments.pilot.orchestrator import (
+    GGContentValidationError,
     PilotRunner,
     guidance_distance_to_interval,
     guidance_token_bounds,
@@ -33,10 +34,40 @@ def solver(marker: str) -> str:
 
 def guidance(marker: str) -> str:
     return (
-        "## Constraint Analysis\nPreserve the important constraints.\n\n"
-        "## Plausible Approaches\nCompare suitable algorithmic directions.\n\n"
-        "## Edge Cases\nHandle boundaries and degenerate inputs.\n\n"
-        f"## Implementation Checks\n{marker}."
+        "## Constraint Analysis\nThe input size constraints require O(n) time "
+        "complexity and bounded space complexity.\n\n"
+        "## Plausible Approaches\nCompare a greedy algorithm with dynamic "
+        "programming before selecting an approach.\n\n"
+        "## Edge Cases\nCheck edge cases and boundaries; use an invariant "
+        "to justify correctness.\n\n"
+        "## Implementation Checks\nCheck implementation risks such as indexing, "
+        f"overflow, and data types. {marker}."
+    )
+
+
+def alias_guidance(marker: str = "ALIAS") -> str:
+    return (
+        "## Constraints and Observations\nInput size constraints require O(n) time "
+        "complexity and bounded space complexity.\n\n"
+        "## Possible Algorithms\nCompare a greedy algorithm with dynamic "
+        "programming before selecting an approach.\n\n"
+        "## Correctness, Pitfalls, and Edge Cases\nUse an invariant for "
+        "correctness and check edge cases and boundaries.\n\n"
+        "## Implementation Notes\nImplementation risks include indexing, "
+        f"overflow, and data types. {marker}."
+    )
+
+
+def unheaded_guidance() -> str:
+    return (
+        "1. The input size constraints require O(n) time complexity and bounded "
+        "space complexity for the upper bound.\n\n"
+        "2. Compare a greedy algorithm and dynamic programming as candidate "
+        "approaches before choosing the more suitable algorithm.\n\n"
+        "3. Prove correctness with an invariant and examine edge cases, "
+        "boundaries, and impossible inputs.\n\n"
+        "4. Implementation checks should cover indexing, overflow, data types, "
+        "and other coding risks."
     )
 
 
@@ -108,10 +139,10 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         return result, match, model, runner
 
     def test_interval_uses_ceil_and_floor(self) -> None:
-        self.assertEqual(guidance_token_bounds(1110, 0.05), (1055, 1165))
-        self.assertEqual(guidance_distance_to_interval(1054, 1055, 1165), 1)
-        self.assertEqual(guidance_distance_to_interval(1110, 1055, 1165), 0)
-        self.assertEqual(guidance_distance_to_interval(1166, 1055, 1165), 1)
+        self.assertEqual(guidance_token_bounds(1168, 0.10), (1052, 1284))
+        self.assertEqual(guidance_distance_to_interval(1051, 1052, 1284), 1)
+        self.assertEqual(guidance_distance_to_interval(1168, 1052, 1284), 0)
+        self.assertEqual(guidance_distance_to_interval(1285, 1052, 1284), 1)
 
     def test_initial_version_matches_and_stops(self) -> None:
         key = MockModelClient.key
@@ -125,6 +156,11 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertEqual(match["selected_version"], 0)
         self.assertEqual(match["attempts_used"], 1)
         self.assertEqual(len(model.calls), 1)
+        version = match["versions"][0]
+        self.assertTrue(version["preferred_structure"])
+        self.assertTrue(version["semantic_completeness_passed"])
+        self.assertTrue(version["valid_candidate"])
+        self.assertEqual(match["selected_validation"]["missing_categories"], [])
 
     def test_too_long_compresses_with_ratios_and_dynamic_limit(self) -> None:
         key = MockModelClient.key
@@ -138,9 +174,9 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         }, target=1000)
         self.assertTrue(result["metrics"]["token_match_passed"])
         self.assertEqual(match["matched_version"], 1)
-        self.assertEqual(match["dynamic_max_tokens"], 1114)
+        self.assertEqual(match["dynamic_max_tokens"], 1164)
         self.assertEqual([call["max_output_tokens"] for call in model.calls],
-                         [1114, 1114])
+                         [1164, 1164])
         prompt = model.calls[1]["system_prompt"]
         self.assertIn("33.3%", prompt)
         self.assertIn("66.7%", prompt)
@@ -212,7 +248,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         }, attempts=0)
         model = MockModelClient(config.model)
         runner = PilotRunner(config, model, judge=NoJudge(), project_root=ROOT)
-        with self.assertRaisesRegex(ModelInfrastructureError, "no complete"):
+        with self.assertRaisesRegex(GGContentValidationError, "no semantically"):
             runner._matched_guidance(
                 self.root / "problem", PROBLEM_ID, FORMATTED_PROBLEM, 1110
             )
@@ -268,6 +304,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         forbidden = (
             "TEACHER_RESPONSE_SENTINEL", "TEACHER_CODE_SENTINEL",
             "VERDICT_SENTINEL", "FF_MATERIAL_SENTINEL",
+            "HIDDEN_TEST_SENTINEL", "JUDGE_SENTINEL",
         )
         for call in model.calls:
             visible = call["system_prompt"] + "\n" + call["user_prompt"]
@@ -320,6 +357,13 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         )
         self.assertTrue(result["metrics"]["token_match_passed"])
         self.assertEqual(len(model.calls), 2)
+        resumed_match = json.loads(
+            (problem_dir / "teaching_materials/general_guidance/match.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual(resumed_match["dynamic_max_tokens"], 1164)
+        self.assertEqual(resumed_match["versions"][0]["request_max_tokens"], 1114)
+        self.assertTrue(resumed_match["versions"][0]["semantic_completeness_passed"])
         again = PilotRunner(config, model, judge=NoJudge(), project_root=ROOT)
         result_again = again._matched_guidance(
             problem_dir, PROBLEM_ID, FORMATTED_PROBLEM, 1000
@@ -327,18 +371,87 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertEqual(result_again["metrics"], result["metrics"])
         self.assertEqual(len(model.calls), 2)
 
-    def test_structural_validation_rejects_missing_or_truncated_sections(self) -> None:
-        self.assertEqual(validate_guidance_content(guidance("COMPLETE")), (True, []))
-        valid, errors = validate_guidance_content(
-            "## Constraint Analysis\nOnly one section."
+    def test_semantic_validation_accepts_exact_alias_and_unheaded_forms(self) -> None:
+        exact = validate_guidance_content(guidance("COMPLETE"))
+        self.assertTrue(exact["preferred_structure"])
+        self.assertTrue(exact["semantic_completeness_passed"])
+        self.assertEqual(exact["covered_categories"], [
+            "constraints", "approaches", "correctness", "implementation"
+        ])
+        alias = validate_guidance_content(alias_guidance())
+        self.assertFalse(alias["preferred_structure"])
+        self.assertTrue(alias["semantic_completeness_passed"])
+        self.assertIn("preferred_headings_not_used", alias["structural_warnings"])
+        unheaded = validate_guidance_content(unheaded_guidance())
+        self.assertFalse(unheaded["preferred_structure"])
+        self.assertTrue(unheaded["semantic_completeness_passed"])
+        blocks = guidance("REORDERED").split("\n\n")
+        reordered = validate_guidance_content("\n\n".join(
+            [blocks[1], blocks[0], blocks[2], blocks[3]]
+        ))
+        self.assertFalse(reordered["preferred_structure"])
+        self.assertTrue(reordered["semantic_completeness_passed"])
+
+    def test_semantic_validation_rejects_missing_categories_code_and_truncation(self) -> None:
+        missing = validate_guidance_content(
+            "## Constraints\nInput constraints require O(n) time complexity and "
+            "bounded space complexity."
         )
-        self.assertFalse(valid)
-        self.assertIn("missing_required_section", errors)
-        valid, errors = validate_guidance_content(
-            guidance("ENDS BADLY")[:-1] + ":"
+        self.assertFalse(missing["semantic_completeness_passed"])
+        self.assertGreaterEqual(len(missing["missing_categories"]), 2)
+        one_missing = validate_guidance_content(
+            alias_guidance().split("## Implementation Notes", 1)[0].strip()
         )
-        self.assertFalse(valid)
-        self.assertIn("obviously_incomplete_ending", errors)
+        self.assertFalse(one_missing["semantic_completeness_passed"])
+        self.assertEqual(one_missing["missing_categories"], ["implementation"])
+        code = validate_guidance_content(
+            unheaded_guidance() + "\n\n```Python\nclass Solution:\n    pass\n```"
+        )
+        self.assertFalse(code["semantic_completeness_passed"])
+        self.assertIn("code_fence_not_allowed", code["structural_errors"])
+        unfenced_code = validate_guidance_content(
+            unheaded_guidance() +
+            "\n\nclass Solution:\n    def solve(self, nums):\n        return len(nums)"
+        )
+        self.assertFalse(unfenced_code["semantic_completeness_passed"])
+        self.assertIn(
+            "complete_solution_code_not_allowed",
+            unfenced_code["structural_errors"],
+        )
+        pseudocode = validate_guidance_content(
+            unheaded_guidance() + "\n\nThe transition is dp[i] = dp[i-1] + 1."
+        )
+        self.assertTrue(pseudocode["semantic_completeness_passed"])
+        truncated = validate_guidance_content(guidance("ENDS BADLY")[:-1] + ":")
+        self.assertFalse(truncated["semantic_completeness_passed"])
+        self.assertIn("obviously_incomplete_ending", truncated["structural_errors"])
+        unclosed_fence = validate_guidance_content(
+            unheaded_guidance() + "\n\n```text\nunfinished"
+        )
+        self.assertTrue(unclosed_fence["obviously_truncated"])
+        self.assertFalse(unclosed_fence["semantic_completeness_passed"])
+
+    def test_successful_api_with_invalid_content_is_not_model_api(self) -> None:
+        key = MockModelClient.key
+        config = self.config({
+            key("teacher", PROBLEM_ID, "teacher"): [item(solver("WA"), 100)],
+            key("failure_frontier", PROBLEM_ID, "failure"): [item("FF", 1000)],
+            key("general_guidance", PROBLEM_ID, "initial"): [
+                item("Generic advice only.", 1000)
+            ],
+        }, attempts=0)
+        runner = PilotRunner(
+            config, MockModelClient(config.model), judge=MarkerJudge(),
+            project_root=ROOT,
+        )
+        runner.run("invalid-content")
+        record = json.loads(
+            (self.root / "runs/invalid-content/problems" / PROBLEM_ID / "record.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertFalse(record["valid_episode"])
+        self.assertEqual(record["model_output_validation"], "gg_content_validation")
+        self.assertNotIn("infrastructure_error", record)
 
     def full_failure_responses(self, sequence: list[tuple[int, str]]) -> dict:
         key = MockModelClient.key
@@ -390,10 +503,42 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertEqual(len(gg_calls), 2)
         self.assertEqual(summary["condition_comparison_eligible_count"], 1)
         self.assertEqual(summary["teacher_failure_count"], 1)
-        self.assertTrue(all(call["max_output_tokens"] == 1229 for call in gg_calls))
+        self.assertTrue(all(call["max_output_tokens"] == 1285 for call in gg_calls))
         non_gg = [call for call in model.calls
                   if not call["role"].startswith("general_guidance")]
-        self.assertTrue(all(call["max_output_tokens"] == 8192 for call in non_gg))
+        self.assertTrue(all(call["max_output_tokens"] == 16384 for call in non_gg))
+
+    def test_recent_smoke_sequence_accepts_semantic_alias_version(self) -> None:
+        key = MockModelClient.key
+        config = self.config({
+            key("general_guidance", PROBLEM_ID, "initial"): [
+                item(guidance("OUTSIDE"), 1290)
+            ],
+            key("general_guidance_adjust", PROBLEM_ID, "compress_1"): [
+                item(alias_guidance("MATCH"), 1230)
+            ],
+            key("general_guidance_adjust", PROBLEM_ID, "compress_2"): [
+                item(guidance("MUST NOT RUN"), 858)
+            ],
+        })
+        model = MockModelClient(config.model)
+        runner = PilotRunner(config, model, judge=NoJudge(), project_root=ROOT)
+        result = runner._matched_guidance(
+            self.root / "recent-sequence", PROBLEM_ID, FORMATTED_PROBLEM, 1168
+        )
+        match = json.loads(
+            (self.root / "recent-sequence/teaching_materials/general_guidance/match.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual((match["lower_bound"], match["upper_bound"]), (1052, 1284))
+        self.assertEqual(match["dynamic_max_tokens"], 1348)
+        self.assertEqual(match["matched_version"], 1)
+        self.assertEqual(match["attempts_used"], 2)
+        self.assertFalse(match["versions"][1]["preferred_structure"])
+        self.assertTrue(match["versions"][1]["semantic_completeness_passed"])
+        self.assertTrue(match["versions"][1]["valid_candidate"])
+        self.assertTrue(result["metrics"]["token_match_passed"])
+        self.assertEqual(len(model.calls), 2)
 
 
 if __name__ == "__main__":

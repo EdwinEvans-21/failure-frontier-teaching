@@ -36,10 +36,14 @@ def solver_response(marker: str) -> str:
 
 def guidance_response(marker: str) -> str:
     return (
-        "## Constraint Analysis\nConstraints remain central.\n\n"
-        "## Plausible Approaches\nConsider task-relevant algorithms.\n\n"
-        "## Edge Cases\nCheck boundaries carefully.\n\n"
-        f"## Implementation Checks\n{marker}."
+        "## Constraint Analysis\nInput size constraints require O(n) time "
+        "complexity and bounded space complexity.\n\n"
+        "## Plausible Approaches\nCompare a greedy algorithm with dynamic "
+        "programming as candidate approaches.\n\n"
+        "## Edge Cases\nUse an invariant for correctness and check edge "
+        "cases and boundaries.\n\n"
+        "## Implementation Checks\nImplementation risks include indexing, "
+        f"overflow, and data types. {marker}."
     )
 
 
@@ -90,6 +94,21 @@ class PilotCodeExtractionTests(unittest.TestCase):
 
 
 class PilotConfigurationTests(unittest.TestCase):
+    def test_all_four_solvers_share_the_same_exploration_limit(self):
+        constraint = (
+            "You may use at most 600 words for limited exploration and may "
+            "investigate at most two candidate directions. After that, you must "
+            "choose exactly one algorithm and submit its complete code."
+        )
+        teacher = (ROOT / "experiments/prompts/teacher.md").read_text(
+            encoding="utf-8"
+        )
+        student = (ROOT / "experiments/prompts/student.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(teacher.count(constraint), 1)
+        self.assertEqual(student.count(constraint), 1)
+
     def test_five_problem_config_uses_one_non_reasoning_model_policy(self):
         config = load_config(CONFIG)
         self.assertEqual(len(config.problems), 5)
@@ -100,7 +119,7 @@ class PilotConfigurationTests(unittest.TestCase):
         )
         self.assertFalse(config.model.reasoning_mode)
         self.assertEqual(config.execution.judge_phase, "hidden")
-        self.assertEqual(config.teaching_material.token_match_tolerance, 0.05)
+        self.assertEqual(config.teaching_material.token_match_tolerance, 0.10)
         self.assertEqual(config.teaching_material.gg_token_headroom, 64)
         self.assertEqual(config.teaching_material.gg_min_max_tokens, 128)
         snapshot = json.dumps(config.public_snapshot())

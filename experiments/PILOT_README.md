@@ -25,21 +25,36 @@ not use character counts, word counts, or division-based estimates. A missing
 reliable API count and unavailable matching tokenizer is an infrastructure
 error, not a claimed token match.
 
-General Guidance length control is stricter: it accepts only the API's actual
+General Guidance length control accepts only the API's actual
 `completion_tokens` (or deterministic mock usage in tests), never a tokenizer
-fallback. The unchanged 5% tolerance defines an inclusive integer interval
-around the Failure Frontier token count. Every GG call uses a dynamic output
-limit equal to the interval upper bound plus configured headroom, subject to a
-configured minimum. Teacher, Failure Frontier, Success Teaching, and Student
-calls retain the solver output limit.
+fallback. The formal Pilot uses one 10% tolerance, defining an inclusive integer
+interval around the Failure Frontier token count with `ceil` for the lower bound
+and `floor` for the upper bound. There is no parallel 5% analysis. Every GG call
+uses a dynamic output limit equal to the interval upper bound plus configured
+headroom, subject to a configured minimum. Teacher, Failure Frontier, Success
+Teaching, and Student calls retain the 16384-token solver output limit.
 
 All GG versions are preserved with their prompts, content, usage, finish
-reason, structural status, interval distance, and target distance. The first
-structurally complete `finish_reason=stop` response inside the interval is
-accepted immediately. A `finish_reason=length` response is always invalid. If
-all configured attempts fail, the closest complete normally-finished version
-is selected only for audit display; this does not satisfy token matching, and
-the episode is excluded from formal condition comparison.
+reason, preferred-format signal, semantic coverage, validation findings,
+interval distance, and target distance. Exact recommended Markdown headings are
+preferred structure, not a validity requirement. Validity instead requires
+substantive coverage of constraints, plausible approaches, correctness and edge
+cases, and implementation checks and risks, with no complete solution code or
+forbidden information. The first semantically complete `finish_reason=stop`
+response inside the interval is accepted immediately. A `finish_reason=length`
+response is always invalid. If all configured attempts fail, the closest
+semantically complete normally-finished version is selected only for audit
+display; this does not satisfy token matching, and the episode is excluded from
+formal condition comparison. A successful API response that fails content
+validation is recorded as `gg_content_validation`, not as a network/API error.
+
+GG token-matching tolerance was changed from 5% to 10% before the formal Pilot
+and before the runner was frozen. Repeated smoke tests showed that bounded
+rewrites under a 5% tolerance could destabilize the structure of otherwise
+relevant guidance. GG validity is therefore based on semantic coverage of the
+required material categories rather than exact reproduction of Markdown
+headings. The formal Pilot has not yet run, and this change precedes the final
+runner freeze.
 
 For a clean Git worktree, set `execution.output_root` to a directory outside
 the repository. Run directories may contain full model prompts and responses
