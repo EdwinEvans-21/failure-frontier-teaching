@@ -1,7 +1,7 @@
 # Failure-Frontier Teaching Pilot v1
 
 This module runs the minimal five-problem pilot above the frozen
-`failure-frontier-baseline-v1` judge. It does not change problem statements,
+`failure-frontier-baseline-v2` judge. It does not change problem statements,
 oracles, tests, resource limits, Docker isolation, comparisons, or verdict
 generation. The baseline manifest is verified before every run.
 
@@ -24,6 +24,22 @@ tokenizer in `model.tokenizer_name` and install `transformers`. The runner will
 not use character counts, word counts, or division-based estimates. A missing
 reliable API count and unavailable matching tokenizer is an infrastructure
 error, not a claimed token match.
+
+General Guidance length control is stricter: it accepts only the API's actual
+`completion_tokens` (or deterministic mock usage in tests), never a tokenizer
+fallback. The unchanged 5% tolerance defines an inclusive integer interval
+around the Failure Frontier token count. Every GG call uses a dynamic output
+limit equal to the interval upper bound plus configured headroom, subject to a
+configured minimum. Teacher, Failure Frontier, Success Teaching, and Student
+calls retain the solver output limit.
+
+All GG versions are preserved with their prompts, content, usage, finish
+reason, structural status, interval distance, and target distance. The first
+structurally complete `finish_reason=stop` response inside the interval is
+accepted immediately. A `finish_reason=length` response is always invalid. If
+all configured attempts fail, the closest complete normally-finished version
+is selected only for audit display; this does not satisfy token matching, and
+the episode is excluded from formal condition comparison.
 
 For a clean Git worktree, set `execution.output_root` to a directory outside
 the repository. Run directories may contain full model prompts and responses

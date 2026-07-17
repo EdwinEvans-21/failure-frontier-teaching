@@ -34,6 +34,15 @@ def solver_response(marker: str) -> str:
     )
 
 
+def guidance_response(marker: str) -> str:
+    return (
+        "## Constraint Analysis\nConstraints remain central.\n\n"
+        "## Plausible Approaches\nConsider task-relevant algorithms.\n\n"
+        "## Edge Cases\nCheck boundaries carefully.\n\n"
+        f"## Implementation Checks\n{marker}."
+    )
+
+
 class FakeJudge:
     def __init__(self) -> None:
         self.calls = 0
@@ -92,6 +101,8 @@ class PilotConfigurationTests(unittest.TestCase):
         self.assertFalse(config.model.reasoning_mode)
         self.assertEqual(config.execution.judge_phase, "hidden")
         self.assertEqual(config.teaching_material.token_match_tolerance, 0.05)
+        self.assertEqual(config.teaching_material.gg_token_headroom, 64)
+        self.assertEqual(config.teaching_material.gg_min_max_tokens, 128)
         snapshot = json.dumps(config.public_snapshot())
         self.assertNotIn("api_key\"", snapshot)
         self.assertIn("api_key_env", snapshot)
@@ -154,10 +165,10 @@ class PilotIntegrationTests(unittest.TestCase):
                 self.item("FAILURE FRONTIER MATERIAL", 100)
             ],
             key("general_guidance", PROBLEM_ID, "initial"): [
-                self.item("GENERAL GUIDANCE V0", 130)
+                self.item(guidance_response("GENERAL GUIDANCE V0"), 130)
             ],
             key("general_guidance_adjust", PROBLEM_ID, "compress_1"): [
-                self.item("GENERAL GUIDANCE MATCHED", 103)
+                self.item(guidance_response("GENERAL GUIDANCE MATCHED"), 103)
             ],
             key("student", PROBLEM_ID, "success_only"): [
                 self.item(solver_response("WA_BASELINE"))
@@ -202,7 +213,7 @@ class PilotIntegrationTests(unittest.TestCase):
         normalized_ff = ff_student["user_prompt"].replace(
             "FAILURE FRONTIER MATERIAL", "<MATERIAL>")
         normalized_gg = gg_student["user_prompt"].replace(
-            "GENERAL GUIDANCE MATCHED", "<MATERIAL>")
+            guidance_response("GENERAL GUIDANCE MATCHED"), "<MATERIAL>")
         self.assertEqual(normalized_ff, normalized_gg)
         call_count, judge_count = len(model.calls), judge.calls
         second = PilotRunner(config, model, judge=judge, project_root=ROOT)

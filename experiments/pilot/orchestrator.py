@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 import hashlib
 import json
+import math
 import os
 import subprocess
 import sys
@@ -31,6 +32,12 @@ VERDICT_MAP = {
     Verdict.INTERNAL_ERROR: "JUDGE_ERROR",
 }
 STUDENT_CONDITIONS = ("success_only", "failure_frontier", "general_guidance")
+GG_REQUIRED_SECTIONS = (
+    "## Constraint Analysis",
+    "## Plausible Approaches",
+    "## Edge Cases",
+    "## Implementation Checks",
+)
 
 
 def coarse_verdict(verdict: Verdict) -> str:
@@ -268,8 +275,14 @@ class PilotRunner:
         calls.append(self._rendered_call("failure_frontier", problem_id, "failure", problem,
                                          teacher_raw_response="<teacher-response>",
                                          teacher_code="<teacher-code>", teacher_verdict="<coarse-verdict>"))
-        calls.append(self._rendered_call("general_guidance", problem_id, "guidance", problem,
-                                         target_tokens="<failure-frontier-output-tokens>"))
+        guidance = self._rendered_call(
+            "general_guidance", problem_id, "initial", problem,
+            target_tokens="<failure-frontier-output-tokens>",
+            lower_bound="<lower-bound>",
+            upper_bound="<upper-bound>",
+        )
+        guidance["max_output_tokens"] = "<upper-bound-plus-headroom>"
+        calls.append(guidance)
         for condition in STUDENT_CONDITIONS:
             calls.append(self._rendered_call("student", problem_id, condition, problem,
                                              additional_material="<condition-specific-material>"))
@@ -297,9 +310,11 @@ class PilotRunner:
                 "general_guidance_tokens": None,
                 "token_relative_error": None,
                 "token_match_passed": None,
+                "token_match_failed": None,
             },
             "students": {},
             "valid_episode": True,
+            "condition_comparison_eligible": True,
             "artifacts": {},
         }
         try:
@@ -337,6 +352,7 @@ class PilotRunner:
                     problem_dir / "teaching_materials")
                 if not gg["metrics"]["token_match_passed"]:
                     record["token_match_failed"] = True
+                    record["condition_comparison_eligible"] = False
                 student_materials = {
                     "success_only": "",
                     "failure_frontier": ff.content,
@@ -459,43 +475,159 @@ class PilotRunner:
             raise ModelInfrastructureError(
                 "reliable Failure Frontier completion token usage is required"
             )
-        stage_root = problem_dir / "teaching_materials" / "general_guidance"
-        rendered = self._rendered_call(
-            "general_guidance", problem_id, "initial", problem,
-            target_tokens=target_tokens,
+        teaching = self.config.teaching_material
+        lower_bound, upper_bound = guidance_token_bounds(
+            target_tokens, teaching.token_match_tolerance
         )
-        response = self._call(stage_root / "version_0", "general_guidance",
-                              problem_id, "initial", rendered)[0]
-        versions = [response]
-        for attempt in range(1, self.config.teaching_material.max_regeneration_attempts + 1):
-            error = token_relative_error(target_tokens, response.output_tokens)
-            if error is not None and error <= self.config.teaching_material.token_match_tolerance:
-                break
-            direction = "compress" if response.output_tokens is not None and response.output_tokens > target_tokens else "expand"
-            rendered = self._rendered_call(
-                "general_guidance_adjust", problem_id, f"{direction}_{attempt}", problem,
-                target_tokens=target_tokens,
-                general_guidance=response.content,
-                direction=direction,
+        dynamic_max_tokens = max(
+            teaching.gg_min_max_tokens,
+            upper_bound + teaching.gg_token_headroom,
+        )
+        stage_root = problem_dir / "teaching_materials" / "general_guidance"
+        responses: list[ModelResponse] = []
+        version_records: list[dict[str, Any]] = []
+        matched_version: int | None = None
+        stop_reason = "maximum_adjustments_reached"
+
+        for version in range(teaching.max_regeneration_attempts + 1):
+            if version == 0:
+                operation = "initial"
+                input_version = None
+                role = "general_guidance"
+                condition = "initial"
+                rendered = self._rendered_call(
+                    role, problem_id, condition, problem,
+                    target_tokens=target_tokens,
+                    lower_bound=lower_bound,
+                    upper_bound=upper_bound,
+                )
+            else:
+                previous = responses[-1]
+                assert previous.output_tokens is not None
+                direction = (
+                    "compress" if previous.output_tokens >= target_tokens
+                    else "expand"
+                )
+                operation = direction
+                input_version = version - 1
+                role = "general_guidance_adjust"
+                condition = f"{direction}_{version}"
+                retain = target_tokens / previous.output_tokens * 100
+                rendered = self._rendered_call(
+                    role, problem_id, condition, problem,
+                    target_tokens=target_tokens,
+                    lower_bound=lower_bound,
+                    upper_bound=upper_bound,
+                    current_tokens=previous.output_tokens,
+                    retain_ratio_percent=f"{retain:.1f}",
+                    remove_ratio_percent=f"{max(0.0, 100 - retain):.1f}",
+                    expand_ratio_percent=f"{max(0.0, retain - 100):.1f}",
+                    general_guidance=previous.content,
+                    direction=direction,
+                )
+
+            version_dir = stage_root / f"version_{version}"
+            response = self._call(
+                version_dir, role, problem_id, condition, rendered,
+                max_output_tokens=dynamic_max_tokens,
+            )[0]
+            if response.token_count_source not in {"api_usage", "mock_usage"}:
+                raise ModelInfrastructureError(
+                    "General Guidance requires API completion_tokens; tokenizer fallback is not accepted"
+                )
+            responses.append(response)
+            content_path = version_dir / "content.md"
+            write_text(content_path, response.content)
+            valid_content, structural_errors = validate_guidance_content(
+                response.content
             )
-            response = self._call(stage_root / f"version_{attempt}",
-                                  "general_guidance_adjust", problem_id,
-                                  f"{direction}_{attempt}", rendered)[0]
-            versions.append(response)
-        error = token_relative_error(target_tokens, response.output_tokens)
-        passed = error is not None and error <= self.config.teaching_material.token_match_tolerance
-        write_json(stage_root / "match.json", {
+            status = guidance_candidate_status(
+                response, lower_bound, upper_bound, valid_content
+            )
+            record = guidance_version_record(
+                version=version,
+                operation=operation,
+                input_version=input_version,
+                response=response,
+                content_path=content_path,
+                target_tokens=target_tokens,
+                lower_bound=lower_bound,
+                upper_bound=upper_bound,
+                dynamic_max_tokens=dynamic_max_tokens,
+                status=status,
+                valid_content=valid_content,
+                structural_errors=structural_errors,
+            )
+            version_records.append(record)
+            write_json(version_dir / "version.json", record)
+
+            if record["matched"]:
+                matched_version = version
+                stop_reason = "first_valid_candidate_in_interval"
+                break
+            if not response.content.strip():
+                stop_reason = "empty_content"
+                break
+
+        valid_records = [item for item in version_records if item["valid_candidate"]]
+        if matched_version is not None:
+            selected_version = matched_version
+            selection_reason = "first_valid_candidate_in_interval"
+            passed = True
+        elif valid_records:
+            selected = min(
+                valid_records,
+                key=lambda item: (
+                    item["distance_to_target"],
+                    item["distance_to_interval"],
+                    item["version"],
+                ),
+            )
+            selected_version = selected["version"]
+            selection_reason = "closest_valid_candidate_for_audit"
+            passed = False
+        else:
+            selected_version = None
+            selection_reason = "no_valid_candidate"
+            passed = False
+
+        match_record = {
             "target_tokens": target_tokens,
-            "version_output_tokens": [item.output_tokens for item in versions],
-            "token_relative_error": error,
+            "lower_bound": lower_bound,
+            "upper_bound": upper_bound,
+            "dynamic_max_tokens": dynamic_max_tokens,
+            "max_regeneration_attempts": teaching.max_regeneration_attempts,
+            "attempts_used": len(version_records),
+            "matched_version": matched_version,
+            "selected_version": selected_version,
+            "selection_reason": selection_reason,
+            "stop_reason": stop_reason,
             "token_match_passed": passed,
-        })
+            "token_match_failed": not passed,
+            "versions": version_records,
+        }
+        write_json(stage_root / "match.json", match_record)
+        if selected_version is None:
+            raise ModelInfrastructureError(
+                "General Guidance produced no complete structurally valid candidate"
+            )
+        response = responses[selected_version]
+        error = token_relative_error(target_tokens, response.output_tokens)
         return {
             "response": response,
             "metrics": {
+                "target_tokens": target_tokens,
+                "lower_bound": lower_bound,
+                "upper_bound": upper_bound,
+                "dynamic_max_tokens": dynamic_max_tokens,
+                "attempts_used": len(version_records),
+                "matched_version": matched_version,
+                "selected_version": selected_version,
+                "selection_reason": selection_reason,
                 "general_guidance_tokens": response.output_tokens,
                 "token_relative_error": error,
                 "token_match_passed": passed,
+                "token_match_failed": not passed,
                 "general_guidance_truncated": response.truncated,
             },
         }
@@ -523,13 +655,23 @@ class PilotRunner:
                 teacher_verdict=values["teacher_verdict"],
             )
         elif role == "general_guidance":
-            system = self.renderer.render(self.renderer.template("general_guidance.md"),
-                                          target_tokens=values["target_tokens"])
+            system = self.renderer.render(
+                self.renderer.template("general_guidance.md"),
+                target_tokens=values["target_tokens"],
+                lower_bound=values["lower_bound"],
+                upper_bound=values["upper_bound"],
+            )
             user = problem
         elif role == "general_guidance_adjust":
             system = self.renderer.render(
                 self.renderer.template(f"general_guidance_{values['direction']}.md"),
                 target_tokens=values["target_tokens"],
+                lower_bound=values["lower_bound"],
+                upper_bound=values["upper_bound"],
+                current_tokens=values["current_tokens"],
+                retain_ratio_percent=values["retain_ratio_percent"],
+                remove_ratio_percent=values["remove_ratio_percent"],
+                expand_ratio_percent=values["expand_ratio_percent"],
             )
             user = self.renderer.render(
                 self.renderer.template("general_guidance_adjust_user.md"),
@@ -553,14 +695,25 @@ class PilotRunner:
                 "system_prompt": system, "user_prompt": user}
 
     def _call(self, stage_dir: Path, role: str, problem_id: str, condition: str,
-              rendered: dict[str, str]) -> tuple[ModelResponse, Path]:
+              rendered: dict[str, str], *,
+              max_output_tokens: int | None = None) -> tuple[ModelResponse, Path]:
         artifact = stage_dir / "model_call.json"
+        effective_max_tokens = (
+            self.config.model.max_output_tokens
+            if max_output_tokens is None else max_output_tokens
+        )
         if self.config.execution.resume and artifact.is_file():
             saved = read_json(artifact)
             if saved.get("status") == "completed":
+                if saved.get("model", {}).get("max_output_tokens") != effective_max_tokens:
+                    raise ModelInfrastructureError(
+                        "persisted model call max_output_tokens differs from current request"
+                    )
                 return ModelResponse(**saved["response"]), artifact
         assert self.model is not None
-        response = self.model.complete(**rendered)
+        response = self.model.complete(
+            **rendered, max_output_tokens=effective_max_tokens
+        )
         payload = {
             "status": "completed",
             "role": role,
@@ -575,7 +728,8 @@ class PilotRunner:
                 "reasoning_mode": self.config.model.reasoning_mode,
                 "temperature": self.config.model.temperature,
                 "top_p": self.config.model.top_p,
-                "max_output_tokens": self.config.model.max_output_tokens,
+                "max_output_tokens": effective_max_tokens,
+                "configured_solver_max_output_tokens": self.config.model.max_output_tokens,
             },
             "prompt_hash": _hash(rendered["system_prompt"] + "\0" + rendered["user_prompt"]),
             "completed_at": _now(),
@@ -601,6 +755,113 @@ def token_relative_error(target: int, actual: int | None) -> float | None:
     return abs(actual - target) / target
 
 
+def guidance_token_bounds(target: int, tolerance: float) -> tuple[int, int]:
+    if target <= 0 or not 0 <= tolerance < 1:
+        raise ValueError("target and token tolerance must define a positive interval")
+    return (
+        math.ceil(target * (1 - tolerance)),
+        math.floor(target * (1 + tolerance)),
+    )
+
+
+def guidance_distance_to_interval(actual: int, lower: int, upper: int) -> int:
+    if actual < lower:
+        return lower - actual
+    if actual > upper:
+        return actual - upper
+    return 0
+
+
+def validate_guidance_content(content: str) -> tuple[bool, list[str]]:
+    text = content.strip()
+    errors: list[str] = []
+    if not text:
+        return False, ["empty_content"]
+    positions = [text.find(section) for section in GG_REQUIRED_SECTIONS]
+    if any(position < 0 for position in positions):
+        errors.append("missing_required_section")
+    elif positions != sorted(positions) or len(set(positions)) != len(positions):
+        errors.append("required_sections_out_of_order")
+    else:
+        for index, position in enumerate(positions):
+            body_start = position + len(GG_REQUIRED_SECTIONS[index])
+            body_end = positions[index + 1] if index + 1 < len(positions) else len(text)
+            if not text[body_start:body_end].strip():
+                errors.append(f"empty_section_{index}")
+    if "```" in text:
+        errors.append("code_fence_not_allowed")
+    last_line = text.splitlines()[-1].strip()
+    if (last_line.startswith("#") or last_line in {"-", "*", "+"} or
+            last_line.endswith((":", ",", ";", "-", "(", "["))):
+        errors.append("obviously_incomplete_ending")
+    return not errors, errors
+
+
+def guidance_candidate_status(
+    response: ModelResponse,
+    lower_bound: int,
+    upper_bound: int,
+    valid_content: bool,
+) -> str:
+    if response.finish_reason != "stop":
+        return "INVALID_FINISH_REASON"
+    if not valid_content:
+        return "INVALID_CONTENT"
+    if response.output_tokens is None:
+        raise ModelInfrastructureError(
+            "reliable General Guidance completion token usage is required"
+        )
+    if response.output_tokens < lower_bound:
+        return "TOO_SHORT"
+    if response.output_tokens > upper_bound:
+        return "TOO_LONG"
+    return "MATCHED"
+
+
+def guidance_version_record(
+    *,
+    version: int,
+    operation: str,
+    input_version: int | None,
+    response: ModelResponse,
+    content_path: Path,
+    target_tokens: int,
+    lower_bound: int,
+    upper_bound: int,
+    dynamic_max_tokens: int,
+    status: str,
+    valid_content: bool,
+    structural_errors: list[str],
+) -> dict[str, Any]:
+    if response.output_tokens is None:
+        raise ModelInfrastructureError(
+            "reliable General Guidance completion token usage is required"
+        )
+    tokens = response.output_tokens
+    valid_candidate = response.finish_reason == "stop" and valid_content
+    return {
+        "version": version,
+        "operation": operation,
+        "input_version": input_version,
+        "prompt_tokens": response.input_tokens,
+        "completion_tokens": tokens,
+        "total_tokens": response.total_tokens,
+        "finish_reason": response.finish_reason,
+        "response_id": response.response_id,
+        "content_path": str(content_path),
+        "relative_error": token_relative_error(target_tokens, tokens),
+        "distance_to_target": abs(tokens - target_tokens),
+        "distance_to_interval": guidance_distance_to_interval(
+            tokens, lower_bound, upper_bound
+        ),
+        "matched": status == "MATCHED",
+        "valid_candidate": valid_candidate,
+        "status": status,
+        "structural_errors": structural_errors,
+        "dynamic_max_tokens": dynamic_max_tokens,
+    }
+
+
 def _solver_summary(result: dict[str, Any]) -> dict[str, Any]:
     return {key: result[key] for key in (
         "verdict", "input_tokens", "output_tokens", "truncated", "format_error"
@@ -609,8 +870,14 @@ def _solver_summary(result: dict[str, Any]) -> dict[str, Any]:
 
 def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
     valid = [record for record in records if record.get("valid_episode")]
-    teacher_failures = [record for record in valid
+    comparable = [
+        record for record in valid
+        if record.get("condition_comparison_eligible", True)
+    ]
+    teacher_failures = [record for record in comparable
                         if record.get("teacher", {}).get("verdict") != "AC"]
+    all_teacher_failures = [record for record in valid
+                            if record.get("teacher", {}).get("verdict") != "AC"]
     conditions = STUDENT_CONDITIONS
     summary: dict[str, Any] = {
         "run_id": run_id,
@@ -619,7 +886,11 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
         "problem_count": len(records),
         "valid_episode_count": len(valid),
         "invalid_episode_count": len(records) - len(valid),
-        "teacher_ac_count": sum(r.get("teacher", {}).get("verdict") == "AC" for r in valid),
+        "condition_comparison_eligible_count": len(comparable),
+        "condition_comparison_ineligible_count": len(valid) - len(comparable),
+        "teacher_ac_count": sum(
+            r.get("teacher", {}).get("verdict") == "AC" for r in comparable
+        ),
         "teacher_failure_count": len(teacher_failures),
         "student_ac_count": {},
         "student_breakthrough_on_teacher_failures": {},
@@ -630,7 +901,9 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
     }
     for condition in conditions:
         summary["student_ac_count"][condition] = sum(
-            r.get("students", {}).get(condition, {}).get("verdict") == "AC" for r in valid)
+            r.get("students", {}).get(condition, {}).get("verdict") == "AC"
+            for r in comparable
+        )
         summary["student_breakthrough_on_teacher_failures"][condition] = sum(
             r.get("students", {}).get(condition, {}).get("verdict") == "AC"
             for r in teacher_failures)
@@ -658,7 +931,9 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
         sum(bool(call.get("truncated")) for call in calls) +
         sum(material_truncations)
     )
-    failed_materials = [record["teaching_material"] for record in teacher_failures]
+    failed_materials = [
+        record["teaching_material"] for record in all_teacher_failures
+    ]
     paired = [item for item in failed_materials
               if item.get("failure_frontier_tokens") is not None and
               item.get("general_guidance_tokens") is not None]
@@ -685,6 +960,8 @@ def summary_markdown(summary: dict[str, Any]) -> str:
         f"- Problems: {summary['problem_count']}",
         f"- Valid episodes: {summary['valid_episode_count']}",
         f"- Invalid episodes: {summary['invalid_episode_count']}",
+        f"- Condition-comparison eligible: {summary['condition_comparison_eligible_count']}",
+        f"- Condition-comparison ineligible: {summary['condition_comparison_ineligible_count']}",
         f"- Teacher AC: {summary['teacher_ac_count']}",
         f"- Teacher failures: {summary['teacher_failure_count']}",
         "",

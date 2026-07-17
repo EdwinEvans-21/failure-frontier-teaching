@@ -24,7 +24,9 @@
   },
   "teaching_material": {
     "token_match_tolerance": 0.05,
-    "max_regeneration_attempts": 2
+    "max_regeneration_attempts": 2,
+    "gg_token_headroom": 64,
+    "gg_min_max_tokens": 128
   },
   "execution": {
     "output_root": "experiments/runs",

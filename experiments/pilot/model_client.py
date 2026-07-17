@@ -66,6 +66,7 @@ class ModelClient(Protocol):
         condition: str,
         system_prompt: str,
         user_prompt: str,
+        max_output_tokens: int | None = None,
     ) -> ModelResponse: ...
 
 
@@ -89,13 +90,21 @@ class DeepSeekCompatibleClient:
             return base
         return base + "/chat/completions"
 
-    def build_chat_payload(self, messages: list[dict[str, str]]) -> dict[str, Any]:
+    def build_chat_payload(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        max_output_tokens: int | None = None,
+    ) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "model": self.config.model_name,
             "messages": messages,
             "temperature": self.config.temperature,
             "top_p": self.config.top_p,
-            "max_tokens": self.config.max_output_tokens,
+            "max_tokens": (
+                self.config.max_output_tokens
+                if max_output_tokens is None else max_output_tokens
+            ),
             "stream": False,
             "thinking": dict(self.config.thinking or {}),
         }
@@ -103,11 +112,11 @@ class DeepSeekCompatibleClient:
             payload["seed"] = self.config.seed
         return payload
 
-    def complete(self, **request: str) -> ModelResponse:
+    def complete(self, **request: Any) -> ModelResponse:
         payload = self.build_chat_payload([
                 {"role": "system", "content": request["system_prompt"]},
                 {"role": "user", "content": request["user_prompt"]},
-        ])
+        ], max_output_tokens=request.get("max_output_tokens"))
         transport = self.send_chat(payload, retry=True)
         raw = transport.data
         try:
@@ -227,7 +236,7 @@ class MockModelClient:
 
     def __init__(self, config: ModelConfig) -> None:
         self.config = config
-        self.calls: list[dict[str, str]] = []
+        self.calls: list[dict[str, Any]] = []
         self._responses: dict[str, list[dict[str, Any]]] = {}
         if config.mock_responses_path:
             loaded = json.loads(Path(config.mock_responses_path).read_text(encoding="utf-8"))
@@ -237,7 +246,7 @@ class MockModelClient:
     def key(role: str, problem_id: str, condition: str) -> str:
         return f"{role}|{problem_id}|{condition}"
 
-    def complete(self, **request: str) -> ModelResponse:
+    def complete(self, **request: Any) -> ModelResponse:
         self.calls.append(dict(request))
         key = self.key(request["role"], request["problem_id"], request["condition"])
         scripted = self._responses.get(key, [])
@@ -263,6 +272,13 @@ class MockModelClient:
     def _default(role: str) -> dict[str, Any]:
         if role in {"teacher", "student"}:
             content = "## Approach\nMock submission.\n\n## Code\n```python\nclass Solution:\n    pass\n```"
+        elif role in {"general_guidance", "general_guidance_adjust"}:
+            content = (
+                "## Constraint Analysis\nMock constraints.\n\n"
+                "## Plausible Approaches\nMock approaches.\n\n"
+                "## Edge Cases\nMock edge cases.\n\n"
+                "## Implementation Checks\nMock implementation checks."
+            )
         else:
             content = "## Core Insight\nDeterministic mock teaching material."
         return {"content": content, "output_tokens": 64}

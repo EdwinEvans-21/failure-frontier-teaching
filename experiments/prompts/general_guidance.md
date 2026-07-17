@@ -6,7 +6,10 @@ Analyze the constraints and provide task-relevant guidance that could help anoth
 Discuss plausible algorithmic paradigms, required complexity, important edge cases, and implementation checks.
 Do not produce a complete solution program.
 Do not claim that another solver attempted or failed at anything.
-Aim for approximately {{target_tokens}} output tokens.
+
+Write the guidance so that the final response is between {{lower_bound}} and {{upper_bound}} completion tokens.
+The target length is {{target_tokens}} completion tokens.
+Do not exceed the upper bound. Do not use filler, repetition, code, or irrelevant explanation merely to reach the target length.
 
 Use the following sections:
 

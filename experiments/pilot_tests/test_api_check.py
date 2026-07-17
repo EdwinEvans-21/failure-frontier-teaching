@@ -123,6 +123,21 @@ class ApiCompatibilityCheckTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertIn("reasoning_content_not_empty", result["failure_reasons"])
 
+    def test_complete_forwards_per_call_dynamic_max_tokens(self):
+        opener = CapturingOpener(FakeHttpResponse(response_payload()))
+        with patch.dict(os.environ, {"DEEPSEEK_API_KEY": SECRET}):
+            client = DeepSeekCompatibleClient(self.config.model, opener=opener)
+            client.complete(
+                role="general_guidance",
+                problem_id="problem",
+                condition="initial",
+                system_prompt="system",
+                user_prompt="user",
+                max_output_tokens=1229,
+            )
+        self.assertEqual(opener.calls[0]["payload"]["max_tokens"], 1229)
+        self.assertEqual(self.config.model.max_output_tokens, 8192)
+
     def test_missing_completion_tokens_fails_without_estimation(self):
         result, _ = self.run_check(response_payload(completion_tokens=None))
         self.assertFalse(result["passed"])
