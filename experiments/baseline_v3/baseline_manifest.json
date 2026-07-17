@@ -1,0 +1,454 @@
+{
+  "schema_version": "3.0",
+  "baseline_id": "failure-frontier-baseline-v3",
+  "created_at": "2026-07-17T17:11:17.566959+00:00",
+  "environment": {
+    "python_version": "3.12.8",
+    "docker_client_version": "29.6.1",
+    "docker_server_version": "29.6.1",
+    "ffjudge_image_id": "sha256:a740488b5ff63833ddb9d51d8f20d97b654c5d2604fe2bd6fd8d40f362e9a72f",
+    "base_image": "python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de",
+    "base_image_repo_digest": "sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de",
+    "source_commit": "8697b2d494678383447535a37288114ce3e3c62f",
+    "authority": "source_commit identifies the commit containing benchmark code and data; the authoritative baseline tag points to the later manifest-only commit.",
+    "working_tree_dirty_at_generation": true,
+    "dirty_frozen_paths_at_generation": [],
+    "source_commit_contains_frozen_state": true
+  },
+  "scope_rules": {
+    "policy": "explicit_problem_and_judge_allowlist_v3",
+    "included": [
+      "canonical problem.json files",
+      "public and hidden formal tests",
+      "trusted oracles and custom checker",
+      "judge execution and verdict semantics",
+      "formal test generators",
+      "pinned Dockerfile and Python package metadata"
+    ],
+    "excluded": [
+      "any path whose basename case-insensitively equals README.md",
+      "research prompts and experiment runner",
+      "protocol and explanatory documents",
+      "run artifacts, caches, logs, and local environment files",
+      "accepted and intentionally wrong submissions",
+      ".gitignore and other development-only configuration"
+    ],
+    "readme_exclusion_case_insensitive": true
+  },
+  "hash_strategy": {
+    "json": "Canonical UTF-8 JSON with sorted object keys; array order and numeric types are preserved.",
+    "text": "UTF-8 text normalized from CRLF/CR to LF before SHA-256.",
+    "binary": "SHA-256 of raw bytes."
+  },
+  "problems": [
+    {
+      "fixture": "palindrome_number",
+      "problem_id": "lc-0009-palindrome-number",
+      "role": "sanity_control",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "isPalindrome"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 0.5,
+      "memory_limit_mb": 64,
+      "public_test_count": 3,
+      "hidden_test_count": 20,
+      "pressure_test_count": 0
+    },
+    {
+      "fixture": "exact_monotone_paths",
+      "problem_id": "lc-3988-exact-monotone-paths",
+      "role": "medium_upper_construction_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "constructGrid"
+      },
+      "comparison": "custom",
+      "checker": "exact_monotone_paths",
+      "time_limit_seconds": 1.0,
+      "memory_limit_mb": 64,
+      "public_test_count": 4,
+      "hidden_test_count": 24,
+      "pressure_test_count": 0
+    },
+    {
+      "fixture": "minimum_operations_binary_transform",
+      "problem_id": "lc-3980-minimum-operations-binary-transform",
+      "role": "medium_dp_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minOperations"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 1.0,
+      "memory_limit_mb": 64,
+      "public_test_count": 4,
+      "hidden_test_count": 24,
+      "pressure_test_count": 3
+    },
+    {
+      "fixture": "sorted_gcd_pair_queries",
+      "problem_id": "lc-3312-sorted-gcd-pair-queries",
+      "role": "hard_number_theory_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "gcdValues"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 1.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 4,
+      "hidden_test_count": 18,
+      "pressure_test_count": 3
+    },
+    {
+      "fixture": "maximum_subarray_sum_after_k_swaps",
+      "problem_id": "lc-3962-maximum-subarray-sum-after-k-swaps",
+      "role": "hard_optimization_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "maxSum"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 20.0,
+      "memory_limit_mb": 128,
+      "public_test_count": 4,
+      "hidden_test_count": 29,
+      "pressure_test_count": 7
+    }
+  ],
+  "formal_test_generators": [
+    {
+      "fixture": "palindrome_number",
+      "path": null,
+      "deterministic": null,
+      "random_seed": null,
+      "check": "no_formal_generator_present",
+      "temporary_regeneration": {
+        "fixture": "palindrome_number",
+        "result": "not_applicable_no_generator",
+        "runs": 0,
+        "files": []
+      }
+    },
+    {
+      "fixture": "exact_monotone_paths",
+      "path": null,
+      "deterministic": null,
+      "random_seed": null,
+      "check": "no_formal_generator_present",
+      "temporary_regeneration": {
+        "fixture": "exact_monotone_paths",
+        "result": "not_applicable_no_generator",
+        "runs": 0,
+        "files": []
+      }
+    },
+    {
+      "fixture": "minimum_operations_binary_transform",
+      "path": "tools/generate_minimum_operations_binary_transform_tests.py",
+      "deterministic": true,
+      "random_seed": null,
+      "check": "static_source_scan_plus_temporary_regeneration",
+      "temporary_regeneration": {
+        "fixture": "minimum_operations_binary_transform",
+        "result": "byte_identical",
+        "runs": 2,
+        "files": [
+          {
+            "path": "examples/minimum_operations_binary_transform/public_tests.json",
+            "frozen_raw_sha256": "cdc1114a9bae05ce70e6c8f30e56d84d3489e1272b7e19cb2c424118929d76ff",
+            "generated_raw_sha256": "cdc1114a9bae05ce70e6c8f30e56d84d3489e1272b7e19cb2c424118929d76ff",
+            "raw_byte_identical": true,
+            "canonical_json_identical": true
+          },
+          {
+            "path": "examples/minimum_operations_binary_transform/hidden_tests.json",
+            "frozen_raw_sha256": "3c5fe323c21e69f719b914d1cd4bf2a08b370b39f3546b76fb429eb9d94e63f9",
+            "generated_raw_sha256": "3c5fe323c21e69f719b914d1cd4bf2a08b370b39f3546b76fb429eb9d94e63f9",
+            "raw_byte_identical": true,
+            "canonical_json_identical": true
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "sorted_gcd_pair_queries",
+      "path": "tools/generate_sorted_gcd_pair_queries_tests.py",
+      "deterministic": true,
+      "random_seed": null,
+      "check": "static_source_scan_plus_temporary_regeneration",
+      "temporary_regeneration": {
+        "fixture": "sorted_gcd_pair_queries",
+        "result": "byte_identical",
+        "runs": 2,
+        "files": [
+          {
+            "path": "examples/sorted_gcd_pair_queries/public_tests.json",
+            "frozen_raw_sha256": "c569673be0279bdb7655e8ca75d02f9f041de44942281ac9c0db9612cbb197af",
+            "generated_raw_sha256": "c569673be0279bdb7655e8ca75d02f9f041de44942281ac9c0db9612cbb197af",
+            "raw_byte_identical": true,
+            "canonical_json_identical": true
+          },
+          {
+            "path": "examples/sorted_gcd_pair_queries/hidden_tests.json",
+            "frozen_raw_sha256": "730ecdb0fc57b065de1a228f4a699e6bd3fd1de26fe81f479ef9ce8f3e66e3b5",
+            "generated_raw_sha256": "730ecdb0fc57b065de1a228f4a699e6bd3fd1de26fe81f479ef9ce8f3e66e3b5",
+            "raw_byte_identical": true,
+            "canonical_json_identical": true
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "maximum_subarray_sum_after_k_swaps",
+      "path": "tools/generate_maximum_subarray_sum_after_k_swaps_tests.py",
+      "deterministic": true,
+      "random_seed": 3962,
+      "check": "static_source_scan_plus_temporary_regeneration",
+      "temporary_regeneration": {
+        "fixture": "maximum_subarray_sum_after_k_swaps",
+        "result": "byte_identical",
+        "runs": 2,
+        "files": [
+          {
+            "path": "examples/maximum_subarray_sum_after_k_swaps/public_tests.json",
+            "frozen_raw_sha256": "1fd8e6af32ce0a8fbca05c14f6a2d2774bab9e383d2c517889f0b15ac5e73786",
+            "generated_raw_sha256": "1fd8e6af32ce0a8fbca05c14f6a2d2774bab9e383d2c517889f0b15ac5e73786",
+            "raw_byte_identical": true,
+            "canonical_json_identical": true
+          },
+          {
+            "path": "examples/maximum_subarray_sum_after_k_swaps/hidden_tests.json",
+            "frozen_raw_sha256": "15e34851c6e30aa14128f2f3ac0eaedb1dbcbe23725bfdc5d6486aa8ba487139",
+            "generated_raw_sha256": "15e34851c6e30aa14128f2f3ac0eaedb1dbcbe23725bfdc5d6486aa8ba487139",
+            "raw_byte_identical": true,
+            "canonical_json_identical": true
+          }
+        ]
+      }
+    }
+  ],
+  "frozen_files": [
+    {
+      "path": "Dockerfile",
+      "category": "pinned_judge_environment",
+      "sha256": "6358a83348835a72a6d82e62fc580d15a75f101f72f6ba6e707d69293e63d6eb",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/exact_monotone_paths/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "1f2bd624da203b1cfe7863ff587dda044283ee5d134dd2937f5c9310d2a0d446",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/exact_monotone_paths/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "1619af9b0ba1b093b13ccdc6635cac8f4a52fecfd9712ce7efc2cd15d3e8433d",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/exact_monotone_paths/public_tests.json",
+      "category": "public_tests",
+      "sha256": "db2a07eb463ca5439044992396ec3443fd85ec43b73e0b66cd4c634d87d425bb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/maximum_subarray_sum_after_k_swaps/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "9b4797299cb98f7221033d44d3d3b1e9f03b8ee8cfa2bce8f41c0bc2a928cf3d",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/maximum_subarray_sum_after_k_swaps/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "d354bd5f0d0ed3ae56d6390a518770dcb794324ba7e52a621820cfe2d9db8a69",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/maximum_subarray_sum_after_k_swaps/public_tests.json",
+      "category": "public_tests",
+      "sha256": "aa7e711c3f453c95d39f296101df79a27e2d772a4d6e7b4cb65a356e0f3c5962",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/minimum_operations_binary_transform/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "1c9574e85826f07cbfbc3e166c33cabde091c61b7b41b63c2f89a7a5eab97d10",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/minimum_operations_binary_transform/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "dbca20f657471bab8227f7b4d145dcf25f78db861f90490cfcf071b3db31ae25",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/minimum_operations_binary_transform/public_tests.json",
+      "category": "public_tests",
+      "sha256": "649802c16f97c5ed31b0bd0ea83f672a7e2452a0ce3714f57a394bf672f90bb0",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/palindrome_number/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "406d059eaede832c226435a5d4e9f0dd5381d0cee9ee4c166cfdf4657243d0f8",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/palindrome_number/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "98c62c68a2eb5240e0c1ee8ad6a3db153a36773d669d0f050e02775418a4e57e",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/palindrome_number/public_tests.json",
+      "category": "public_tests",
+      "sha256": "e70e4d4b09282cefab3e4c016087b10d2eeca07a035f3d4e7fd37c02f01966b6",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/sorted_gcd_pair_queries/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "2ed73feac3af27e19bd209ac0daa6fcb1cf1f219a73e53b02bfaeb133f1bdbed",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/sorted_gcd_pair_queries/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "fa05368895b3bc73786f6f0d2a051407cb6a9b516eed91611516b0b932f65424",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/sorted_gcd_pair_queries/public_tests.json",
+      "category": "public_tests",
+      "sha256": "31a97e4134f3832bc6aa815a5334c2e66e7744a0db339b6ddcd2a33bfe3d205e",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "pyproject.toml",
+      "category": "judge_semantics",
+      "sha256": "19c84610e2b0e8c888469fbd70d019a89c56beffc47f68edf589960bc38dc5d7",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/__init__.py",
+      "category": "judge_semantics",
+      "sha256": "a38afe86b746b5696c60288a4bea2e16ebd499c86d11a093566c94b6a52204b7",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/checkers/__init__.py",
+      "category": "trusted_checker",
+      "sha256": "1164eeb88658876a7a3342df2d6b504de646f0e0b63fdbfa16320f4332ba3a31",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/checkers/exact_monotone_paths.py",
+      "category": "trusted_checker",
+      "sha256": "b96e534997b456ffc5c77b4a93e4631002a948d512b83b7a3c72ec432dd6c662",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/cli.py",
+      "category": "judge_semantics",
+      "sha256": "88027220e7863ba81bb3cfbee68d33848631f295a4ee7e7d9d4af7361de20c89",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/harness.py",
+      "category": "judge_semantics",
+      "sha256": "6a77cadb202f6950241f96dc07a88fbb07b614a70ae4ae1f76ea4b4ff1810016",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/models.py",
+      "category": "judge_semantics",
+      "sha256": "d7412f8d7ff2aa6c44b61da27c6d0fc31aa727c953b27946b7015fa331028eca",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/oracles/__init__.py",
+      "category": "trusted_oracle",
+      "sha256": "6921b244c95cdf54d79d63dcce130f2c2a5bef031798f3e0934ea5bfb87236ea",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/oracles/exact_monotone_paths.py",
+      "category": "trusted_oracle",
+      "sha256": "13e84cbece96dda2b42b42435ae8513bb39dbc0af31821ddeeb6144e4c423fc3",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/oracles/maximum_subarray_sum_after_k_swaps.py",
+      "category": "trusted_oracle",
+      "sha256": "f2d12b67e6c490406b2e5e393439285113e70f0fb37452a28081df8a5fbb526d",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/oracles/minimum_operations_binary_transform.py",
+      "category": "trusted_oracle",
+      "sha256": "935898e75e17c98c775f1fc161668093068d3bdd514f51753edc030a41bbea36",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/oracles/sorted_gcd_pair_queries.py",
+      "category": "trusted_oracle",
+      "sha256": "d6368e5dbe13a99abb6481d5def0cce10a90353eca89bd40f1f62f137cc47620",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/runner.py",
+      "category": "judge_semantics",
+      "sha256": "5eafdb356efa35dd0a62d7262afc2796cda602f952b52d893801e34cf5edbc57",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tools/generate_maximum_subarray_sum_after_k_swaps_tests.py",
+      "category": "formal_test_generator",
+      "sha256": "87bb32c6e5d52fd1e21dbb28b08e6680b09d3a1ace84982df1c0b12eb368a341",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tools/generate_minimum_operations_binary_transform_tests.py",
+      "category": "formal_test_generator",
+      "sha256": "55fbe5c19a6f8e76df7e76c022e03f87880a0e6041f1c3afad4d80b4133e0821",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tools/generate_sorted_gcd_pair_queries_tests.py",
+      "category": "formal_test_generator",
+      "sha256": "0d904a9fc0f19a529ddc2cd9e48c2452b041204dcf6527ab21e91958ab8211d6",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tools/verify_formal_test_generators.py",
+      "category": "judge_semantics",
+      "sha256": "b7b4a0cbadedf8be00a196776f1f65e806cb0bf588a2d5161ee7a87fdf098796",
+      "hash_mode": "utf8_normalized_lf_v1"
+    }
+  ],
+  "scope_summary": {
+    "frozen_file_count": 33,
+    "readme_frozen_count": 0
+  },
+  "judge_timing_policy": {
+    "runtime_source": "container_harness_monotonic_clock",
+    "start_boundary": "immediately_before_submission_module_loading",
+    "end_boundary": "immediately_after_entrypoint_returns_or_raises",
+    "docker_startup_included": false,
+    "docker_host_watchdog_verdict": "INTERNAL_ERROR",
+    "submission_execution_timeout_verdict": "TIME_LIMIT_EXCEEDED"
+  }
+}
