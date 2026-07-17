@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 import hashlib
 import json
+import os
 import subprocess
 import sys
 
@@ -99,6 +100,146 @@ class PilotRunner:
             "completed_at": _now(),
         })
         return result
+
+    def run_smoke(self, problem_id: str, output_root: str | Path,
+                  run_id: str | None = None) -> dict[str, Any]:
+        """Run one explicitly selected, non-formal episode outside the repo."""
+        self.verify_baseline()
+        output = Path(output_root).resolve()
+        if output == self.project_root or output.is_relative_to(self.project_root):
+            raise ValueError("smoke-test output-root must be outside the repository")
+        selected: tuple[ProblemConfig, ...] = tuple(
+            item for item in self.config.problems
+            if ProblemSpec.load(self._path(item.problem)).problem_id == problem_id
+        )
+        if len(selected) != 1:
+            raise ValueError(f"problem-id must select exactly one configured problem: {problem_id}")
+        run_id = run_id or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+        self.run_dir = output / "smoke-test" / run_id
+        self.run_dir.mkdir(parents=True, exist_ok=False)
+        metadata = self._smoke_metadata(problem_id)
+        write_json(self.run_dir / "version.json", metadata)
+        write_json(self.run_dir / "config.snapshot.yaml", self.config.public_snapshot())
+        write_json(self.run_dir / "run.state.json", {
+            "run_id": run_id, "problem_id": problem_id,
+            "status": "running", "started_at": _now(), "informal": True,
+        })
+        record = self._run_problem(run_id, selected[0])
+        audit = self._smoke_audit(record, selected[0])
+        result = {
+            "run_id": run_id,
+            "problem_id": problem_id,
+            "informal_smoke_test": True,
+            "formal_pilot_data_generated": False,
+            "record": record,
+            "audit": audit,
+            "passed": bool(record.get("valid_episode")) and all(audit.values()),
+            "output_directory": str(self.run_dir),
+        }
+        write_json(self.run_dir / "smoke_result.json", result)
+        write_text(self.run_dir / "smoke_report.md", smoke_markdown(result))
+        write_json(self.run_dir / "run.state.json", {
+            "run_id": run_id, "problem_id": problem_id,
+            "status": "completed", "completed_at": _now(),
+            "informal": True, "passed": result["passed"],
+        })
+        return result
+
+    def _smoke_metadata(self, problem_id: str) -> dict[str, Any]:
+        config_path = self.project_root / "experiments" / "configs" / "pilot_v1.yaml"
+        prompt_hashes = {
+            str(path.relative_to(self.project_root)).replace("\\", "/"): _file_hash(path)
+            for path in sorted(self._path(self.config.prompts_dir).glob("*.md"))
+        }
+        commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=self.project_root,
+            capture_output=True, text=True, check=True).stdout.strip()
+        tags = subprocess.run(
+            ["git", "tag", "--points-at", "HEAD"], cwd=self.project_root,
+            capture_output=True, text=True, check=True).stdout.splitlines()
+        return {
+            "commit_sha": commit,
+            "tags": tags,
+            "problem_id": problem_id,
+            "config_path": str(config_path),
+            "config_sha256": _file_hash(config_path),
+            "prompt_sha256": prompt_hashes,
+        }
+
+    def _smoke_audit(self, record: dict[str, Any], item: ProblemConfig) -> dict[str, bool]:
+        assert self.run_dir is not None
+        calls = [read_json(path) for path in self.run_dir.rglob("model_call.json")]
+        responses = [call.get("response", {}) for call in calls]
+        usage_valid = all(
+            type(response.get("input_tokens")) is int and response["input_tokens"] >= 0 and
+            type(response.get("output_tokens")) is int and response["output_tokens"] > 0 and
+            type(response.get("total_tokens")) is int and response["total_tokens"] > 0
+            for response in responses
+        )
+        reasoning_empty = all(
+            response.get("reasoning_content") in (None, "") for response in responses)
+        key = os.environ.get(self.config.model.api_key_env, "")
+        persisted = b"".join(path.read_bytes() for path in self.run_dir.rglob("*")
+                             if path.is_file())
+        teacher_calls = [call for call in calls if call.get("role") == "teacher"]
+        expected_problem = self.renderer.formatted_problem(
+            self._path(item.problem), self._path(item.public_tests))
+        teacher_public_only = (
+            len(teacher_calls) == 1 and
+            teacher_calls[0].get("user_prompt") == expected_problem
+        )
+        baseline_calls = [call for call in calls if call.get("role") == "student" and
+                          call.get("condition") == "success_only"]
+        baseline_exact = bool(baseline_calls) and (
+            record.get("teacher", {}).get("verdict") == "AC" or
+            baseline_calls[0].get("user_prompt") == expected_problem
+        )
+        ff_calls = [call for call in calls if call.get("role") == "student" and
+                    call.get("condition") == "failure_frontier"]
+        gg_calls = [call for call in calls if call.get("role") == "student" and
+                    call.get("condition") == "general_guidance"]
+        student_system_equal = bool(ff_calls and gg_calls) and (
+            ff_calls[0].get("system_prompt") == gg_calls[0].get("system_prompt"))
+        student_calls = [call for call in calls if call.get("role") == "student"]
+        success_student_prompts_equal = True
+        if record.get("teacher", {}).get("verdict") == "AC":
+            success_student_prompts_equal = len(student_calls) == 3 and (
+                len({call.get("system_prompt") for call in student_calls}) == 1 and
+                len({call.get("user_prompt") for call in student_calls}) == 1
+            )
+        sentinel_ff = self._rendered_call(
+            "student", record["problem_id"], "failure_frontier", expected_problem,
+            additional_material="FF_MATERIAL_SENTINEL", success_branch=False)
+        sentinel_gg = self._rendered_call(
+            "student", record["problem_id"], "general_guidance", expected_problem,
+            additional_material="GG_MATERIAL_SENTINEL", success_branch=False)
+        framing_equal = (
+            sentinel_ff["system_prompt"] == sentinel_gg["system_prompt"] and
+            sentinel_ff["user_prompt"].replace("FF_MATERIAL_SENTINEL", "<MATERIAL>") ==
+            sentinel_gg["user_prompt"].replace("GG_MATERIAL_SENTINEL", "<MATERIAL>")
+        )
+        token_match_ok = (
+            record.get("teacher", {}).get("verdict") == "AC" or
+            record.get("teaching_material", {}).get("token_match_passed") is True
+        )
+        return {
+            "exactly_one_problem": record.get("problem_id") ==
+                ProblemSpec.load(self._path(item.problem)).problem_id,
+            "teacher_called_once": len(teacher_calls) == 1,
+            "teacher_public_information_only": teacher_public_only,
+            "all_reasoning_content_empty": reasoning_empty,
+            "all_usage_complete": usage_valid,
+            "all_requests_non_reasoning": self.config.model.thinking == {"type": "disabled"},
+            "baseline_prompt_exact_when_applicable": baseline_exact,
+            "ff_gg_student_system_equal": student_system_equal,
+            "ff_gg_student_framing_equal_except_material": framing_equal,
+            "success_branch_student_prompts_equal": success_student_prompts_equal,
+            "token_match_passed_when_applicable": token_match_ok,
+            "api_key_not_persisted": not key or key.encode() not in persisted,
+            "no_formal_results": not (self.run_dir / "results.jsonl").exists() and
+                not (self.run_dir / "summary.json").exists() and
+                not (self.run_dir / "summary.md").exists(),
+        }
 
     def _dry_run(self, run_id: str) -> dict[str, Any]:
         assert self.run_dir is not None
@@ -440,6 +581,12 @@ class PilotRunner:
             "artifact": str(artifact),
             "completed_at": payload["completed_at"],
         })
+        if (response.reasoning_content not in (None, "") or
+                type(response.input_tokens) is not int or response.input_tokens < 0 or
+                type(response.output_tokens) is not int or response.output_tokens <= 0 or
+                type(response.total_tokens) is not int or response.total_tokens <= 0):
+            raise ModelInfrastructureError(
+                "model response failed non-reasoning or API usage validation")
         return response, artifact
 
 
@@ -555,5 +702,28 @@ def _hash(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def _file_hash(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def smoke_markdown(result: dict[str, Any]) -> str:
+    record = result["record"]
+    lines = [
+        "# Informal Single-Problem Smoke Test",
+        "",
+        "This artifact is not part of the formal five-problem Pilot.",
+        "",
+        f"- Problem: {result['problem_id']}",
+        f"- Passed: {result['passed']}",
+        f"- Teacher verdict: {record.get('teacher', {}).get('verdict')}",
+        f"- Valid episode: {record.get('valid_episode')}",
+        "",
+        "## Audit",
+        "",
+    ]
+    lines.extend(f"- {key}: {value}" for key, value in result["audit"].items())
+    return "\n".join(lines) + "\n"

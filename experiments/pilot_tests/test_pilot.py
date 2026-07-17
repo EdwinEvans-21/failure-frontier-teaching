@@ -323,6 +323,25 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertFalse(result["api_accessed"])
         self.assertEqual(len(result["model_calls"]), 35)
 
+    def test_single_problem_smoke_is_isolated_from_formal_outputs(self):
+        config = self.config({}, mode="smoke-test")
+        model = MockModelClient(config.model)
+        judge = FakeJudge()
+        result = PilotRunner(config, model, judge=judge, project_root=ROOT).run_smoke(
+            PROBLEM_ID, self.root / "external", "mock-smoke")
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["problem_id"], PROBLEM_ID)
+        self.assertTrue(result["informal_smoke_test"])
+        self.assertFalse(result["formal_pilot_data_generated"])
+        self.assertEqual(len([call for call in model.calls if call["role"] == "teacher"]), 1)
+        output = Path(result["output_directory"])
+        self.assertTrue((output / "version.json").is_file())
+        self.assertTrue((output / "smoke_result.json").is_file())
+        self.assertFalse((output / "results.jsonl").exists())
+        self.assertFalse((output / "summary.json").exists())
+        self.assertFalse((output / "summary.md").exists())
+        self.assertTrue(all(result["audit"].values()))
+
 
 if __name__ == "__main__":
     unittest.main()

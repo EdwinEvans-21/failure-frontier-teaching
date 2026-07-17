@@ -46,6 +46,11 @@ class ModelResponse:
     seed_supported: bool | None
     latency_ms: int
     token_count_source: str
+    response_id: str | None = None
+    returned_model: str | None = None
+    reasoning_content: str | None = None
+    total_tokens: int | None = None
+    request_id_supported: bool = False
 
     @property
     def truncated(self) -> bool:
@@ -114,9 +119,11 @@ class DeepSeekCompatibleClient:
                 output_tokens = self._fallback_token_count(choice["message"]["content"])
                 token_count_source = "configured_model_tokenizer"
             request_id = _request_id(transport.headers)
+            prompt_tokens = _optional_int(usage.get("prompt_tokens"))
+            total_tokens = _optional_int(usage.get("total_tokens"))
             return ModelResponse(
                 content=choice["message"]["content"],
-                input_tokens=_optional_int(usage.get("prompt_tokens")),
+                input_tokens=prompt_tokens,
                 output_tokens=output_tokens,
                 finish_reason=choice.get("finish_reason"),
                 request_id=request_id,
@@ -124,6 +131,11 @@ class DeepSeekCompatibleClient:
                 seed_supported=False,
                 latency_ms=transport.latency_ms,
                 token_count_source=token_count_source,
+                response_id=raw.get("id"),
+                returned_model=raw.get("model"),
+                reasoning_content=choice["message"].get("reasoning_content"),
+                total_tokens=total_tokens,
+                request_id_supported=request_id is not None,
             )
         except (KeyError, IndexError, TypeError, ValueError) as error:
             raise ModelInfrastructureError("model API response schema is unsupported") from error
@@ -240,6 +252,11 @@ class MockModelClient:
             seed_supported=True,
             latency_ms=item.get("latency_ms", 0),
             token_count_source=item.get("token_count_source", "mock_usage"),
+            response_id=item.get("response_id", f"mock-response-{len(self.calls)}"),
+            returned_model=item.get("returned_model", self.config.model_name),
+            reasoning_content=item.get("reasoning_content"),
+            total_tokens=item.get("total_tokens", 164),
+            request_id_supported=item.get("request_id_supported", True),
         )
 
     @staticmethod

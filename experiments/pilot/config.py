@@ -116,8 +116,8 @@ def load_config(path: str | Path) -> PilotConfig:
 
 
 def _validate(config: PilotConfig) -> None:
-    if config.mode not in {"live", "mock", "dry-run", "api-check"}:
-        raise ValueError("mode must be live, mock, dry-run, or api-check")
+    if config.mode not in {"live", "mock", "dry-run", "api-check", "smoke-test"}:
+        raise ValueError("mode must be live, mock, dry-run, api-check, or smoke-test")
     if config.model.reasoning_mode:
         raise ValueError("pilot v1 requires non-reasoning mode")
     if config.model.thinking != {"type": "disabled"}:

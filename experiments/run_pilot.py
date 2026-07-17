@@ -15,9 +15,10 @@ def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description="Run the five-problem Failure-Frontier Teaching pilot")
     result.add_argument("--config", required=True)
     result.add_argument("--run-id")
-    result.add_argument("--mode", choices=["live", "mock", "dry-run", "api-check"])
+    result.add_argument("--mode", choices=["live", "mock", "dry-run", "api-check", "smoke-test"])
     result.add_argument("--mock-responses")
     result.add_argument("--output-root", help="override the artifact directory")
+    result.add_argument("--problem-id", help="single configured problem for smoke-test")
     return result
 
 
@@ -40,6 +41,14 @@ def main() -> None:
         client = DeepSeekCompatibleClient(config.model)
         result = run_api_compatibility_check(
             config, client, args.output_root, project_root=Path.cwd())
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        raise SystemExit(0 if result["passed"] else 1)
+    if config.mode == "smoke-test":
+        if not args.output_root or not args.problem_id:
+            raise SystemExit("--output-root and --problem-id are required for smoke-test")
+        model = DeepSeekCompatibleClient(config.model)
+        result = PilotRunner(config, model).run_smoke(
+            args.problem_id, args.output_root, args.run_id)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         raise SystemExit(0 if result["passed"] else 1)
     if config.mode == "dry-run":
