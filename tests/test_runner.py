@@ -163,6 +163,35 @@ class DockerJudgeTests(unittest.TestCase):
                 judge.judge(submission, problem, tests_path).verdict,
                 Verdict.RUNTIME_ERROR)
 
+    def test_docker_watchdog_timeout_is_infrastructure_error(self) -> None:
+        directory, submission, problem, tests_path = self.make_inputs([{
+            "args": [],
+            "expected": None,
+        }])
+        with directory:
+            judge = FakeDockerJudge([(None, False, True)])
+            result = judge.judge(submission, problem, tests_path)
+            self.assertIs(result.verdict, Verdict.INTERNAL_ERROR)
+            self.assertEqual(result.runtime_ms, 0)
+            self.assertNotIn("Execution exceeded the time limit",
+                             result.message)
+
+    def test_worker_execution_timeout_remains_time_limit_exceeded(self) -> None:
+        directory, submission, problem, tests_path = self.make_inputs([{
+            "args": [],
+            "expected": None,
+        }])
+        with directory:
+            worker = WorkerResult(
+                "time_limit_exceeded",
+                1000,
+                error_type="ExecutionTimedOut",
+            )
+            judge = FakeDockerJudge([(worker, False, False)])
+            result = judge.judge(submission, problem, tests_path)
+            self.assertIs(result.verdict, Verdict.TIME_LIMIT_EXCEEDED)
+            self.assertEqual(result.runtime_ms, 1000)
+
     def test_exit_137_without_oom_evidence_is_not_mle(self) -> None:
         directory, submission, problem, tests_path = self.make_inputs([{
             "args": [],

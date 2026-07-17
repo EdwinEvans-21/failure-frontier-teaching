@@ -19,7 +19,11 @@ from .models import JudgeResult, ProblemSpec, Verdict
 # A maximum-size exact result may contain 100,000 five-digit integers.  Keep
 # the stream bounded while retaining the complete worker protocol record.
 OUTPUT_LIMIT_BYTES = 1024 * 1024
-DOCKER_STARTUP_GRACE_SECONDS = 2.0
+# This watchdog bounds Docker/host infrastructure, not submission execution.
+# Submission timing starts inside harness.py after the container is running and
+# the request has been loaded.  A generous host-side grace avoids conflating a
+# slow Docker startup with a model TLE.
+DOCKER_INFRASTRUCTURE_GRACE_SECONDS = 30.0
 WORKER_RESULT_PREFIX = b"FFJUDGE_WORKER_RESULT:"
 SAFE_ERROR_TYPES = {
     "ArithmeticError",
@@ -180,10 +184,11 @@ class DockerJudge:
         self,
         image: str = "ffjudge-python:latest",
         *,
-        startup_grace_seconds: float = DOCKER_STARTUP_GRACE_SECONDS,
+        infrastructure_grace_seconds: float =
+        DOCKER_INFRASTRUCTURE_GRACE_SECONDS,
     ) -> None:
         self.image = image
-        self.startup_grace_seconds = startup_grace_seconds
+        self.infrastructure_grace_seconds = infrastructure_grace_seconds
 
     def ensure_available(self) -> None:
         if shutil.which("docker") is None:
@@ -239,12 +244,12 @@ class DockerJudge:
                 submission, spec, case)
             if outer_timeout:
                 return self._result(
-                    Verdict.TIME_LIMIT_EXCEEDED,
+                    Verdict.INTERNAL_ERROR,
                     phase,
                     index,
                     total,
-                    runtime_ms + int(spec.limits.time_seconds * 1000),
-                    "Execution exceeded the time limit.",
+                    runtime_ms,
+                    "The Docker worker exceeded its infrastructure watchdog.",
                 )
             if oom_killed:
                 return self._result(
@@ -360,7 +365,7 @@ class DockerJudge:
                 output = run_limited_process(
                     command,
                     timeout=spec.limits.time_seconds +
-                    self.startup_grace_seconds,
+                    self.infrastructure_grace_seconds,
                 )
                 oom_killed = self._inspect_oom_killed(container_name)
             finally:

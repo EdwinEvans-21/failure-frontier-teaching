@@ -26,6 +26,9 @@ MANIFEST = ROOT / "experiments/baseline_v2/baseline_manifest.json"
 AUDIT = ROOT / "experiments/baseline_v2/problem_statement_audit.json"
 SNAPSHOTS = ROOT / "experiments/baseline_v2/rendered_prompt_snapshots.json"
 CONFIG = ROOT / "experiments/configs/pilot_v1.yaml"
+EXPECTED_V2_SUPERSEDED_DRIFT = [
+    "modified frozen file: src/ffjudge/runner.py"
+]
 
 
 class BaselineV2Tests(unittest.TestCase):
@@ -44,8 +47,8 @@ class BaselineV2Tests(unittest.TestCase):
         shutil.copy2(MANIFEST, target_manifest)
         return target_manifest
 
-    def test_checked_in_manifest_verifies(self) -> None:
-        self.assertEqual(verify(ROOT, MANIFEST), [])
+    def test_v2_is_preserved_and_superseded_only_by_runner_timing(self) -> None:
+        self.assertEqual(verify(ROOT, MANIFEST), EXPECTED_V2_SUPERSEDED_DRIFT)
         self.assertEqual(self.manifest["baseline_id"], BASELINE_ID)
 
     def test_no_readme_case_variant_is_frozen(self) -> None:
@@ -61,10 +64,14 @@ class BaselineV2Tests(unittest.TestCase):
             for variant in ("README.md", "Readme.md", "readme.md"):
                 path = root / "examples/palindrome_number" / variant
                 path.write_text("arbitrary human documentation\n", encoding="utf-8")
-            self.assertEqual(verify(root, manifest), [])
+            self.assertEqual(
+                verify(root, manifest), EXPECTED_V2_SUPERSEDED_DRIFT
+            )
             for path in (root / "examples/palindrome_number").glob("*eadme.md"):
                 path.unlink()
-            self.assertEqual(verify(root, manifest), [])
+            self.assertEqual(
+                verify(root, manifest), EXPECTED_V2_SUPERSEDED_DRIFT
+            )
 
     def test_problem_json_change_fails(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
