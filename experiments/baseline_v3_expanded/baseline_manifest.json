@@ -1,0 +1,2988 @@
+{
+  "schema_version": "3.1-expanded",
+  "baseline_id": "failure-frontier-baseline-v3-expanded",
+  "created_at": "2026-07-18T04:23:56.622346+00:00",
+  "environment": {
+    "python_version": "3.12.8",
+    "docker_client_version": "29.6.1",
+    "docker_server_version": "29.6.1",
+    "ffjudge_image_id": "sha256:34673ca39ba64f718a079314ec2e5f6c89bd68ca388f5da75663e858e4cdddcd",
+    "base_image": "python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de",
+    "base_image_repo_digest": "sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de",
+    "source_commit": "ae3819e5fcc8f0c27b2f08a3c5366e441ba76b7f",
+    "authority": "source_commit identifies the commit containing benchmark code and data; the authoritative baseline tag points to the later manifest-only commit.",
+    "working_tree_dirty_at_generation": false,
+    "dirty_frozen_paths_at_generation": [],
+    "source_commit_contains_frozen_state": true
+  },
+  "scope_rules": {
+    "policy": "baseline_v3_plus_explicit_expanded_benchmark_allowlist",
+    "included": [
+      "canonical problem.json files",
+      "public and hidden formal tests",
+      "trusted oracles and custom checker",
+      "judge execution and verdict semantics",
+      "formal test generators",
+      "pinned Dockerfile and Python package metadata"
+    ],
+    "excluded": [
+      "any path whose basename case-insensitively equals README.md",
+      "research prompts and experiment runner",
+      "protocol and explanatory documents",
+      "run artifacts, caches, logs, and local environment files",
+      "accepted and intentionally wrong submissions",
+      ".gitignore and other development-only configuration"
+    ],
+    "readme_exclusion_case_insensitive": true
+  },
+  "hash_strategy": {
+    "json": "Canonical UTF-8 JSON with sorted object keys; array order and numeric types are preserved.",
+    "text": "UTF-8 text normalized from CRLF/CR to LF before SHA-256.",
+    "binary": "SHA-256 of raw bytes."
+  },
+  "problems": [
+    {
+      "fixture": "palindrome_number",
+      "problem_id": "lc-0009-palindrome-number",
+      "role": "sanity_control",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "isPalindrome"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 0.5,
+      "memory_limit_mb": 64,
+      "public_test_count": 3,
+      "hidden_test_count": 20,
+      "pressure_test_count": 0
+    },
+    {
+      "fixture": "exact_monotone_paths",
+      "problem_id": "lc-3988-exact-monotone-paths",
+      "role": "medium_upper_construction_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "constructGrid"
+      },
+      "comparison": "custom",
+      "checker": "exact_monotone_paths",
+      "time_limit_seconds": 1.0,
+      "memory_limit_mb": 64,
+      "public_test_count": 4,
+      "hidden_test_count": 24,
+      "pressure_test_count": 0
+    },
+    {
+      "fixture": "minimum_operations_binary_transform",
+      "problem_id": "lc-3980-minimum-operations-binary-transform",
+      "role": "medium_dp_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minOperations"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 1.0,
+      "memory_limit_mb": 64,
+      "public_test_count": 4,
+      "hidden_test_count": 24,
+      "pressure_test_count": 3
+    },
+    {
+      "fixture": "sorted_gcd_pair_queries",
+      "problem_id": "lc-3312-sorted-gcd-pair-queries",
+      "role": "hard_number_theory_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "gcdValues"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 1.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 4,
+      "hidden_test_count": 18,
+      "pressure_test_count": 3
+    },
+    {
+      "fixture": "maximum_subarray_sum_after_k_swaps",
+      "problem_id": "lc-3962-maximum-subarray-sum-after-k-swaps",
+      "role": "hard_optimization_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "maxSum"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 20.0,
+      "memory_limit_mb": 128,
+      "public_test_count": 4,
+      "hidden_test_count": 29,
+      "pressure_test_count": 7
+    },
+    {
+      "fixture": "lc-3123-find-edges-in-shortest-paths",
+      "problem_id": "lc-3123-find-edges-in-shortest-paths",
+      "role": "hard_graph_connectivity_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "findAnswer"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "graph_connectivity",
+      "memorization_risk": "low"
+    },
+    {
+      "fixture": "lc-3108-minimum-cost-walk-in-weighted-graph",
+      "problem_id": "lc-3108-minimum-cost-walk-in-weighted-graph",
+      "role": "hard_graph_connectivity_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minimumCost"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "graph_connectivity",
+      "memorization_risk": "low"
+    },
+    {
+      "fixture": "lc-2421-number-of-good-paths",
+      "problem_id": "lc-2421-number-of-good-paths",
+      "role": "hard_graph_connectivity_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "numberOfGoodPaths"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "graph_connectivity",
+      "memorization_risk": "medium"
+    },
+    {
+      "fixture": "lc-1697-checking-existence-of-edge-length-limited-paths",
+      "problem_id": "lc-1697-checking-existence-of-edge-length-limited-paths",
+      "role": "hard_graph_connectivity_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "distanceLimitedPathsExist"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "graph_connectivity",
+      "memorization_risk": "medium"
+    },
+    {
+      "fixture": "lc-1786-number-of-restricted-paths-from-first-to-last-node",
+      "problem_id": "lc-1786-number-of-restricted-paths-from-first-to-last-node",
+      "role": "hard_graph_connectivity_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "countRestrictedPaths"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "graph_connectivity",
+      "memorization_risk": "medium"
+    },
+    {
+      "fixture": "lc-1970-last-day-where-you-can-still-cross",
+      "problem_id": "lc-1970-last-day-where-you-can-still-cross",
+      "role": "medium_graph_connectivity_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "latestDayToCross"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "graph_connectivity",
+      "memorization_risk": "high"
+    },
+    {
+      "fixture": "lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid",
+      "problem_id": "lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid",
+      "role": "medium_graph_connectivity_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minCost"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "graph_connectivity",
+      "memorization_risk": "high"
+    },
+    {
+      "fixture": "lc-2203-minimum-weighted-subgraph-with-the-required-paths",
+      "problem_id": "lc-2203-minimum-weighted-subgraph-with-the-required-paths",
+      "role": "hard_graph_connectivity_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minimumWeight"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "graph_connectivity",
+      "memorization_risk": "low"
+    },
+    {
+      "fixture": "lc-3117-minimum-sum-of-values-by-dividing-array",
+      "problem_id": "lc-3117-minimum-sum-of-values-by-dividing-array",
+      "role": "hard_dynamic_programming_optimization_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minimumValueSum"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "dynamic_programming_optimization",
+      "memorization_risk": "low"
+    },
+    {
+      "fixture": "lc-3077-maximum-strength-of-k-disjoint-subarrays",
+      "problem_id": "lc-3077-maximum-strength-of-k-disjoint-subarrays",
+      "role": "hard_dynamic_programming_optimization_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "maximumStrength"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "dynamic_programming_optimization",
+      "memorization_risk": "low"
+    },
+    {
+      "fixture": "lc-2188-minimum-time-to-finish-the-race",
+      "problem_id": "lc-2188-minimum-time-to-finish-the-race",
+      "role": "hard_dynamic_programming_optimization_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minimumFinishTime"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "dynamic_programming_optimization",
+      "memorization_risk": "medium"
+    },
+    {
+      "fixture": "lc-2809-minimum-time-to-make-array-sum-at-most-x",
+      "problem_id": "lc-2809-minimum-time-to-make-array-sum-at-most-x",
+      "role": "hard_dynamic_programming_optimization_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minimumTime"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "dynamic_programming_optimization",
+      "memorization_risk": "low"
+    },
+    {
+      "fixture": "lc-2478-number-of-beautiful-partitions",
+      "problem_id": "lc-2478-number-of-beautiful-partitions",
+      "role": "hard_dynamic_programming_optimization_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "beautifulPartitions"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "dynamic_programming_optimization",
+      "memorization_risk": "medium"
+    },
+    {
+      "fixture": "lc-2719-count-of-integers",
+      "problem_id": "lc-2719-count-of-integers",
+      "role": "hard_dynamic_programming_optimization_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "count"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "dynamic_programming_optimization",
+      "memorization_risk": "medium"
+    },
+    {
+      "fixture": "lc-2945-find-maximum-non-decreasing-array-length",
+      "problem_id": "lc-2945-find-maximum-non-decreasing-array-length",
+      "role": "hard_dynamic_programming_optimization_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "findMaximumLength"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "dynamic_programming_optimization",
+      "memorization_risk": "low"
+    },
+    {
+      "fixture": "lc-2926-maximum-balanced-subsequence-sum",
+      "problem_id": "lc-2926-maximum-balanced-subsequence-sum",
+      "role": "hard_dynamic_programming_optimization_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "maxBalancedSubsequenceSum"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "dynamic_programming_optimization",
+      "memorization_risk": "low"
+    },
+    {
+      "fixture": "lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference",
+      "problem_id": "lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference",
+      "role": "hard_dynamic_programming_optimization_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minimumDifference"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "dynamic_programming_optimization",
+      "memorization_risk": "high"
+    },
+    {
+      "fixture": "lc-1547-minimum-cost-to-cut-a-stick",
+      "problem_id": "lc-1547-minimum-cost-to-cut-a-stick",
+      "role": "medium_dynamic_programming_optimization_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minCost"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "dynamic_programming_optimization",
+      "memorization_risk": "high"
+    },
+    {
+      "fixture": "lc-2071-maximum-number-of-tasks-you-can-assign",
+      "problem_id": "lc-2071-maximum-number-of-tasks-you-can-assign",
+      "role": "hard_greedy_offline_data_structures_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "maxTaskAssign"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "greedy_offline_data_structures",
+      "memorization_risk": "medium"
+    },
+    {
+      "fixture": "lc-1851-minimum-interval-to-include-each-query",
+      "problem_id": "lc-1851-minimum-interval-to-include-each-query",
+      "role": "medium_greedy_offline_data_structures_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minInterval"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "greedy_offline_data_structures",
+      "memorization_risk": "high"
+    },
+    {
+      "fixture": "lc-2940-find-building-where-alice-and-bob-can-meet",
+      "problem_id": "lc-2940-find-building-where-alice-and-bob-can-meet",
+      "role": "hard_greedy_offline_data_structures_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "leftmostBuildingQueries"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "greedy_offline_data_structures",
+      "memorization_risk": "low"
+    },
+    {
+      "fixture": "lc-3072-distribute-elements-into-two-arrays-ii",
+      "problem_id": "lc-3072-distribute-elements-into-two-arrays-ii",
+      "role": "hard_greedy_offline_data_structures_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "resultArray"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "greedy_offline_data_structures",
+      "memorization_risk": "low"
+    },
+    {
+      "fixture": "lc-2366-minimum-replacements-to-sort-the-array",
+      "problem_id": "lc-2366-minimum-replacements-to-sort-the-array",
+      "role": "hard_greedy_offline_data_structures_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minimumReplacement"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "greedy_offline_data_structures",
+      "memorization_risk": "medium"
+    },
+    {
+      "fixture": "lc-3102-minimize-manhattan-distances",
+      "problem_id": "lc-3102-minimize-manhattan-distances",
+      "role": "hard_greedy_offline_data_structures_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minimumDistance"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "greedy_offline_data_structures",
+      "memorization_risk": "low"
+    },
+    {
+      "fixture": "lc-3116-kth-smallest-amount-with-single-denomination-combination",
+      "problem_id": "lc-3116-kth-smallest-amount-with-single-denomination-combination",
+      "role": "hard_greedy_offline_data_structures_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "findKthSmallest"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "greedy_offline_data_structures",
+      "memorization_risk": "low"
+    },
+    {
+      "fixture": "lc-1611-minimum-one-bit-operations-to-make-integers-zero",
+      "problem_id": "lc-1611-minimum-one-bit-operations-to-make-integers-zero",
+      "role": "medium_bit_string_expression_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minimumOneBitOperations"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "bit_string_expression",
+      "memorization_risk": "high"
+    },
+    {
+      "fixture": "lc-1896-minimum-cost-to-change-the-final-value-of-expression",
+      "problem_id": "lc-1896-minimum-cost-to-change-the-final-value-of-expression",
+      "role": "hard_bit_string_expression_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minOperationsToFlip"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "bit_string_expression",
+      "memorization_risk": "medium"
+    },
+    {
+      "fixture": "lc-0995-minimum-number-of-k-consecutive-bit-flips",
+      "problem_id": "lc-0995-minimum-number-of-k-consecutive-bit-flips",
+      "role": "medium_bit_string_expression_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minKBitFlips"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "bit_string_expression",
+      "memorization_risk": "high"
+    },
+    {
+      "fixture": "lc-3022-minimize-or-of-remaining-elements-using-operations",
+      "problem_id": "lc-3022-minimize-or-of-remaining-elements-using-operations",
+      "role": "hard_bit_string_expression_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "minOrAfterOperations"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "bit_string_expression",
+      "memorization_risk": "low"
+    },
+    {
+      "fixture": "lc-3045-count-prefix-and-suffix-pairs-ii",
+      "problem_id": "lc-3045-count-prefix-and-suffix-pairs-ii",
+      "role": "hard_bit_string_expression_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "countPrefixSuffixPairs"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "bit_string_expression",
+      "memorization_risk": "low"
+    },
+    {
+      "fixture": "lc-0761-special-binary-string",
+      "problem_id": "lc-0761-special-binary-string",
+      "role": "hard_bit_string_expression_candidate",
+      "entrypoint": {
+        "kind": "class_method",
+        "class_name": "Solution",
+        "method": "makeLargestSpecial"
+      },
+      "comparison": "exact",
+      "checker": "",
+      "time_limit_seconds": 4.0,
+      "memory_limit_mb": 256,
+      "public_test_count": 2,
+      "hidden_test_count": 12,
+      "pressure_test_count": 3,
+      "topic": "bit_string_expression",
+      "memorization_risk": "high"
+    }
+  ],
+  "formal_test_generators": [
+    {
+      "fixture": "palindrome_number",
+      "path": null,
+      "deterministic": null,
+      "random_seed": null,
+      "check": "no_formal_generator_present",
+      "temporary_regeneration": {
+        "fixture": "palindrome_number",
+        "result": "not_applicable_no_generator",
+        "runs": 0,
+        "files": []
+      }
+    },
+    {
+      "fixture": "exact_monotone_paths",
+      "path": null,
+      "deterministic": null,
+      "random_seed": null,
+      "check": "no_formal_generator_present",
+      "temporary_regeneration": {
+        "fixture": "exact_monotone_paths",
+        "result": "not_applicable_no_generator",
+        "runs": 0,
+        "files": []
+      }
+    },
+    {
+      "fixture": "minimum_operations_binary_transform",
+      "path": "tools/generate_minimum_operations_binary_transform_tests.py",
+      "deterministic": true,
+      "random_seed": null,
+      "check": "static_source_scan_plus_temporary_regeneration",
+      "temporary_regeneration": {
+        "fixture": "minimum_operations_binary_transform",
+        "result": "byte_identical",
+        "runs": 2,
+        "files": [
+          {
+            "path": "examples/minimum_operations_binary_transform/public_tests.json",
+            "frozen_raw_sha256": "cdc1114a9bae05ce70e6c8f30e56d84d3489e1272b7e19cb2c424118929d76ff",
+            "generated_raw_sha256": "cdc1114a9bae05ce70e6c8f30e56d84d3489e1272b7e19cb2c424118929d76ff",
+            "raw_byte_identical": true,
+            "canonical_json_identical": true
+          },
+          {
+            "path": "examples/minimum_operations_binary_transform/hidden_tests.json",
+            "frozen_raw_sha256": "3c5fe323c21e69f719b914d1cd4bf2a08b370b39f3546b76fb429eb9d94e63f9",
+            "generated_raw_sha256": "3c5fe323c21e69f719b914d1cd4bf2a08b370b39f3546b76fb429eb9d94e63f9",
+            "raw_byte_identical": true,
+            "canonical_json_identical": true
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "sorted_gcd_pair_queries",
+      "path": "tools/generate_sorted_gcd_pair_queries_tests.py",
+      "deterministic": true,
+      "random_seed": null,
+      "check": "static_source_scan_plus_temporary_regeneration",
+      "temporary_regeneration": {
+        "fixture": "sorted_gcd_pair_queries",
+        "result": "byte_identical",
+        "runs": 2,
+        "files": [
+          {
+            "path": "examples/sorted_gcd_pair_queries/public_tests.json",
+            "frozen_raw_sha256": "c569673be0279bdb7655e8ca75d02f9f041de44942281ac9c0db9612cbb197af",
+            "generated_raw_sha256": "c569673be0279bdb7655e8ca75d02f9f041de44942281ac9c0db9612cbb197af",
+            "raw_byte_identical": true,
+            "canonical_json_identical": true
+          },
+          {
+            "path": "examples/sorted_gcd_pair_queries/hidden_tests.json",
+            "frozen_raw_sha256": "730ecdb0fc57b065de1a228f4a699e6bd3fd1de26fe81f479ef9ce8f3e66e3b5",
+            "generated_raw_sha256": "730ecdb0fc57b065de1a228f4a699e6bd3fd1de26fe81f479ef9ce8f3e66e3b5",
+            "raw_byte_identical": true,
+            "canonical_json_identical": true
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "maximum_subarray_sum_after_k_swaps",
+      "path": "tools/generate_maximum_subarray_sum_after_k_swaps_tests.py",
+      "deterministic": true,
+      "random_seed": 3962,
+      "check": "static_source_scan_plus_temporary_regeneration",
+      "temporary_regeneration": {
+        "fixture": "maximum_subarray_sum_after_k_swaps",
+        "result": "byte_identical",
+        "runs": 2,
+        "files": [
+          {
+            "path": "examples/maximum_subarray_sum_after_k_swaps/public_tests.json",
+            "frozen_raw_sha256": "1fd8e6af32ce0a8fbca05c14f6a2d2774bab9e383d2c517889f0b15ac5e73786",
+            "generated_raw_sha256": "1fd8e6af32ce0a8fbca05c14f6a2d2774bab9e383d2c517889f0b15ac5e73786",
+            "raw_byte_identical": true,
+            "canonical_json_identical": true
+          },
+          {
+            "path": "examples/maximum_subarray_sum_after_k_swaps/hidden_tests.json",
+            "frozen_raw_sha256": "15e34851c6e30aa14128f2f3ac0eaedb1dbcbe23725bfdc5d6486aa8ba487139",
+            "generated_raw_sha256": "15e34851c6e30aa14128f2f3ac0eaedb1dbcbe23725bfdc5d6486aa8ba487139",
+            "raw_byte_identical": true,
+            "canonical_json_identical": true
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "expanded_31_problem_suite",
+      "path": "tools/generate_expanded_benchmarks.py",
+      "deterministic": true,
+      "random_seed": 20260718,
+      "check": "temporary_directory_byte_identical_all_fixture_files",
+      "temporary_regeneration": {
+        "result": "byte_identical",
+        "file_count": 310
+      }
+    }
+  ],
+  "frozen_files": [
+    {
+      "path": "Dockerfile",
+      "category": "pinned_judge_environment",
+      "sha256": "6358a83348835a72a6d82e62fc580d15a75f101f72f6ba6e707d69293e63d6eb",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/exact_monotone_paths/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "1f2bd624da203b1cfe7863ff587dda044283ee5d134dd2937f5c9310d2a0d446",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/exact_monotone_paths/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "1619af9b0ba1b093b13ccdc6635cac8f4a52fecfd9712ce7efc2cd15d3e8433d",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/exact_monotone_paths/public_tests.json",
+      "category": "public_tests",
+      "sha256": "db2a07eb463ca5439044992396ec3443fd85ec43b73e0b66cd4c634d87d425bb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-0761-special-binary-string/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "d3320199e61f12d63c614153a7a0169c4bce04d756a71fe61f73625f08e520fd",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-0761-special-binary-string/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "dcec8c4fe1e5fb0f90ceed3043be4ec300db72eb9c5dec025e78cb65e3c0f326",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-0761-special-binary-string/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "4fec86b33f772016931ec234cf8a7304d4b477bb12a595fb7ab096f71e4c6f07",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-0761-special-binary-string/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-0761-special-binary-string/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "0d0ae83780c3f6f49477dc171e1360756201ebd816bfb88543114965283b9d08",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-0761-special-binary-string/public_tests.json",
+      "category": "public_tests",
+      "sha256": "d7d110cd205201d125be78de1e845520bd3a6d55fd330f17cd6bfc8d42a2243f",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-0761-special-binary-string/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "93559a1af35f38c94194fc6d84da0403ac22ea0445315479ffdf3e44cda5d270",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-0761-special-binary-string/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "33d8410297bbea0f16a72b2c2ffe83e3421ca03f274e2f703eff96348ec9822d",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-0761-special-binary-string/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "6427df810cc2fb7afad599ad548b9836322ceef544992e6f7fdfaddd36832339",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-0761-special-binary-string/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "dca940baaa6086f46c1847a61d97babdeefbc5e4d536d2cdc0ca838e351382d2",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-0995-minimum-number-of-k-consecutive-bit-flips/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "2c7c9ba5b267a16f61f34ae3817ef82b0a0a0cc51f5413787adee40673cfa06b",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-0995-minimum-number-of-k-consecutive-bit-flips/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "61821f85bbb80a4e78449214a9b1c12c2d6059aa9b92b18fdd14f373e17210cc",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-0995-minimum-number-of-k-consecutive-bit-flips/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "42a06bbdbaa259d8f1f5f4345c732c854b1372b234916ed6a2afb18540a62043",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-0995-minimum-number-of-k-consecutive-bit-flips/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-0995-minimum-number-of-k-consecutive-bit-flips/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "1a91713c8c73ae16329654f9ae885d36207b6f2a4734c938147562c3dc774dee",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-0995-minimum-number-of-k-consecutive-bit-flips/public_tests.json",
+      "category": "public_tests",
+      "sha256": "e4b696d86287229cd459c4c3650d6a2ca73e3c0387a49690df2519c4ed9c659e",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-0995-minimum-number-of-k-consecutive-bit-flips/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "f14d6e502107c5cd0fe056a3906246195a7cee2cc92c5ac11fc7127ea50bbb1d",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-0995-minimum-number-of-k-consecutive-bit-flips/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "d8b398c80b3556591b02e8a2c74e761f3a5df9f8c2cbe7d537b1b201bb923db2",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-0995-minimum-number-of-k-consecutive-bit-flips/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "1d9f20467a95e422c44222b5b2cb0e7e61acffe542b820f1e1b44d099d8c04c5",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-0995-minimum-number-of-k-consecutive-bit-flips/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "eaa250f7de67c6c982792ceccb5904ca4ee83427bd9a670ab858013264414fea",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "124fde75fd0eb9781c85472e6b74f52627a4d7accb7cd94a98f662f20290c704",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "37a806ac0eed9447fbc900e185c1bd19b227ec3360faa3ac571bb1fcc1b0a4eb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "2e4f6a68ddf9321aab60762d24f75002bfa0b7a8c9fe936a135f5fc3f09ce525",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "a657a89ff1183ee99a038550b9a5da5beca4f3429d4a255b40ce60ec572263b3",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid/public_tests.json",
+      "category": "public_tests",
+      "sha256": "5ee59f378ede758e2734259440d2980a19541cf9762f864cc0e34b952f24e434",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "a724f9b0feeb8d439e76a33cd5991b232aeaa4ce9b63e4788b97b07f6f19fb9d",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "1fa8b095bb3ade3dd33417959c84f3d6427f91dda0392afaa83f4a49c2dee5be",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "d929700780db07f9e070130aa471e0799938622900639464f8c578632f70cbab",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "d7f1084f3ffd65beddcc7fba5fc019347192fce190336003a6cd1ff4d09fd607",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1547-minimum-cost-to-cut-a-stick/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "88e4d416a74866c7c683580a00cb40536e16315b4118f2b08173e83c8b75c6da",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1547-minimum-cost-to-cut-a-stick/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "3eb0ea46f75d8a88b820e59799fee722942bfce19fd744edcb80bcf67eb519ac",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1547-minimum-cost-to-cut-a-stick/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "4837e26abbedae2a9d80df41df98b37acb33d507207f09681587e3aacde781a2",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1547-minimum-cost-to-cut-a-stick/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1547-minimum-cost-to-cut-a-stick/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "af163d9ddb6c7c6b019496a79ab2e93ab29b862482ce448d88700d02ece89fb1",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1547-minimum-cost-to-cut-a-stick/public_tests.json",
+      "category": "public_tests",
+      "sha256": "1449235120f38750bba5c226c016b378e1d59523585b3055e6a3c704cbf965e8",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1547-minimum-cost-to-cut-a-stick/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "2722e0bc82e52982db8dee19e0506529a632be3bd8e0c5ba9347e63fdf33e3b1",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1547-minimum-cost-to-cut-a-stick/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "162d0efc0a876f3ca8265ad8137f4fb0326b5f587bd066cd4e6631bc2f2159bb",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1547-minimum-cost-to-cut-a-stick/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "7a8dc2be70d56141f0832079b21daa0027e63e55e8c98cf1047c4bc00a67af12",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1547-minimum-cost-to-cut-a-stick/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "cf5afb8263aac4ec381bf3dcff6dbc6dfb97d3bf6695357a362fd3d5ba40db5a",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1611-minimum-one-bit-operations-to-make-integers-zero/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "80bdfa5392bd05235c83ee1aacb555a28e46ea11aee3d3debb1b8ddf85b52ff7",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1611-minimum-one-bit-operations-to-make-integers-zero/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "5d9c501d82d47c0016555b45de7ae6f05c3a239663d8bd77d696f069627cea59",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1611-minimum-one-bit-operations-to-make-integers-zero/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "f923af00352fbf49c32f73952b46258d652d8c252fb73b11852847c98a04a12d",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1611-minimum-one-bit-operations-to-make-integers-zero/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1611-minimum-one-bit-operations-to-make-integers-zero/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "b18930b30003823bc415e3410309432347299a74c98b08b20691a33447d6025f",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1611-minimum-one-bit-operations-to-make-integers-zero/public_tests.json",
+      "category": "public_tests",
+      "sha256": "70ce780a0f35962da0c084a9135b0beecdd77df4c9b3c9faca019d1a58c80f28",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1611-minimum-one-bit-operations-to-make-integers-zero/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "c8fba986462b45e556c3512fada09332ebf1dcdd4a3dadc1b97eefdb224af2eb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1611-minimum-one-bit-operations-to-make-integers-zero/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "09be6588ca674317ba14594900ce06b0adca9591d0df9219ebcb9eb078bd22a1",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1611-minimum-one-bit-operations-to-make-integers-zero/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "8a259168d7a4c2ff30686a6bc0781a58328b322c737fdd0882b17b27b53c7147",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1611-minimum-one-bit-operations-to-make-integers-zero/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "a5c9ffa1d3a4b5a703b32fcb9b193b879075b647780af987116d2b4ae12c2f0a",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1697-checking-existence-of-edge-length-limited-paths/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "b176ddaca444a956eb6fbaf51f964a321af5e1da70cb3af86b94f8d6165d0ae0",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1697-checking-existence-of-edge-length-limited-paths/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "e8e2a43bcd29b6b35b2cc30c81b3d33dcec898cc046318351c4fc46bb3cb5ea5",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1697-checking-existence-of-edge-length-limited-paths/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "179e5390d8260bb5cf2e77ae2b1db9b47f9414944fd086a5bc70f48e7a3cdf50",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1697-checking-existence-of-edge-length-limited-paths/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1697-checking-existence-of-edge-length-limited-paths/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "ae0c0529fbef0bc3d1c41528c3fcbee46cf67b43512859b3227f1d693e73981b",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1697-checking-existence-of-edge-length-limited-paths/public_tests.json",
+      "category": "public_tests",
+      "sha256": "2b8335623506d6e1aec88a65aacd1a09804fae9e394e5951be7bb51e43c37a6f",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1697-checking-existence-of-edge-length-limited-paths/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "5604d2631247641e8b8cd8ea983b32304d79bc866f4ccd75b49d64ef4c7e5f04",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1697-checking-existence-of-edge-length-limited-paths/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "278be62114ece5b8fa64224de25c2b8af90d9c3ac0cf9e55418ae4b9423e3b45",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1697-checking-existence-of-edge-length-limited-paths/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "1cc6056ebb41c12d6d3978b68f7964492001c29afd0f76d63dc1f73325ba252f",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1697-checking-existence-of-edge-length-limited-paths/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "b9babcb6796b5302b88c9edebc8a18d1417991af060c0c3faff50d395e4e7563",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1786-number-of-restricted-paths-from-first-to-last-node/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "fc4b5aa0c8bc868430633b6c9f535d9cfdf1a79136984f9244713d09badf1917",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1786-number-of-restricted-paths-from-first-to-last-node/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "34498c9eaa4f7e5664c8f259ea917a9523adbec098a5c8360b438d9583f4021d",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1786-number-of-restricted-paths-from-first-to-last-node/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "b0e61b10520bd6f595051cbdb338b327bf82a489edc64e565964120a94fbccc9",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1786-number-of-restricted-paths-from-first-to-last-node/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1786-number-of-restricted-paths-from-first-to-last-node/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "abe17541aa8b8a7a1465ca5d26d4f4f3ded76df65bc997aa4f132b7892db5822",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1786-number-of-restricted-paths-from-first-to-last-node/public_tests.json",
+      "category": "public_tests",
+      "sha256": "e53822e97a185cbaa8f3bdeb51184db0f2705985ef41f5e292e44a5272e42bce",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1786-number-of-restricted-paths-from-first-to-last-node/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "151a16ce527d8c3dc922071a7ec6dfe72f7b3f6fdb9f5c1e67c865f2f36e5a73",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1786-number-of-restricted-paths-from-first-to-last-node/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "f72cefd5d54f7bce2318cc98e0fd182737ccdd94b4fccbe935d55b64fe9a07b5",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1786-number-of-restricted-paths-from-first-to-last-node/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "152fe0791408ff80803038fdc9f34c41707d034f378b60a31cbb41dac1ac48c9",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1786-number-of-restricted-paths-from-first-to-last-node/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "10078f1fdfd840b83554753da7e00d1d24c18a3cbc83758400552763862a6462",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1851-minimum-interval-to-include-each-query/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "cdbffd98c7f9e20429f3e9395a353f34d949b144c125ed7e55ee62dfbb6d3b8f",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1851-minimum-interval-to-include-each-query/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "fc331c1dcb6c4acdf70c884092d1ca086ac5199b4aaa189b8de5220a98037dbf",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1851-minimum-interval-to-include-each-query/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "7a96ebc8635f5250b06775dc1eb9c496202e9ffa1a03994c0bcd3d48caa093a4",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1851-minimum-interval-to-include-each-query/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1851-minimum-interval-to-include-each-query/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "d67dd8a516150df3ba9b2f3d2729a74e6f8dd17aa6149e8ad62bdda7f853b8b5",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1851-minimum-interval-to-include-each-query/public_tests.json",
+      "category": "public_tests",
+      "sha256": "ba8cad9591ebdbcacb30e8ed7aaf08d1c204068c23826fd621f8f0c09ef457cf",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1851-minimum-interval-to-include-each-query/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "7304a96669fc28a302f985afd49b2531eb923b73753bc36a34c4a95543449164",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1851-minimum-interval-to-include-each-query/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "8f394d5bbb61c9da5cffc9a80e7d200b7cca5bfa4276f2a77e504a2fb3f28162",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1851-minimum-interval-to-include-each-query/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "999a0d474e3287d7f1b69b68dc91a882879831d879cb178aa783ecf963f37498",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1851-minimum-interval-to-include-each-query/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "1afff5031025b6df62ab9066c88a4f1bcbb4a523d0b4ece14a0c9f39ac9c4142",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1896-minimum-cost-to-change-the-final-value-of-expression/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "c8e1fe55be52fa2a536f1869b32a196524bc16ddea626138aa756e58eab396e6",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1896-minimum-cost-to-change-the-final-value-of-expression/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "0ce9d21cb9f66a593a60e857f9047cb7bcd1c7b09fcc8164fc0efc3f95532a35",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1896-minimum-cost-to-change-the-final-value-of-expression/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "422321afab29ba4ad68e0a7ba1cfe42c0525997e16a029f4b70de40b6521915f",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1896-minimum-cost-to-change-the-final-value-of-expression/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1896-minimum-cost-to-change-the-final-value-of-expression/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "951a96c87a8f6b84fd3b49530bc28f3cae85486f19ab23b50197723385235b08",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1896-minimum-cost-to-change-the-final-value-of-expression/public_tests.json",
+      "category": "public_tests",
+      "sha256": "ff73ea18b8a8221aaea71ecd0b63917014c16e2b78c24a2a5c513a935fe16052",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1896-minimum-cost-to-change-the-final-value-of-expression/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "49fd81953c6749df0ac4d532fc8e881075c0eeb16143a30b534c30e9057ebf48",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1896-minimum-cost-to-change-the-final-value-of-expression/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "ff6fe2e26b1f8f42d9b9f52999f06aaf94499b57c0fcdcf714a35cada8215578",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1896-minimum-cost-to-change-the-final-value-of-expression/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "e00e7e709bd5f1811a94d92f19c2559c75896549f27541d051906afb23622348",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1896-minimum-cost-to-change-the-final-value-of-expression/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "5bf7cf5e2e359c522d4fddd72c35db538bf806beab396a4b052de6a0cb333b85",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1970-last-day-where-you-can-still-cross/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "b6b335f1f87ca24fc52d02a99366635c237440f8d18a413e1d1ae53d50eb3249",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1970-last-day-where-you-can-still-cross/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "31c5a14ae2db421ab221e4875875fdeae1e3389d467e36cefd0f56f7fdd731e6",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1970-last-day-where-you-can-still-cross/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "8f6cab195a172f0aa37017099e750eb1392e854f7d3189f7b7f0e23fc807fd59",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1970-last-day-where-you-can-still-cross/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1970-last-day-where-you-can-still-cross/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "14cb6d1881ee7563cfdbec59031e314843ff22d88851d9dd46939e68d5115f37",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1970-last-day-where-you-can-still-cross/public_tests.json",
+      "category": "public_tests",
+      "sha256": "191ebd15c26fe9d6545c2c81036e7cdf99458e6741f56262e814e8cf85f94d91",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1970-last-day-where-you-can-still-cross/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "186c73300c945c4635c7d1f46e3f2c709cb8fb989320811ac6122ca2ee59d0f8",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-1970-last-day-where-you-can-still-cross/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "d398cfafdfc0be928d42f7656f5bfbb7573e53a2c1202078563dbf4058389493",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1970-last-day-where-you-can-still-cross/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "3cdffe2de2e70631e59684665caa8be1d3bc8267889b64f6057447276003ea92",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-1970-last-day-where-you-can-still-cross/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "536e60529f18d60a6dbccd4ca1da16ed4aed28b938c41b91f031bc44ae5bc3bf",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "47e85aa126901967d8aa0f8f95e65972e16effd69b8e667ffab5bb45b39fdba9",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "7c64fed549de12c4fda8846696952cc5133f4d9f35bb0b6580ae5b16a2e1fb0b",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "feec02e5f6ec413f108f39ac7de7e637b9cd65285b7e0e1268c0e8a31081c3d0",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "b4c9b047127e40636fd574424784223c1333cce847d523f12b804cc227492bfb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference/public_tests.json",
+      "category": "public_tests",
+      "sha256": "cee98ecc013602d5a52dda6c990dcd2e41683b52c7037497a15092bb4cd1bdaf",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "e0514f211b5dfb8e106e59635591435edf6e83f7040eca0227bb77b54d69f75d",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "4b3a573ad3ecb2160f72acdc98eb09375818e830ef999ca6f068d660ee3c53fc",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "38789b2002f036e651614e3d6172c9ac961ce44239fb6a42d90882f65e9a1857",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "4e28301716af45df4a34c2970e59ec26d714c2acfc610c54f2606be92da1b462",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2071-maximum-number-of-tasks-you-can-assign/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "63e554777021e9af0c36a68d09b646f7ed844db2672104d853212f22deed1748",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2071-maximum-number-of-tasks-you-can-assign/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "70cf7ef0dd52279d54283c8dfff399898b7beadb144ffeb35884af62520166f5",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2071-maximum-number-of-tasks-you-can-assign/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "9f3612c9b014b229b5909b1b3461393ce3a97df21a224aea34925f4c8a2636e8",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2071-maximum-number-of-tasks-you-can-assign/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2071-maximum-number-of-tasks-you-can-assign/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "d287de8377945dc9601a0897c70937c6959bff9815f8dd7c22a30394848cf7ef",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2071-maximum-number-of-tasks-you-can-assign/public_tests.json",
+      "category": "public_tests",
+      "sha256": "d70816f8e2541f9c406d46e4f8cc6218b8c3f10c02b64273b318f34e538619a8",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2071-maximum-number-of-tasks-you-can-assign/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "94aa9e94fb3841ff478044846089082503384f39f7d48bd4d2c3c042c847cc0c",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2071-maximum-number-of-tasks-you-can-assign/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "8068fe495ac8622fea0a013acfdc53f341751a78b1d0617a580f36adb04ae157",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2071-maximum-number-of-tasks-you-can-assign/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "b47614e39ca97ac33abf18679eafef3dc49c932f36c584f8af410bd4cc48ccd2",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2071-maximum-number-of-tasks-you-can-assign/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "01a4ab36267e8a603871533fb1e62b16402617b6f534823049513d3e605fad2d",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2188-minimum-time-to-finish-the-race/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "c4b9dca426b9321bc977cdc47bd841c46a6ceab1dad23d11d18d05f9de26f042",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2188-minimum-time-to-finish-the-race/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "66232f356f826cffe6a5ff631524344144dcb862d3272c8257110be57daf372e",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2188-minimum-time-to-finish-the-race/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "6b780dc29e538661f5743d3963f2516900c317fa1f6eec888dcd01cc36ee4662",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2188-minimum-time-to-finish-the-race/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2188-minimum-time-to-finish-the-race/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "ad6492e7b673412826645ca3438840d31e5d223e44cf5cefbf51d755f8821dd8",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2188-minimum-time-to-finish-the-race/public_tests.json",
+      "category": "public_tests",
+      "sha256": "8ba6291cd4018ed199da584beb1e6c3b19fbb563b4ca5027070ec1a53d9d3266",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2188-minimum-time-to-finish-the-race/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "8333442712abd030ea5862a08abec1fa1587577f6f3118eb9bd7a3c748a403b5",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2188-minimum-time-to-finish-the-race/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "b177be6dbf1b5b8c6982c88b1d36b8d1f2eb691eff864a0f5d3afab62049251b",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2188-minimum-time-to-finish-the-race/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "b15685473eba67eb34954f89d5676223744c93b9dc2001fc9f66f89926d43269",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2188-minimum-time-to-finish-the-race/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "39abfe5e6d457ff090a8a3e92f406931544c56bb7704a0ef96dd59f1d16d785f",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2203-minimum-weighted-subgraph-with-the-required-paths/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "677efc7cd25b2bb6bc389ff9bd1c7e794e7e5d810d257087a20c6380570dbd66",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2203-minimum-weighted-subgraph-with-the-required-paths/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "f4090328bf1f091414f0b7400d37dd9b3da00a0e94c7cabbb27d77cca6c77c3a",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2203-minimum-weighted-subgraph-with-the-required-paths/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "a767f0d08a26bf75cd34d521d0b0707d586131669951405a4334a7bf34984c07",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2203-minimum-weighted-subgraph-with-the-required-paths/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2203-minimum-weighted-subgraph-with-the-required-paths/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "20de563fb8c2bc5ae231cd007152d43cab7e48dc537461ea8998038b8dfe5f53",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2203-minimum-weighted-subgraph-with-the-required-paths/public_tests.json",
+      "category": "public_tests",
+      "sha256": "3348714c7247624405311df0c55227982fac27b867949f671cc4e7e5673b29cf",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2203-minimum-weighted-subgraph-with-the-required-paths/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "b79f7f2ef97e1cde550358cbdd7335f25118576df01179da7d25f90136cb5d63",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2203-minimum-weighted-subgraph-with-the-required-paths/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "39a0499151c02582d42d9d13bbee77c465852143013dc8d33923d616d384297f",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2203-minimum-weighted-subgraph-with-the-required-paths/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "776624e180224b5ee48517d7939e1c6ad28808fb22fef948b93346787b3185e6",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2203-minimum-weighted-subgraph-with-the-required-paths/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "adb89faaa2fd8eaacdfecd775b3e92cf9b91e9003a412ab4783b0a3ad2fdab03",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2366-minimum-replacements-to-sort-the-array/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "f5a3e5ed87850b6955931da0df6fa5d2038fd7ffba3e66b114ed2cbe533dfa16",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2366-minimum-replacements-to-sort-the-array/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "4f2ea60c80e8b55abc205c6c5569a239780929e91ed6eb042ff12bf22aa779dd",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2366-minimum-replacements-to-sort-the-array/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "965b0874c8f88737f0f2134e7262dfcb5c0cc71eb22a73df4c7db27cbd5087e3",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2366-minimum-replacements-to-sort-the-array/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2366-minimum-replacements-to-sort-the-array/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "d7cafb838c01d787ef48d53a0864794a81373e524c7989122ceeb15917839e97",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2366-minimum-replacements-to-sort-the-array/public_tests.json",
+      "category": "public_tests",
+      "sha256": "941a7fdd49cb72a4d4f2ebc7493bd4750c748bfc330119ff783610e57f3178bc",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2366-minimum-replacements-to-sort-the-array/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "28bb4388ef05be13c3aa9147cebabee8dcbbb13bcf011bcd99ad086d5f404c0c",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2366-minimum-replacements-to-sort-the-array/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "ea92cf929d319100e8f6368f87b0e0ff56252285b6ef4933cac95c44dac9c46b",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2366-minimum-replacements-to-sort-the-array/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "9a1d6ab8f299aca90645bfa696ce77e8f4e58fad0cb60e49ded6f30a6693dadb",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2366-minimum-replacements-to-sort-the-array/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "5388d9efe812e570169ace05aa950da1cf59afe8159dc3cdc4b53984778068cd",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2421-number-of-good-paths/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "175295508c8fe85cb326f5e17789e9774c1c0d57099ea81d7fdc14865e64d9dc",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2421-number-of-good-paths/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "187a3f57197fdc643982d3e6a9c787b010a9a46de9cbe81f8a0a9dca7d78c218",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2421-number-of-good-paths/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "2b896a7593986d99e67f07e7151ce17b681652c2cdc8eb2cc44c32838cfd2519",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2421-number-of-good-paths/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2421-number-of-good-paths/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "f1472088c151a9bd7aa25c6c5267cd08f8336f50b1309f14b696735cb69eeece",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2421-number-of-good-paths/public_tests.json",
+      "category": "public_tests",
+      "sha256": "a88e38e1f0ac36b3c1bb67fc3fc2757402bb77d365a8ad5846cc60eac2da7dd2",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2421-number-of-good-paths/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "7b09c5781f9e273de167e50a0815a2698606657dc0671451978b080aac879346",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2421-number-of-good-paths/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "13bc3b90d7737817ec5a752f244c1151df3a59d8270fdbfc91ba76c5269c750f",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2421-number-of-good-paths/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "115b46aad80d21539fb76f7023f6b288e650323baddad95bbe5e6c3415f9125c",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2421-number-of-good-paths/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "12d5cb964406c198ce7e5d66be840e70f13f7846f46e789cc496caab3428ff9d",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2478-number-of-beautiful-partitions/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "06b5107503e59a6608e76f253caee8f8a46f4c0fbd5681a2c2ac6d9d55b68ba3",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2478-number-of-beautiful-partitions/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "e153596321067d15357943ca29d5b55fa1b54eee88fcf62ab2943b75b0533adf",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2478-number-of-beautiful-partitions/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "e2cc3c284dbb9f9fd211ae541af29132a22e2b4dc31b01dd4028bbd5936ab16d",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2478-number-of-beautiful-partitions/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2478-number-of-beautiful-partitions/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "020435f1df95eab4c5f16fa2035bbb401a02ed0f01b8e35eb83f1d0e68b48bcb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2478-number-of-beautiful-partitions/public_tests.json",
+      "category": "public_tests",
+      "sha256": "2b9c5237bb3e697b789f202d1ad820e17c55951eb7386f364e799aca9dd8abad",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2478-number-of-beautiful-partitions/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "0646a711e5202cb67f4a941bddbdb53cdc0830c7636c3c1bffdd0f83f1cd5a4b",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2478-number-of-beautiful-partitions/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "3c730074c94b40f6b29a522507ab0b975f5b81716976b58d9fbe333933d01d41",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2478-number-of-beautiful-partitions/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "a0d0a37df7707ff2bfad356571c7700e65239f34d6554995c15efd1ffddf1ba9",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2478-number-of-beautiful-partitions/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "b030a7b28e9dd8484f85cd9a1f14c116978b55d7c1c2b2bf02db67370c523a6f",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2719-count-of-integers/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "f3d7c3c6f50c90489eeff4b7325e96449172a4afae551da6277a249e9e2c45b8",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2719-count-of-integers/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "e5685f2afc25dcee3a8ade1f6b5cad139a8b0b7c49e13a4c3b79af22f2a97da9",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2719-count-of-integers/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "e9e47f68e0b96eb3631f10ca9cf7b8cb7547791c8be7c93f9ec35c5164dccfd8",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2719-count-of-integers/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2719-count-of-integers/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "863ce4aedfcbb511d6162807d88c362e07f5fc00f65e6e6d5184a5c93f05f22d",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2719-count-of-integers/public_tests.json",
+      "category": "public_tests",
+      "sha256": "8852eb5d69b003b5d2a3d850f4d4d8a6147f0b9ee938215c87c23bb511e15ec8",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2719-count-of-integers/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "e8d86bff96e33e140245d6be5d8563dfb73184dc0fcf9482a5cb1108f9bae389",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2719-count-of-integers/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "4d27f1982cdf65597af21da6d4292f1404cd316ac1d37982006310421c686ecb",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2719-count-of-integers/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "58766c5e0ddd9eb1bd275f13726a3bc3db938d05082a55e8153704e48a04c764",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2719-count-of-integers/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "90aa7c0ddf3427ddc7e2146ff121a3720a0f9e688d6e684c4f82d3c11e759f48",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2809-minimum-time-to-make-array-sum-at-most-x/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "46a72b9ce6281f8109449f508162cc7b3b0de4b27cf80000ba5b696b51c53e98",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2809-minimum-time-to-make-array-sum-at-most-x/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "72a7adabf9739dc7ac7d5ee546e0a4a5d8b024baef9011a39d180dc2bd052ee1",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2809-minimum-time-to-make-array-sum-at-most-x/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "83b64febdba52d92b9b4f8a1f5945c3d13bd3e798e6be9af26395e82be28df08",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2809-minimum-time-to-make-array-sum-at-most-x/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2809-minimum-time-to-make-array-sum-at-most-x/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "c7febf2ed83f199bedb72c0ddf6f4af569d9d3c5e440d8752b9e44fa7d84bc1a",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2809-minimum-time-to-make-array-sum-at-most-x/public_tests.json",
+      "category": "public_tests",
+      "sha256": "9d1b659e5c94f7b8dfe29f32346f4a031a11ef38b9aabd9776e0aa8ca76f91f6",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2809-minimum-time-to-make-array-sum-at-most-x/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "ee50080a98d4cf5d6b737f0f46b1e9cd7fe667c372a135975ea9ec1c80f7ae2a",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2809-minimum-time-to-make-array-sum-at-most-x/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "a968a6c873e35ba85c4205e48e7ac7b92faecd12ffb7c368acbe7ee9a15b5924",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2809-minimum-time-to-make-array-sum-at-most-x/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "141127cd6d1ad9e2f3bc34a8a5891a1929ce74793b4293b11c2c15ee67db2349",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2809-minimum-time-to-make-array-sum-at-most-x/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "0ec697a450e4264da72170bc7bdf56ab405f6431bfd9c242a588eae0c2690396",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2926-maximum-balanced-subsequence-sum/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "cc8935e7573179c256bb37939a2bd5812ff3aa3c4ca43f6701f4ec2f9bac4373",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2926-maximum-balanced-subsequence-sum/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "63f8e71414e36777089534d3fb429932f551df281d0ffcf7587bd73077d6c3e9",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2926-maximum-balanced-subsequence-sum/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "a275ced746cfc2c7a59eaf2a1bcd1a27bde8c965341d32c9e333cc523e6d130a",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2926-maximum-balanced-subsequence-sum/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2926-maximum-balanced-subsequence-sum/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "5ae61c1647123d8e4144789dca35da4ab42fa3b5c768280ff2e7c0d0a8b8bf10",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2926-maximum-balanced-subsequence-sum/public_tests.json",
+      "category": "public_tests",
+      "sha256": "4d63b482814a973b394cc76de02069ada1746269265b9b85b7b24902222c5321",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2926-maximum-balanced-subsequence-sum/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "e494f47f00a39a2bafa1b6b87bd44bd61d2dc7108d7001a76fdf8a2c9d502d38",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2926-maximum-balanced-subsequence-sum/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "7fdedfc8adae6a28c2b60604562495b89311253cdeaf7cca697001ed88a81a20",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2926-maximum-balanced-subsequence-sum/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "fd7b3f80957bc866317a3a3aeabaffe2bd5700f1063533c8b55f16497b260d5a",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2926-maximum-balanced-subsequence-sum/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "d234584b8a13c8a74d110c0e3bb1f8ca8415bc62fe9293f7659fea1561400365",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2940-find-building-where-alice-and-bob-can-meet/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "e7a29d8bcc705ec39a459e6d7e3e5645363f25fd99f5bcbaa3d03356e54fd7a3",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2940-find-building-where-alice-and-bob-can-meet/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "93d40f4f2f61966023eb79bd83016e2f15154cca24f13de9c6cda086c1e6f60d",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2940-find-building-where-alice-and-bob-can-meet/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "c85700e4e2c74fd6a2b0549ab0b83e80d5a77bb1fd46a37e82d6f90f81c693ee",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2940-find-building-where-alice-and-bob-can-meet/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2940-find-building-where-alice-and-bob-can-meet/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "e36f3573193cc51a773a35d837632b25559cb9297c4496dc109531a0a3b86526",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2940-find-building-where-alice-and-bob-can-meet/public_tests.json",
+      "category": "public_tests",
+      "sha256": "fc1569e69d452ed84d1f954b9715a25da3240efc6b323e27fc9fb179d767a57d",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2940-find-building-where-alice-and-bob-can-meet/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "f89f8a66ac48301c66422ae41c5b2a5e138cd5465dd403703cf894deb36fb75c",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2940-find-building-where-alice-and-bob-can-meet/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "efad3db51b2e092a3c954163fca21005975f3ab0c4a7618bb1a64753e75199ff",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2940-find-building-where-alice-and-bob-can-meet/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "9f9f7bca4d1b3b8b34ff76ba0e54f518a6d4d747302691204df68713b714b067",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2940-find-building-where-alice-and-bob-can-meet/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "3420ab75e01ed64beefd4cd526772eb091bca4d2c1c80426d14fc3c1162a0191",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2945-find-maximum-non-decreasing-array-length/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "ecf6f1065d580ce95ebe8790e6503357911c40eb6327fd7c0e2f66ff726cfb63",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2945-find-maximum-non-decreasing-array-length/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "5c5b7387526e7c88cf53d6d96afc21e15fd640473f7e5045b6cc587f15676452",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2945-find-maximum-non-decreasing-array-length/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "9159811e397bb8840b8775f1efe32049d6ba0484a1a657a356efc7c023f3623a",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2945-find-maximum-non-decreasing-array-length/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2945-find-maximum-non-decreasing-array-length/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "3aced84a0a482dd51e6459aeddeb8f968196e4d3357321c9780c076c4ecfe474",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2945-find-maximum-non-decreasing-array-length/public_tests.json",
+      "category": "public_tests",
+      "sha256": "8b0ccd4faf5c124c10b0fcdf66b9a752239db679ea43124f306021995542437c",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2945-find-maximum-non-decreasing-array-length/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "1221a2500137eba6d8759a03d5a36bba98137e73fd8c5a8140e639aa8fe77187",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-2945-find-maximum-non-decreasing-array-length/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "7ec2cf88545b89f78dbf55fd47ff04d94687014d9136fc73b05d7f9ca7c19a40",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2945-find-maximum-non-decreasing-array-length/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "1b82b326836ead78604d46e9813deaa324f0cc9e1e0f8f5c4a7aa296a294dc6e",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-2945-find-maximum-non-decreasing-array-length/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "d61c340ce9fefa739bc8a9a2c8e35ca8f99ad010e98ff980bb39498ea942dfde",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3022-minimize-or-of-remaining-elements-using-operations/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "a1f9bb22e2d8a4512aa0988f02aacb65d78b642db1a085e06fb5a973cee19935",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3022-minimize-or-of-remaining-elements-using-operations/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "99dad4459ba29ffec0413e35523d17bd3eff74fadc45553a4455c42b87300274",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3022-minimize-or-of-remaining-elements-using-operations/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "ce74c26276342c84e2085724528309d868dc515987b7ec6ca6bf037564797afc",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3022-minimize-or-of-remaining-elements-using-operations/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3022-minimize-or-of-remaining-elements-using-operations/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "427d629cc8764ca5decf079ab7552f2fbd616b97452522157a7e763f125f834d",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3022-minimize-or-of-remaining-elements-using-operations/public_tests.json",
+      "category": "public_tests",
+      "sha256": "dc18366630048d37eb90552ddf6080002cab2c702c84cbf9fe42aa5f78584201",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3022-minimize-or-of-remaining-elements-using-operations/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "1933938790f016d66875d9ed7bcf2020d327d49a2ff6e0f7ced4b0a6c8c001e0",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3022-minimize-or-of-remaining-elements-using-operations/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "106f8174444135f1d10fbc2311b420439107b498c493b7df81035b1dabf3e3fa",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3022-minimize-or-of-remaining-elements-using-operations/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "9424117066ca97a9f623a3ad4ecab4967f30cf5485ae38705356c7e0f6960b04",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3022-minimize-or-of-remaining-elements-using-operations/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "f0e7d83c82ba784b9f9969433315d0101d274979e3ff701e6b497fe7b43b1c2f",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3045-count-prefix-and-suffix-pairs-ii/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "fb97c74c5357e0c1513b95a51a329bb010f72b009f23458f1dabc698d3e4c6ad",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3045-count-prefix-and-suffix-pairs-ii/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "e4e2598e088322c13639aaccd951f0049ff652931e8addbd9d4529b0b53f61c2",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3045-count-prefix-and-suffix-pairs-ii/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "a5c312b69b025aa02421af33af9926c4c061153f95dd8cd2a8eae62c5ec26f71",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3045-count-prefix-and-suffix-pairs-ii/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3045-count-prefix-and-suffix-pairs-ii/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "3e37ab60e3b8918bdc85285aad81176fe54db6adff7da07a7e18b867bfd1aeb2",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3045-count-prefix-and-suffix-pairs-ii/public_tests.json",
+      "category": "public_tests",
+      "sha256": "7803d83e7fee283cf4f6a17f7a45db074c756ee3574326b0937ebd88bb32489c",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3045-count-prefix-and-suffix-pairs-ii/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "0e22510fb58ff6f6ecd76409eaa9ac6a5ec228572112e6ff45fd2405481c5d2b",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3045-count-prefix-and-suffix-pairs-ii/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "762767c0239ff76b6878bba5fa7782e7b879aa7fc6b78a7500bf159396838f15",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3045-count-prefix-and-suffix-pairs-ii/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "fbaed50b61d4885e9cbb63c5b528f7c9b14a6367595975c5518102e84dc39883",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3045-count-prefix-and-suffix-pairs-ii/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "ec9f6b92425ff1f1bfdd984e37a53ab96d9dc280b6bfc423262b739e13238335",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3072-distribute-elements-into-two-arrays-ii/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "07db98f8273d6a53cbfac3612963b423a9a29f2ded22ec77181eaa267b88dcae",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3072-distribute-elements-into-two-arrays-ii/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "934e9ab5d4d11680bfa90ead250b9641a4475544d4c5b53f33b3524a22f0dc31",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3072-distribute-elements-into-two-arrays-ii/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "a62e0b32bbb0af9ae666aa429651815afff0b91c44c15c055ab57f97a2a67dab",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3072-distribute-elements-into-two-arrays-ii/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3072-distribute-elements-into-two-arrays-ii/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "f0d055b0b32888327660ee1b8309eb841f130e94112d5dbbb1b15225ab4e312e",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3072-distribute-elements-into-two-arrays-ii/public_tests.json",
+      "category": "public_tests",
+      "sha256": "11768de9d6631a260fb9cc94c7b50ba4ffe6724ed67bc1c04f01aea90ec3b083",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3072-distribute-elements-into-two-arrays-ii/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "1df4801dd2ed045e857f3fd2fe84a9287b4e65bc3f3f4a42162f2f05e7a4dfbf",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3072-distribute-elements-into-two-arrays-ii/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "23b578302daa461726c82687ef4656b4c30f224c31efa45cdfafbf0af3e06e16",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3072-distribute-elements-into-two-arrays-ii/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "8c60af44edb2ed93bc6b5f419b7b6355659271659a69ab5e97dd6eae276d70e0",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3072-distribute-elements-into-two-arrays-ii/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "fa1a4e59eed756b2a3a2038bba936bf3b57309c07c4348322de3475001904eca",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3077-maximum-strength-of-k-disjoint-subarrays/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "28783cc579d973d68600f4192a0f6f737ebcb6f48c55fc32555a324e75384d72",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3077-maximum-strength-of-k-disjoint-subarrays/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "5a7d00a7429b7ced16ce5bd58c92b9fd4c4b9d6a1ffdaea583ab47da33b1b5d8",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3077-maximum-strength-of-k-disjoint-subarrays/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "5ed20eb1b8cae8edb8b8f380a4a4a3e73d471bbcfecdf7f929dbb34a9e21753e",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3077-maximum-strength-of-k-disjoint-subarrays/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3077-maximum-strength-of-k-disjoint-subarrays/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "f3334c40ac86f19b4bd60db933ac174ded4dfe029210e8bf92e10df236f504c1",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3077-maximum-strength-of-k-disjoint-subarrays/public_tests.json",
+      "category": "public_tests",
+      "sha256": "a2549a7e1faa3b027594f592c7365e3ada16e814d159aebda94907162ff31cca",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3077-maximum-strength-of-k-disjoint-subarrays/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "9af9c1a4ff1df5304245f2b0f5d34a896d6c7c70cda158f060732bc0969d8a5b",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3077-maximum-strength-of-k-disjoint-subarrays/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "443bb644f651d74d9ec1f2439341a3fd1d2c8214031b75c9870ce434c701c1ba",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3077-maximum-strength-of-k-disjoint-subarrays/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "3200e8adc4e643fd3fc2cd6ced5e6e76188edf17deb2b1eb49bea7eea7e8ee2c",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3077-maximum-strength-of-k-disjoint-subarrays/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "cf9b3bbd7aca52204c6d23ec6da01b613a17904de9825bffa19869f6844e98b6",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3102-minimize-manhattan-distances/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "78d3cde9b297446a06ce58dbee08e4517f186391a170912fe865c678d82486f5",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3102-minimize-manhattan-distances/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "3f85ad8e6c443cb8d3c45afbd3a2fa1d848739618aef264156afd4ba17203c06",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3102-minimize-manhattan-distances/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "f1fc61f41ec9d01dbaeb69e57c70179422d8ff3d9315ed9d2c4964676169e37e",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3102-minimize-manhattan-distances/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3102-minimize-manhattan-distances/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "a738e0f6357ed63128b9e57d635185045cdb7c334821f485d410ba556a4ec675",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3102-minimize-manhattan-distances/public_tests.json",
+      "category": "public_tests",
+      "sha256": "4e61fb3e6134f7596bb71b4a852c9cb907da68eb76f1fcbbdea13dddcd8a6171",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3102-minimize-manhattan-distances/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "a52dbf434cac48895be1304d5f153d13341ecd05dd2b8e6d3edd5c1a33bc1343",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3102-minimize-manhattan-distances/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "d51a843f286ab9044c8506aca73db383f6732fd7480aca5bd6557951758c540a",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3102-minimize-manhattan-distances/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "d750be3e06b5d12b38274b4256a9b651df1b4f8329327acc04cc9dc3ce1bd9df",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3102-minimize-manhattan-distances/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "2f1e418061d074acc96c9d4ab88386a8d38d5bcbb3adc39c850f185b2a245968",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3108-minimum-cost-walk-in-weighted-graph/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "726270aa203ebb04554537e5776397fe049d5d2bb93366f63ef02f70aad20ebd",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3108-minimum-cost-walk-in-weighted-graph/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "8d3b4a99dc5f324a3a78c0b829965be5fbf2e7b80bc8af410f8e592e424bb4ad",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3108-minimum-cost-walk-in-weighted-graph/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "5f438def5a9006128a2d09cbe4aaf0103359ab8c059540d25c9bfbaeb819a0d6",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3108-minimum-cost-walk-in-weighted-graph/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3108-minimum-cost-walk-in-weighted-graph/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "f04c552a0ec6b130d84314b3fa05b7f073c64ac5ab0fb330b783c578a92a8d2c",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3108-minimum-cost-walk-in-weighted-graph/public_tests.json",
+      "category": "public_tests",
+      "sha256": "ec9570e1ecefb531b69cf4ebf894f3044a30bb833704a08a4080dea60dcd4ad0",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3108-minimum-cost-walk-in-weighted-graph/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "87d5e85cad2f439cea283d9a8f7d001b9fc3cdd3a3a60a07d361ebc61498f9f7",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3108-minimum-cost-walk-in-weighted-graph/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "7d90515df94a767ed86a5cf5dd6481d5bcf445df8852e78705c293ac5e4fc3f8",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3108-minimum-cost-walk-in-weighted-graph/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "6780819febb2dca0a4af8156206887113e1e63972333006bde6ebbea1bbdaf07",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3108-minimum-cost-walk-in-weighted-graph/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "7cf9e88f65df6371af045815eea5135be96d26387a8ea00ddec4a54d2586ff85",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3116-kth-smallest-amount-with-single-denomination-combination/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "3346a651dc23f7c0df9f259faf006d2bf17cdc5bb5a28b51e82fcd5f27fe33ea",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3116-kth-smallest-amount-with-single-denomination-combination/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "92a346b4415d72f9152c05c97b2f47ff5dc21792c7e66f380df2b92ccd07cacb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3116-kth-smallest-amount-with-single-denomination-combination/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "d00a98b8b6be092b7d8f5835166feba4308ca25221924df24a6545c17c3a07ec",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3116-kth-smallest-amount-with-single-denomination-combination/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3116-kth-smallest-amount-with-single-denomination-combination/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "97695cf55f3dd96b9a482e17f15dd63afe6acf52ed7c2a4689ce8a018363f0bc",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3116-kth-smallest-amount-with-single-denomination-combination/public_tests.json",
+      "category": "public_tests",
+      "sha256": "4ade0cb4b68547a888b1cdef87e8ec71385e5aab29a5695c57488667b7273911",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3116-kth-smallest-amount-with-single-denomination-combination/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "b227d9642397b921fb4f8d1dc7dc20df7abdf1c85141121fc162d96e5d5d05cf",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3116-kth-smallest-amount-with-single-denomination-combination/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "5eba10b052a891ab092ddc5172f0d50a2de3f76d8034b5c03db35cf809e1fb45",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3116-kth-smallest-amount-with-single-denomination-combination/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "23569fdfba217b64f794086f9ca4a4cc76d9d34550950d90ee6e5c500e626de8",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3116-kth-smallest-amount-with-single-denomination-combination/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "4ee84f0f82b1245517bb6b94aca71f3c779d235e65bc9abea5232d3f68c28bb3",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3117-minimum-sum-of-values-by-dividing-array/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "4a552319e43793581ce2523cd7429b08539582e56ca803bf476117ce96b84a88",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3117-minimum-sum-of-values-by-dividing-array/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "daf5319aa8ec9254b9c39c836aca0ca43488b72338622f225e985c3942e7f811",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3117-minimum-sum-of-values-by-dividing-array/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "d88229ca560c2db35d1033a43e44da096fcb9cf4aa53e3e3dbe14a26986ce5cc",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3117-minimum-sum-of-values-by-dividing-array/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3117-minimum-sum-of-values-by-dividing-array/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "4c93375f2de2ce505a9943e5756f9d0b74115864792e21e9f898da6f8a412b54",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3117-minimum-sum-of-values-by-dividing-array/public_tests.json",
+      "category": "public_tests",
+      "sha256": "e14b0d441981e15eb1687acced1479f74b59aab5aa1601d5625561c825ba4839",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3117-minimum-sum-of-values-by-dividing-array/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "753cea2d5e948b79ab60eea557f52fec966d57f3ba145d77b38e8200e2e2b871",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3117-minimum-sum-of-values-by-dividing-array/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "6b20a9600dad122faa6c3672f71620a30ce98a0dd4d292fdfc93ee26cab04a31",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3117-minimum-sum-of-values-by-dividing-array/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "018452b11533c1467c3b69dfee76c952a898ed92f53c35b78f6d4a6d5880121f",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3117-minimum-sum-of-values-by-dividing-array/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "1fdbc7743ea0cca4ece5eb03082f3086616e21da962fd7432a2b61ff96953d84",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3123-find-edges-in-shortest-paths/accepted.py",
+      "category": "judge_semantics",
+      "sha256": "ee0e7ad58936659b40b3000f460cab83bc888cd5faaaf95617c3e7ef474f8c4d",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3123-find-edges-in-shortest-paths/benchmark_metadata.json",
+      "category": "judge_semantics",
+      "sha256": "58cae45222747208cb123bb1e85004f61dd629d21179c43cc3cf162e4159351f",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3123-find-edges-in-shortest-paths/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "0107a5f5d56f84b8f8368ec7c598c0644360cde5cdcb3af508ceed7638c78ecf",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3123-find-edges-in-shortest-paths/mutants.json",
+      "category": "judge_semantics",
+      "sha256": "d4e746e64358fa771b4beb4925bc455f99d2f5791ad0f8a137a7fc87552746fb",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3123-find-edges-in-shortest-paths/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "a26a953fc90b980f54e5ef78ac90d87ee3ec66a5c54ca0f22544575e92a27e03",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3123-find-edges-in-shortest-paths/public_tests.json",
+      "category": "public_tests",
+      "sha256": "2c1976d8c02443b0d89d05dc7602dc34f492449290554fff9b90a80c9a8a60bc",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3123-find-edges-in-shortest-paths/stress_tests.json",
+      "category": "judge_semantics",
+      "sha256": "73b7e5194166ade23ee3ab0eff857575afb5d320f330f98b56c284b9599d9a54",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/lc-3123-find-edges-in-shortest-paths/wrong_boundary.py",
+      "category": "judge_semantics",
+      "sha256": "390e5fba949ccf52a1b71f9bee274c80f2c697b913a53eaa0837eab64124e269",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3123-find-edges-in-shortest-paths/wrong_direction.py",
+      "category": "judge_semantics",
+      "sha256": "f13f702267b5a11f8bc19991db10a862d798dbf07502f9713bac15c2c344d5cb",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/lc-3123-find-edges-in-shortest-paths/wrong_off_by_one.py",
+      "category": "judge_semantics",
+      "sha256": "eb5c3f04009e21214ab83a9d7ef1a3559bed6dc374a7f75863570fc5b7ca03c4",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "examples/maximum_subarray_sum_after_k_swaps/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "9b4797299cb98f7221033d44d3d3b1e9f03b8ee8cfa2bce8f41c0bc2a928cf3d",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/maximum_subarray_sum_after_k_swaps/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "d354bd5f0d0ed3ae56d6390a518770dcb794324ba7e52a621820cfe2d9db8a69",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/maximum_subarray_sum_after_k_swaps/public_tests.json",
+      "category": "public_tests",
+      "sha256": "aa7e711c3f453c95d39f296101df79a27e2d772a4d6e7b4cb65a356e0f3c5962",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/minimum_operations_binary_transform/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "1c9574e85826f07cbfbc3e166c33cabde091c61b7b41b63c2f89a7a5eab97d10",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/minimum_operations_binary_transform/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "dbca20f657471bab8227f7b4d145dcf25f78db861f90490cfcf071b3db31ae25",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/minimum_operations_binary_transform/public_tests.json",
+      "category": "public_tests",
+      "sha256": "649802c16f97c5ed31b0bd0ea83f672a7e2452a0ce3714f57a394bf672f90bb0",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/palindrome_number/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "406d059eaede832c226435a5d4e9f0dd5381d0cee9ee4c166cfdf4657243d0f8",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/palindrome_number/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "98c62c68a2eb5240e0c1ee8ad6a3db153a36773d669d0f050e02775418a4e57e",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/palindrome_number/public_tests.json",
+      "category": "public_tests",
+      "sha256": "e70e4d4b09282cefab3e4c016087b10d2eeca07a035f3d4e7fd37c02f01966b6",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/sorted_gcd_pair_queries/hidden_tests.json",
+      "category": "trusted_hidden_tests",
+      "sha256": "2ed73feac3af27e19bd209ac0daa6fcb1cf1f219a73e53b02bfaeb133f1bdbed",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/sorted_gcd_pair_queries/problem.json",
+      "category": "canonical_problem_specification",
+      "sha256": "fa05368895b3bc73786f6f0d2a051407cb6a9b516eed91611516b0b932f65424",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "examples/sorted_gcd_pair_queries/public_tests.json",
+      "category": "public_tests",
+      "sha256": "31a97e4134f3832bc6aa815a5334c2e66e7744a0db339b6ddcd2a33bfe3d205e",
+      "hash_mode": "canonical_json_utf8_v1"
+    },
+    {
+      "path": "pyproject.toml",
+      "category": "judge_semantics",
+      "sha256": "19c84610e2b0e8c888469fbd70d019a89c56beffc47f68edf589960bc38dc5d7",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/__init__.py",
+      "category": "judge_semantics",
+      "sha256": "a38afe86b746b5696c60288a4bea2e16ebd499c86d11a093566c94b6a52204b7",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/checkers/__init__.py",
+      "category": "trusted_checker",
+      "sha256": "1164eeb88658876a7a3342df2d6b504de646f0e0b63fdbfa16320f4332ba3a31",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/checkers/exact_monotone_paths.py",
+      "category": "trusted_checker",
+      "sha256": "b96e534997b456ffc5c77b4a93e4631002a948d512b83b7a3c72ec432dd6c662",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/cli.py",
+      "category": "judge_semantics",
+      "sha256": "88027220e7863ba81bb3cfbee68d33848631f295a4ee7e7d9d4af7361de20c89",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/harness.py",
+      "category": "judge_semantics",
+      "sha256": "6a77cadb202f6950241f96dc07a88fbb07b614a70ae4ae1f76ea4b4ff1810016",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/models.py",
+      "category": "judge_semantics",
+      "sha256": "d7412f8d7ff2aa6c44b61da27c6d0fc31aa727c953b27946b7015fa331028eca",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/oracles/__init__.py",
+      "category": "trusted_oracle",
+      "sha256": "6921b244c95cdf54d79d63dcce130f2c2a5bef031798f3e0934ea5bfb87236ea",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/oracles/exact_monotone_paths.py",
+      "category": "trusted_oracle",
+      "sha256": "13e84cbece96dda2b42b42435ae8513bb39dbc0af31821ddeeb6144e4c423fc3",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/oracles/expanded_dp.py",
+      "category": "trusted_oracle",
+      "sha256": "9ac3d72b8d32ca7f91ca6fbcc17e3e14690b2d50eb1521c728c0a9ff239af952",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/oracles/expanded_graph.py",
+      "category": "trusted_oracle",
+      "sha256": "b5099da3019490c4be2fd84c5596a13f12af407c3b28a7596a0da48477d07b1c",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/oracles/expanded_misc.py",
+      "category": "trusted_oracle",
+      "sha256": "af45d3cba44631238811e42eaea4d293750278c9b330a7194a5996bd80698c56",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/oracles/maximum_subarray_sum_after_k_swaps.py",
+      "category": "trusted_oracle",
+      "sha256": "f2d12b67e6c490406b2e5e393439285113e70f0fb37452a28081df8a5fbb526d",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/oracles/minimum_operations_binary_transform.py",
+      "category": "trusted_oracle",
+      "sha256": "935898e75e17c98c775f1fc161668093068d3bdd514f51753edc030a41bbea36",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/oracles/sorted_gcd_pair_queries.py",
+      "category": "trusted_oracle",
+      "sha256": "d6368e5dbe13a99abb6481d5def0cce10a90353eca89bd40f1f62f137cc47620",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "src/ffjudge/runner.py",
+      "category": "judge_semantics",
+      "sha256": "5eafdb356efa35dd0a62d7262afc2796cda602f952b52d893801e34cf5edbc57",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tests/test_expanded_benchmark_catalog.py",
+      "category": "judge_semantics",
+      "sha256": "a053e989fa00318e29c449c72cc163437342d0a320bd55ca86f05779a236b7cd",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tests/test_expanded_benchmarks.py",
+      "category": "judge_semantics",
+      "sha256": "06854a2749f75fb363387d6936b4364981e0a473456844c30d6b0497468538dc",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tests/test_expanded_docker_e2e.py",
+      "category": "judge_semantics",
+      "sha256": "4aac5dbb994e8e9e5f296b6a6d78945160d4a8cd51336debf89290ad9b1f9c62",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tests/test_expanded_dp_oracles.py",
+      "category": "judge_semantics",
+      "sha256": "b1417171ff591f54faf2c5488b08e7704680dd6519108af4dc4cf75e1d8f3fe9",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tests/test_expanded_graph_oracles.py",
+      "category": "judge_semantics",
+      "sha256": "0ddceff2f555f479d8702cc271ceac59b8ee4d48d0a74ca08f00ac8bbec6b991",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tests/test_expanded_misc_oracles.py",
+      "category": "judge_semantics",
+      "sha256": "7e42aff5e55234f7b190ddcf6a160eeda59d8938af9201e51b6a3a32a8b82f35",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tools/expanded_benchmark_catalog.py",
+      "category": "judge_semantics",
+      "sha256": "6a459dbe59f62b2e01e588da0f7b6e51fa278c8569969b68167620e1494c9ee1",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tools/expanded_benchmark_specs.py",
+      "category": "judge_semantics",
+      "sha256": "9d693a047ebe7cb93b00a78b349893dd7d33274475a46a2a5d6de2756e595855",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tools/generate_expanded_benchmarks.py",
+      "category": "formal_test_generator",
+      "sha256": "6f8b454627ba4ce22b8c835cc95c3725cb9ea2da7cafc9c2373196e7616f927a",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tools/generate_maximum_subarray_sum_after_k_swaps_tests.py",
+      "category": "formal_test_generator",
+      "sha256": "87bb32c6e5d52fd1e21dbb28b08e6680b09d3a1ace84982df1c0b12eb368a341",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tools/generate_minimum_operations_binary_transform_tests.py",
+      "category": "formal_test_generator",
+      "sha256": "55fbe5c19a6f8e76df7e76c022e03f87880a0e6041f1c3afad4d80b4133e0821",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tools/generate_sorted_gcd_pair_queries_tests.py",
+      "category": "formal_test_generator",
+      "sha256": "0d904a9fc0f19a529ddc2cd9e48c2452b041204dcf6527ab21e91958ab8211d6",
+      "hash_mode": "utf8_normalized_lf_v1"
+    },
+    {
+      "path": "tools/verify_formal_test_generators.py",
+      "category": "judge_semantics",
+      "sha256": "b7b4a0cbadedf8be00a196776f1f65e806cb0bf588a2d5161ee7a87fdf098796",
+      "hash_mode": "utf8_normalized_lf_v1"
+    }
+  ],
+  "scope_summary": {
+    "old_frozen_file_count": 33,
+    "frozen_file_count": 355,
+    "readme_frozen_count": 0,
+    "expanded_problem_count": 31
+  },
+  "judge_timing_policy": {
+    "runtime_source": "container_harness_monotonic_clock",
+    "start_boundary": "immediately_before_submission_module_loading",
+    "end_boundary": "immediately_after_entrypoint_returns_or_raises",
+    "docker_startup_included": false,
+    "docker_host_watchdog_verdict": "INTERNAL_ERROR",
+    "submission_execution_timeout_verdict": "TIME_LIMIT_EXCEEDED"
+  }
+}
