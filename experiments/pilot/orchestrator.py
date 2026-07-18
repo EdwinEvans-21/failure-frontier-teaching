@@ -316,12 +316,15 @@ class PilotRunner:
             teacher_final[0].get("user_prompt", "").startswith(expected_problem) and
             "# Additional Material" not in teacher_final[0].get("user_prompt", "")
         )
+        using_v2 = self._uses_provenance_v2()
+        baseline_condition = BASELINE_CONDITION if using_v2 else "success_only"
+        ff_condition = DIRECT_CONDITION if using_v2 else "failure_frontier"
         baseline_planning = [call for call in calls
                              if call.get("role") == "student_planning" and
-                             call.get("condition") == "success_only"]
+                             call.get("condition") == baseline_condition]
         baseline_final = [call for call in calls
                           if call.get("role") == "student_final" and
-                          call.get("condition") == "success_only"]
+                          call.get("condition") == baseline_condition]
         baseline_exact = bool(baseline_planning and baseline_final) and (
             record.get("teacher", {}).get("verdict") == "AC" or
             (baseline_planning[0].get("user_prompt") == expected_problem and
@@ -329,7 +332,7 @@ class PilotRunner:
              "# Additional Material" not in baseline_final[0].get("user_prompt", ""))
         )
         ff_calls = [call for call in calls if call.get("role") == "student_final" and
-                    call.get("condition") == "failure_frontier"]
+                    call.get("condition") == ff_condition]
         gg_calls = [call for call in calls if call.get("role") == "student_final" and
                     call.get("condition") == "general_guidance"]
         student_system_equal = bool(ff_calls and gg_calls) and (
@@ -347,19 +350,44 @@ class PilotRunner:
                 len({call.get("user_prompt") for call in student_planning}) == 1 and
                 len({call.get("system_prompt") for call in student_final}) == 1
             )
-        sentinel_ff = self._rendered_solver_call(
-            "planning", "student", record["problem_id"], "failure_frontier",
-            expected_problem,
-            additional_material="FF_MATERIAL_SENTINEL", success_branch=False)
-        sentinel_gg = self._rendered_solver_call(
-            "planning", "student", record["problem_id"], "general_guidance",
-            expected_problem,
-            additional_material="GG_MATERIAL_SENTINEL", success_branch=False)
-        framing_equal = (
-            sentinel_ff["system_prompt"] == sentinel_gg["system_prompt"] and
-            sentinel_ff["user_prompt"].replace("FF_MATERIAL_SENTINEL", "<MATERIAL>") ==
-            sentinel_gg["user_prompt"].replace("GG_MATERIAL_SENTINEL", "<MATERIAL>")
-        )
+        if using_v2 and record.get("teacher", {}).get("verdict") != "AC":
+            sentinel_direct = self._rendered_solver_call(
+                "planning", "student", record["problem_id"], DIRECT_CONDITION,
+                expected_problem, additional_material="DIRECT_MATERIAL_SENTINEL",
+                success_branch=False)
+            sentinel_flat = self._rendered_solver_call(
+                "planning", "student", record["problem_id"], FLAT_CONDITION,
+                expected_problem, additional_material="FLAT_MATERIAL_SENTINEL",
+                success_branch=False)
+            framing_equal = (
+                sentinel_direct["system_prompt"] == sentinel_flat["system_prompt"] and
+                sentinel_direct["user_prompt"].replace(
+                    "DIRECT_MATERIAL_SENTINEL", "<MATERIAL>") ==
+                sentinel_flat["user_prompt"].replace(
+                    "FLAT_MATERIAL_SENTINEL", "<MATERIAL>") and
+                record.get("provenance_failure_frontier", {}).get(
+                    "direct_critical_payload_byte_equal") is True and
+                record.get("provenance_failure_frontier", {}).get(
+                    "flat_uses_direct_instruction") is True
+            )
+        elif not using_v2:
+            sentinel_ff = self._rendered_solver_call(
+                "planning", "student", record["problem_id"], "failure_frontier",
+                expected_problem, additional_material="FF_MATERIAL_SENTINEL",
+                success_branch=False)
+            sentinel_gg = self._rendered_solver_call(
+                "planning", "student", record["problem_id"], "general_guidance",
+                expected_problem, additional_material="GG_MATERIAL_SENTINEL",
+                success_branch=False)
+            framing_equal = (
+                sentinel_ff["system_prompt"] == sentinel_gg["system_prompt"] and
+                sentinel_ff["user_prompt"].replace(
+                    "FF_MATERIAL_SENTINEL", "<MATERIAL>") ==
+                sentinel_gg["user_prompt"].replace(
+                    "GG_MATERIAL_SENTINEL", "<MATERIAL>")
+            )
+        else:
+            framing_equal = success_student_prompts_equal
         token_match_ok = (
             record.get("teacher", {}).get("verdict") == "AC" or
             record.get("teaching_material", {}).get("selection_experiment_tier")

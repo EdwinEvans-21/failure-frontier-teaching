@@ -501,6 +501,8 @@ class V2RunnerBoundaryTests(unittest.TestCase):
                                  for call in model.calls), 1)
             self.assertEqual(sum(call["role"] == "ff_organizer_v2"
                                  for call in model.calls), 1)
+            smoke_audit = runner._smoke_audit(first, config.problems[0])
+            self.assertTrue(all(smoke_audit.values()), smoke_audit)
             payload_path = (
                 runner.run_dir / "problems/lc-0009-palindrome-number/"
                 "teaching_materials/provenance_ff_v2/shared_failure_payload.txt")
