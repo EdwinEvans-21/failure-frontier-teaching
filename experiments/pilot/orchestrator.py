@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 import hashlib
+import itertools
 import json
 import math
 import os
@@ -49,14 +50,7 @@ VERDICT_MAP = {
     Verdict.INTERNAL_ERROR: "JUDGE_ERROR",
 }
 STUDENT_CONDITIONS = ("success_only", "failure_frontier", "general_guidance")
-STUDENT_ORDER_PERMUTATIONS = (
-    ("success_only", "failure_frontier", "general_guidance"),
-    ("success_only", "general_guidance", "failure_frontier"),
-    ("failure_frontier", "success_only", "general_guidance"),
-    ("failure_frontier", "general_guidance", "success_only"),
-    ("general_guidance", "success_only", "failure_frontier"),
-    ("general_guidance", "failure_frontier", "success_only"),
-)
+CRITICAL_FF_CONDITION = "critical_failure_frontier"
 GG_REQUIRED_SECTIONS = (
     "## Constraint Analysis",
     "## Algorithmic Directions",
@@ -251,7 +245,11 @@ class PilotRunner:
         return result
 
     def _smoke_metadata(self, problem_id: str) -> dict[str, Any]:
-        config_path = self.project_root / "experiments" / "configs" / "pilot_v1.yaml"
+        config_path = (
+            Path(self.config.source_path).resolve()
+            if self.config.source_path
+            else self.project_root / "experiments" / "configs" / "pilot_v1.yaml"
+        )
         prompt_hashes = {
             str(path.relative_to(self.project_root)).replace("\\", "/"): _file_hash(path)
             for path in sorted(self._path(self.config.prompts_dir).glob("*.md"))
@@ -323,7 +321,8 @@ class PilotRunner:
         success_student_prompts_equal = True
         if record.get("teacher", {}).get("verdict") == "AC":
             success_student_prompts_equal = (
-                len(student_planning) == 3 and len(student_final) == 3 and
+                len(student_planning) == len(self.config.student_conditions) and
+                len(student_final) == len(self.config.student_conditions) and
                 len({call.get("system_prompt") for call in student_planning}) == 1 and
                 len({call.get("user_prompt") for call in student_planning}) == 1 and
                 len({call.get("system_prompt") for call in student_final}) == 1
@@ -343,7 +342,12 @@ class PilotRunner:
         )
         token_match_ok = (
             record.get("teacher", {}).get("verdict") == "AC" or
-            record.get("teaching_material", {}).get("token_match_passed") is True
+            record.get("teaching_material", {}).get("selection_experiment_tier")
+            in {
+                "formal_strict_match",
+                "formal_format_exception",
+                "exploratory_closest_fallback",
+            }
         )
         return {
             "exactly_one_problem": record.get("problem_id") ==
@@ -382,10 +386,14 @@ class PilotRunner:
                 "api_accessed": False, "judge_accessed": False,
                 "problem_count": len(self.config.problems),
                 "minimum_model_calls_if_all_teacher_success":
-                    9 * len(self.config.problems),
+                    (3 + 2 * len(self.config.student_conditions)) *
+                    len(self.config.problems),
                 "maximum_model_calls_under_configured_gg_attempts":
-                    14 * len(self.config.problems),
-                "expected_judge_submissions": 4 * len(self.config.problems),
+                    (8 + 2 * len(self.config.student_conditions)) *
+                    len(self.config.problems),
+                "expected_judge_submissions":
+                    (1 + len(self.config.student_conditions)) *
+                    len(self.config.problems),
                 "student_execution_orders": orders}
         write_json(self.run_dir / "dry_run_plan.json", plan)
         return plan
@@ -473,11 +481,13 @@ class PilotRunner:
         return calls
 
     def _student_order(self, run_id: str, problem_id: str) -> tuple[str, ...]:
+        conditions = self.config.student_conditions
         if self.config.baseline_id != "failure-frontier-baseline-v3-expanded":
-            return STUDENT_CONDITIONS
+            return conditions
+        permutations = tuple(itertools.permutations(conditions))
         digest = hashlib.sha256(f"{run_id}{problem_id}".encode("utf-8")).digest()
-        return STUDENT_ORDER_PERMUTATIONS[
-            int.from_bytes(digest, "big") % len(STUDENT_ORDER_PERMUTATIONS)
+        return permutations[
+            int.from_bytes(digest, "big") % len(permutations)
         ]
 
     def _run_problem(self, run_id: str, item: ProblemConfig) -> dict[str, Any]:
@@ -541,7 +551,10 @@ class PilotRunner:
                 })
                 record["artifacts"]["teaching_materials"] = str(
                     problem_dir / "teaching_materials")
-                student_materials = {condition: material.content for condition in STUDENT_CONDITIONS}
+                student_materials = {
+                    condition: material.content
+                    for condition in self.config.student_conditions
+                }
             else:
                 ff = self._failure_material(problem_dir, spec.problem_id, problem, teacher)
                 ff_limit = (
@@ -573,8 +586,16 @@ class PilotRunner:
                 student_materials = {
                     "success_only": "",
                     "failure_frontier": ff.content,
+                    "critical_failure_frontier": ff.content,
                     "general_guidance": gg["response"].content,
                 }
+                if CRITICAL_FF_CONDITION in self.config.student_conditions:
+                    record["critical_ff_pair"] = {
+                        "naive_material_sha256": _hash(ff.content),
+                        "critical_material_sha256": _hash(ff.content),
+                        "material_identical": True,
+                        "difference_policy": "prompt_framing_only",
+                    }
             student_order = self._student_order(run_id, spec.problem_id)
             record["student_execution_order"] = list(student_order)
             for condition in student_order:
@@ -1258,12 +1279,12 @@ class PilotRunner:
             )
             if selected is None:
                 selected_version = None
-                selection_reason = "no_complete_semantic_fallback_candidate"
+                selection_reason = "no_safe_generated_fallback_candidate"
             else:
                 fallback_used = True
                 fallback_version = selected["version"]
                 selected_version = fallback_version
-                selection_reason = "fallback_minimum_distance_to_registered_interval"
+                selection_reason = "fallback_minimum_absolute_distance_to_target"
 
         selected_record = (
             version_records[selected_version]
@@ -1273,11 +1294,6 @@ class PilotRunner:
             selected_record is not None and
             lower_bound <= selected_record["completion_tokens"] <= upper_bound
         )
-        token_interval_outcome = (
-            "matched_within_tolerance" if passed else
-            "fallback_outside_tolerance" if fallback_used else
-            "unmatched_no_fallback"
-        )
         selected_validation = None if selected_record is None else {
             key: selected_record[key] for key in (
                 "preferred_structure", "required_sections_passed",
@@ -1286,6 +1302,39 @@ class PilotRunner:
                 "structural_warnings", "forbidden_content", "obviously_truncated",
             )
         }
+        selected_complete_response = bool(
+            selected_record is not None
+            and selected_record.get("finish_reason") == "stop"
+            and not selected_record.get("obviously_truncated")
+        )
+        selected_format_valid = bool(
+            selected_record is not None
+            and selected_record.get("semantic_completeness_passed") is True
+        )
+        token_interval_outcome = (
+            "matched_within_tolerance" if passed else
+            "fallback_within_tolerance_format_exception"
+            if (
+                fallback_used
+                and selected_within_token_interval
+                and selected_complete_response
+            ) else
+            "fallback_within_tolerance_incomplete"
+            if fallback_used and selected_within_token_interval else
+            "fallback_outside_tolerance" if fallback_used else
+            "unmatched_no_fallback"
+        )
+        selection_experiment_tier = (
+            "formal_strict_match" if passed else
+            "formal_format_exception"
+            if (
+                fallback_used
+                and selected_within_token_interval
+                and selected_complete_response
+            ) else
+            "exploratory_closest_fallback" if fallback_used else
+            "unusable_no_safe_candidate"
+        )
         final_anchors = guidance_anchor_records(version_records)
         complete_semantic_versions = [
             item["version"] for item in version_records
@@ -1328,10 +1377,13 @@ class PilotRunner:
             "token_match_failed": not passed,
             "token_interval_outcome": token_interval_outcome,
             "selected_within_token_interval": selected_within_token_interval,
+            "selected_complete_response": selected_complete_response,
+            "selected_format_valid": selected_format_valid,
+            "selection_experiment_tier": selection_experiment_tier,
             "fallback_used": fallback_used,
             "fallback_candidate_used": fallback_used,
             "fallback_selection_policy": (
-                "interval_distance_then_target_distance_then_prefer_at_or_above_target_then_version"
+                "absolute_completion_token_distance_to_target_then_version"
             ),
             "validation_policy": "semantic_completeness_v2",
             "gg_generation_policy": GG_GENERATION_POLICY,
@@ -1366,7 +1418,7 @@ class PilotRunner:
                 else "gg_content_validation_failed"
             )
             raise GGContentValidationError(
-                "General Guidance produced no semantically complete candidate",
+                "General Guidance produced no safe selectable candidate",
                 validation_error=validation_error,
                 metrics={
                     "gg_generation_policy": GG_GENERATION_POLICY,
@@ -1427,6 +1479,9 @@ class PilotRunner:
                 "token_match_failed": not passed,
                 "token_interval_outcome": token_interval_outcome,
                 "selected_within_token_interval": selected_within_token_interval,
+                "selected_complete_response": selected_complete_response,
+                "selected_format_valid": selected_format_valid,
+                "selection_experiment_tier": selection_experiment_tier,
                 "general_guidance_truncated": response.truncated,
                 "truncation_recovery_used": match_record[
                     "truncation_recovery_used"
@@ -1708,8 +1763,14 @@ class PilotRunner:
             if condition == "success_only" and not values.get("success_branch"):
                 user = problem
             else:
+                template = (
+                    "student_user_with_critical_ff.md"
+                    if condition == CRITICAL_FF_CONDITION and
+                    not values.get("success_branch")
+                    else "student_user_with_material.md"
+                )
                 user = self.renderer.render(
-                    self.renderer.template("student_user_with_material.md"),
+                    self.renderer.template(template),
                     formatted_problem=problem,
                     additional_material=material,
                 )
@@ -1727,8 +1788,13 @@ class PilotRunner:
         if role == "teacher" or (condition == "success_only" and not success_branch):
             solver_input = problem
         else:
+            template = (
+                "student_user_with_critical_ff.md"
+                if condition == CRITICAL_FF_CONDITION and not success_branch
+                else "student_user_with_material.md"
+            )
             solver_input = self.renderer.render(
-                self.renderer.template("student_user_with_material.md"),
+                self.renderer.template(template),
                 formatted_problem=problem,
                 additional_material=additional_material,
             )
@@ -2427,7 +2493,12 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
         for record, analysis in zip(records, eligibility)
         if analysis["compatibility_warnings"]
     ]
-    conditions = STUDENT_CONDITIONS
+    conditions = list(STUDENT_CONDITIONS)
+    if any(
+        CRITICAL_FF_CONDITION in record.get("students", {})
+        for record in records
+    ):
+        conditions.insert(2, CRITICAL_FF_CONDITION)
     summary: dict[str, Any] = {
         "run_id": run_id,
         "pilot_only": True,
@@ -2454,6 +2525,14 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
         "student_breakthrough_on_teacher_failures": {},
         "baseline_fail_gg_fail_ff_success": [],
         "baseline_fail_ff_fail_gg_success": [],
+        "naive_vs_critical_failure_frontier": {
+            "paired_episode_count": 0,
+            "both_ac": [],
+            "naive_only_ac": [],
+            "critical_only_ac": [],
+            "neither_ac": [],
+            "verdict_transitions": {},
+        },
         "truncated_call_count": 0,
         "token_matching": {},
     }
@@ -2474,6 +2553,32 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
             summary["baseline_fail_gg_fail_ff_success"].append(record["problem_id"])
         if baseline != "AC" and ff != "AC" and gg == "AC":
             summary["baseline_fail_ff_fail_gg_success"].append(record["problem_id"])
+        critical = students.get(CRITICAL_FF_CONDITION, {}).get("verdict")
+        pair = record.get("critical_ff_pair", {})
+        pair_audited = (
+            pair.get("material_identical") is True
+            and isinstance(pair.get("naive_material_sha256"), str)
+            and pair.get("naive_material_sha256")
+            == pair.get("critical_material_sha256")
+        )
+        if (
+            pair_audited
+            and critical in {"AC", "WA", "CE", "RE", "TLE", "MLE"}
+        ):
+            comparison = summary["naive_vs_critical_failure_frontier"]
+            comparison["paired_episode_count"] += 1
+            transition = f"{ff}->{critical}"
+            comparison["verdict_transitions"][transition] = (
+                comparison["verdict_transitions"].get(transition, 0) + 1
+            )
+            if ff == "AC" and critical == "AC":
+                comparison["both_ac"].append(record["problem_id"])
+            elif ff == "AC":
+                comparison["naive_only_ac"].append(record["problem_id"])
+            elif critical == "AC":
+                comparison["critical_only_ac"].append(record["problem_id"])
+            else:
+                comparison["neither_ac"].append(record["problem_id"])
     calls = [record.get("teacher", {}) for record in records]
     calls += [student for record in records for student in record.get("students", {}).values()]
     material_truncations = []
@@ -2499,6 +2604,16 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
         "pair_count": len(paired),
         "matched_within_tolerance_count": sum(
             item.get("token_interval_outcome") == "matched_within_tolerance"
+            for item in paired
+        ),
+        "fallback_within_tolerance_format_exception_count": sum(
+            item.get("token_interval_outcome")
+            == "fallback_within_tolerance_format_exception"
+            for item in paired
+        ),
+        "fallback_within_tolerance_incomplete_count": sum(
+            item.get("token_interval_outcome")
+            == "fallback_within_tolerance_incomplete"
             for item in paired
         ),
         "fallback_outside_tolerance_count": sum(
@@ -2549,12 +2664,28 @@ def summary_markdown(summary: dict[str, Any]) -> str:
     lines.extend(["", "## Breakthroughs on Teacher failures", ""])
     for condition, count in summary["student_breakthrough_on_teacher_failures"].items():
         lines.append(f"- {condition}: {count}")
+    critical = summary.get("naive_vs_critical_failure_frontier", {})
+    if critical.get("paired_episode_count"):
+        lines.extend([
+            "",
+            "## Naive FF versus Critical FF",
+            "",
+            f"- Paired eligible episodes: {critical['paired_episode_count']}",
+            f"- Both AC: {len(critical['both_ac'])}",
+            f"- Naive FF only AC: {len(critical['naive_only_ac'])}",
+            f"- Critical FF only AC: {len(critical['critical_only_ac'])}",
+            f"- Neither AC: {len(critical['neither_ac'])}",
+        ])
     token_matching = summary["token_matching"]
     lines.extend([
         "",
         "## GG token interval outcomes",
         "",
         f"- Matched within tolerance: {token_matching['matched_within_tolerance_count']}",
+        "- Format-exception fallback within tolerance: "
+        f"{token_matching['fallback_within_tolerance_format_exception_count']}",
+        "- Incomplete fallback within tolerance: "
+        f"{token_matching['fallback_within_tolerance_incomplete_count']}",
         f"- Fallback outside tolerance: {token_matching['fallback_outside_tolerance_count']}",
         f"- Unmatched without fallback: {token_matching['unmatched_no_fallback_count']}",
     ])

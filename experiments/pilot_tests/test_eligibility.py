@@ -41,6 +41,7 @@ def failure_record(*, matched: bool = True, fallback: bool = False) -> dict:
             "token_match_passed": matched,
             "token_match_failed": not matched,
             "fallback_used": fallback,
+            "selected_version": 0,
             "selected_within_token_interval": matched,
             "token_interval_outcome": (
                 "matched_within_tolerance"
@@ -108,7 +109,7 @@ class EligibilityDerivationTests(unittest.TestCase):
         record["teaching_material"]["selected_within_token_interval"] = False
         result = derive_comparison_eligibility(record)
         self.assertFalse(result.condition_comparison_eligible)
-        self.assertIn("gg_candidate_invalid", result.eligibility_reasons)
+        self.assertIn("gg_token_outside_interval", result.eligibility_reasons)
 
     def test_fallback_is_exploratory_but_not_strict(self) -> None:
         result = derive_comparison_eligibility(
@@ -116,17 +117,29 @@ class EligibilityDerivationTests(unittest.TestCase):
         )
         self.assertFalse(result.condition_comparison_eligible)
         self.assertTrue(result.exploratory_comparison_eligible)
-        self.assertEqual(result.eligibility_reason, "token_match_failed")
-        self.assertIn("fallback_candidate_used", result.eligibility_reasons)
+        self.assertEqual(result.eligibility_reason, "gg_token_outside_interval")
 
-    def test_truncated_fallback_is_not_exploratory(self) -> None:
+    def test_truncated_fallback_is_exploratory_not_formal(self) -> None:
         record = failure_record(matched=False, fallback=True)
         record["teaching_material"]["general_guidance_truncated"] = True
         record["teaching_material"]["semantic_completeness_passed"] = False
         result = derive_comparison_eligibility(record)
         self.assertFalse(result.condition_comparison_eligible)
+        self.assertTrue(result.exploratory_comparison_eligible)
+        self.assertIn("gg_candidate_truncated", result.eligibility_reasons)
+
+    def test_format_invalid_fallback_inside_interval_is_formal(self) -> None:
+        record = failure_record(matched=False, fallback=True)
+        material = record["teaching_material"]
+        material["selected_within_token_interval"] = True
+        material["token_interval_outcome"] = (
+            "fallback_within_tolerance_format_exception"
+        )
+        material["semantic_completeness_passed"] = False
+        result = derive_comparison_eligibility(record)
+        self.assertTrue(result.condition_comparison_eligible)
         self.assertFalse(result.exploratory_comparison_eligible)
-        self.assertIn("gg_candidate_invalid", result.eligibility_reasons)
+        self.assertEqual(result.eligibility_reason, "eligible")
 
     def test_incomplete_student_is_ineligible(self) -> None:
         record = failure_record()

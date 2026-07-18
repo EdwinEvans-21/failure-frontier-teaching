@@ -177,20 +177,23 @@ def select_material_fallback(
     lower_bound: int,
     upper_bound: int,
 ) -> dict[str, Any] | None:
+    """Select the safe generated candidate closest to the FF token target.
+
+    Strict acceptance is handled before this fallback.  Once every strict
+    attempt has failed, format validity and interval membership are audit
+    classifications rather than selection filters.  Forbidden content remains
+    excluded so fallback behavior cannot weaken the information boundary.
+    """
     candidates = [
         item for item in records
-        if item.get("finish_reason") == "stop"
-        and item.get("semantic_completeness_passed") is True
+        if isinstance(item.get("completion_tokens"), int)
+        and item["completion_tokens"] >= 0
         and not item.get("forbidden_content")
-        and item.get("state")
-        not in {"TRUNCATED_TOO_LONG", "INVALID_CONTENT", "FORBIDDEN_CONTENT"}
     ]
     return min(
         candidates,
         key=lambda item: (
-            _interval_distance(item["completion_tokens"], lower_bound, upper_bound),
             abs(item["completion_tokens"] - target_tokens),
-            0 if item["completion_tokens"] >= target_tokens else 1,
             item["version"],
         ),
         default=None,

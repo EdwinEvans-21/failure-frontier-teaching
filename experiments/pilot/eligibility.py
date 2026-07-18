@@ -4,15 +4,15 @@ from dataclasses import dataclass
 from typing import Any
 
 
-ELIGIBILITY_POLICY = "teacher_failure_strict_v3"
+ELIGIBILITY_POLICY = "teacher_failure_selected_gg_v4"
 ELIGIBILITY_REASON_PRECEDENCE = (
     "infrastructure_error",
     "invalid_episode",
     "teacher_success_branch",
     "failure_frontier_output_limit_reached",
-    "token_match_failed",
-    "fallback_candidate_used",
-    "gg_candidate_invalid",
+    "gg_candidate_missing_or_unsafe",
+    "gg_token_outside_interval",
+    "gg_candidate_truncated",
     "students_incomplete",
     "student_material_invalid",
 )
@@ -78,12 +78,19 @@ def _students_completed(record: dict[str, Any]) -> bool:
     return True
 
 
-def _gg_semantically_valid(material: dict[str, Any]) -> bool:
+def _gg_selected_and_safe(material: dict[str, Any]) -> bool:
     return (
-        material.get("semantic_completeness_passed") is True
-        and material.get("general_guidance_truncated") is not True
-        and material.get("obviously_truncated") is not True
+        isinstance(material.get("selected_version"), int)
+        and isinstance(material.get("general_guidance_tokens"), int)
+        and material.get("general_guidance_tokens") >= 0
         and not material.get("forbidden_content")
+    )
+
+
+def _gg_complete_response(material: dict[str, Any]) -> bool:
+    return (
+        material.get("general_guidance_truncated") is not True
+        and material.get("obviously_truncated") is not True
     )
 
 
@@ -123,29 +130,21 @@ def derive_comparison_eligibility(
         material = record.get("teaching_material")
         if not isinstance(material, dict):
             material = {}
-        token_match_passed = (
-            material.get("token_match_passed") is True
-            and record.get("token_match_failed") is not True
-        )
-        fallback_used = material.get("fallback_used") is True
         students_completed = _students_completed(record)
+        selected_and_safe = _gg_selected_and_safe(material)
+        selected_in_interval = (
+            material.get("selected_within_token_interval") is True
+        )
+        complete_response = _gg_complete_response(material)
 
         if material.get("failure_frontier_output_limit_reached") is True:
             reasons.append("failure_frontier_output_limit_reached")
-        if not token_match_passed:
-            reasons.append("token_match_failed")
-        if fallback_used:
-            reasons.append("fallback_candidate_used")
-        if not _gg_semantically_valid(material):
-            reasons.append("gg_candidate_invalid")
-        elif token_match_passed and (
-            material.get("selected_within_token_interval") is not True
-            or material.get("token_interval_outcome")
-            != "matched_within_tolerance"
-        ):
-            reasons.append("gg_candidate_invalid")
-        elif record.get("protocol_output_invalid") is True:
-            reasons.append("gg_candidate_invalid")
+        if not selected_and_safe or record.get("protocol_output_invalid") is True:
+            reasons.append("gg_candidate_missing_or_unsafe")
+        elif not selected_in_interval:
+            reasons.append("gg_token_outside_interval")
+        if selected_and_safe and not complete_response:
+            reasons.append("gg_candidate_truncated")
         if not students_completed:
             reasons.append("students_incomplete")
         if not _student_materials_valid(material):
@@ -165,11 +164,11 @@ def derive_comparison_eligibility(
         and record.get("valid_episode") is True
         and not record.get("infrastructure_error")
         and record.get("protocol_output_invalid") is not True
-        and material.get("fallback_used") is True
         and material.get("failure_frontier_output_limit_reached") is not True
-        and _gg_semantically_valid(material)
+        and _gg_selected_and_safe(material)
         and _students_completed(record)
         and _student_materials_valid(material)
+        and not strict
     )
 
     return EligibilityResult(

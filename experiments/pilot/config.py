@@ -73,6 +73,12 @@ class PilotConfig:
     execution: ExecutionConfig
     problems: tuple[ProblemConfig, ...]
     prompts_dir: str
+    student_conditions: tuple[str, ...] = (
+        "success_only",
+        "failure_frontier",
+        "general_guidance",
+    )
+    source_path: str | None = None
 
     def public_snapshot(self) -> dict[str, Any]:
         data = _as_dict(self)
@@ -128,6 +134,12 @@ def load_config(path: str | Path) -> PilotConfig:
         execution=execution,
         problems=problems,
         prompts_dir=data["prompts_dir"],
+        student_conditions=tuple(data.get("student_conditions", (
+            "success_only",
+            "failure_frontier",
+            "general_guidance",
+        ))),
+        source_path=str(config_path),
     )
     _validate(config)
     return config
@@ -177,6 +189,23 @@ def _validate(config: PilotConfig) -> None:
         raise ValueError("gg_max_expand_scale must be at least gg_min_expand_scale")
     if config.execution.judge_phase != "hidden":
         raise ValueError("pilot v1 formal submissions must use the hidden phase")
+    allowed_student_conditions = {
+        "success_only",
+        "failure_frontier",
+        "critical_failure_frontier",
+        "general_guidance",
+    }
+    if len(config.student_conditions) != len(set(config.student_conditions)):
+        raise ValueError("student_conditions must be unique")
+    if not set(config.student_conditions) <= allowed_student_conditions:
+        raise ValueError("student_conditions contains an unsupported condition")
+    required_student_conditions = {
+        "success_only", "failure_frontier", "general_guidance"
+    }
+    if not required_student_conditions <= set(config.student_conditions):
+        raise ValueError(
+            "student_conditions must retain the baseline, naive FF, and GG conditions"
+        )
     expected_problem_count = (
         31 if config.baseline_id == "failure-frontier-baseline-v3-expanded"
         else 5

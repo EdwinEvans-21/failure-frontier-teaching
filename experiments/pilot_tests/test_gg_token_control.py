@@ -537,7 +537,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertEqual(match["selected_version"], 1)
         self.assertEqual(
             match["selection_reason"],
-            "fallback_minimum_distance_to_registered_interval",
+            "fallback_minimum_absolute_distance_to_target",
         )
         self.assertTrue(match["fallback_used"])
         self.assertEqual(
@@ -574,11 +574,11 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertEqual(match["selected_version"], 2)
         self.assertEqual(
             match["selection_reason"],
-            "fallback_minimum_distance_to_registered_interval",
+            "fallback_minimum_absolute_distance_to_target",
         )
         self.assertEqual(
             match["fallback_selection_policy"],
-            "interval_distance_then_target_distance_then_prefer_at_or_above_target_then_version",
+            "absolute_completion_token_distance_to_target_then_version",
         )
         self.assertEqual(len(model.calls), 3)
 
@@ -596,11 +596,11 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             ],
         }, target=2043)
         self.assertFalse(result["metrics"]["token_match_passed"])
-        self.assertEqual(match["selected_audit_version"], 1)
+        self.assertEqual(match["selected_audit_version"], 0)
         self.assertTrue(match["fallback_used"])
         self.assertEqual(
             match["selection_reason"],
-            "fallback_minimum_distance_to_registered_interval",
+            "fallback_minimum_absolute_distance_to_target",
         )
         self.assertEqual(match["best_complete_long_version"], None)
         self.assertEqual(match["best_complete_short_version"], 1)
@@ -879,7 +879,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertEqual(version_path.read_bytes(), before)
         self.assertEqual(resumed_model.calls, [])
 
-    def test_finish_reason_length_inside_interval_is_never_matched(self) -> None:
+    def test_finish_reason_length_inside_interval_is_exploratory_fallback(self) -> None:
         key = MockModelClient.key
         config = self.config({
             key("general_guidance", PROBLEM_ID, "initial"): [
@@ -888,23 +888,30 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         }, attempts=0)
         model = MockModelClient(config.model)
         runner = PilotRunner(config, model, judge=NoJudge(), project_root=ROOT)
-        with self.assertRaisesRegex(GGContentValidationError, "no semantically"):
-            runner._matched_guidance(
-                self.root / "problem", PROBLEM_ID, FORMATTED_PROBLEM, 1110
-            )
+        result = runner._matched_guidance(
+            self.root / "problem", PROBLEM_ID, FORMATTED_PROBLEM, 1110
+        )
         match = json.loads(
             (self.root / "problem/teaching_materials/general_guidance/match.json")
             .read_text(encoding="utf-8")
         )
         self.assertFalse(match["token_match_passed"])
-        self.assertEqual(match["token_interval_outcome"], "unmatched_no_fallback")
-        self.assertFalse(match["selected_within_token_interval"])
-        self.assertIsNone(match["selected_version"])
+        self.assertEqual(
+            match["token_interval_outcome"],
+            "fallback_within_tolerance_incomplete",
+        )
+        self.assertTrue(match["selected_within_token_interval"])
+        self.assertEqual(match["selected_version"], 0)
         self.assertEqual(match["versions"][0]["status"],
                          "TRUNCATED_TOO_LONG")
         self.assertFalse(match["versions"][0]["valid_candidate"])
         self.assertTrue(match["versions"][0]["is_truncated_candidate"])
-        self.assertIsNone(match["selected_audit_version"])
+        self.assertEqual(match["selected_audit_version"], 0)
+        self.assertEqual(
+            match["selection_experiment_tier"],
+            "exploratory_closest_fallback",
+        )
+        self.assertTrue(result["metrics"]["general_guidance_truncated"])
 
     def test_length_finish_can_use_one_remaining_adjustment(self) -> None:
         key = MockModelClient.key
@@ -1207,15 +1214,15 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertTrue(unclosed_fence["obviously_truncated"])
         self.assertFalse(unclosed_fence["semantic_completeness_passed"])
 
-    def test_successful_api_with_invalid_content_is_not_model_api(self) -> None:
+    def test_format_invalid_inside_interval_is_formal_not_model_api(self) -> None:
         key = MockModelClient.key
-        config = self.config({
-            key("teacher", PROBLEM_ID, "teacher"): [item(solver("WA"), 100)],
-            key("failure_frontier", PROBLEM_ID, "failure"): [item("FF", 1000)],
-            key("general_guidance", PROBLEM_ID, "initial"): [
-                item("Generic advice only.", 1000)
-            ],
-        }, attempts=0)
+        responses = self.full_failure_responses(
+            [(1000, "IGNORED")], target=1000
+        )
+        responses[key("general_guidance", PROBLEM_ID, "initial")] = [
+            item("Generic advice only.", 1000)
+        ]
+        config = self.config(responses, attempts=0)
         runner = PilotRunner(
             config, MockModelClient(config.model), judge=MarkerJudge(),
             project_root=ROOT,
@@ -1225,12 +1232,20 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             (self.root / "runs/invalid-content/problems" / PROBLEM_ID / "record.json")
             .read_text(encoding="utf-8")
         )
-        self.assertFalse(record["valid_episode"])
-        self.assertFalse(record["condition_comparison_eligible"])
-        self.assertEqual(record["model_output_validation"], "gg_content_validation")
+        self.assertTrue(record["valid_episode"])
+        self.assertTrue(record["condition_comparison_eligible"])
+        self.assertFalse(record["exploratory_comparison_eligible"])
+        self.assertTrue(record["teaching_material"]["token_match_failed"])
+        self.assertFalse(
+            record["teaching_material"]["semantic_completeness_passed"]
+        )
+        self.assertEqual(
+            record["teaching_material"]["selection_experiment_tier"],
+            "formal_format_exception",
+        )
         self.assertNotIn("infrastructure_error", record)
 
-    def test_truncated_outside_interval_uses_ineligible_fallback_not_model_api(self) -> None:
+    def test_truncated_outside_interval_uses_exploratory_closest_fallback(self) -> None:
         config = self.config(self.full_failure_responses([
             (8192, "TRUNCATED V0", "length"),
             (8192, "TRUNCATED V1", "length"),
@@ -1247,14 +1262,15 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             (self.root / "runs/truncated-only/problems" / PROBLEM_ID / "record.json")
             .read_text(encoding="utf-8")
         )
-        self.assertFalse(record["valid_episode"])
+        self.assertTrue(record["valid_episode"])
         self.assertFalse(record["condition_comparison_eligible"])
+        self.assertTrue(record["exploratory_comparison_eligible"])
         self.assertTrue(record["teaching_material"]["token_match_failed"])
-        self.assertIsNone(record["teaching_material"]["selected_version"])
-        self.assertFalse(record["teaching_material"]["fallback_used"])
+        self.assertEqual(record["teaching_material"]["selected_version"], 0)
+        self.assertTrue(record["teaching_material"]["fallback_used"])
         self.assertEqual(
             record["teaching_material"]["token_interval_outcome"],
-            "unmatched_no_fallback",
+            "fallback_outside_tolerance",
         )
         self.assertTrue(record["teaching_material"]["truncation_recovery_used"])
         match = json.loads(
@@ -1267,8 +1283,11 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             match["versions"][1]["prompt_hash"],
             match["versions"][2]["prompt_hash"],
         )
-        self.assertEqual(len(record["students"]), 0)
-        self.assertEqual(record["model_output_validation"], "gg_content_validation")
+        self.assertEqual(len(record["students"]), 3)
+        self.assertEqual(
+            record["teaching_material"]["selection_experiment_tier"],
+            "exploratory_closest_fallback",
+        )
         self.assertNotIn("infrastructure_error", record)
 
     def full_failure_responses(
@@ -1513,7 +1532,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         )
         self.assertTrue(record["token_match_failed"])
         self.assertFalse(record["condition_comparison_eligible"])
-        self.assertEqual(record["teaching_material"]["selected_audit_version"], 1)
+        self.assertEqual(record["teaching_material"]["selected_audit_version"], 0)
         self.assertTrue(record["teaching_material"]["fallback_used"])
         self.assertEqual(
             record["teaching_material"]["token_interval_outcome"],
@@ -1574,7 +1593,9 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         resumed = runner._run_problem("resume-run", config.problems[0])
 
         self.assertFalse(resumed["condition_comparison_eligible"])
-        self.assertEqual(resumed["eligibility_policy"], "teacher_failure_strict_v3")
+        self.assertEqual(
+            resumed["eligibility_policy"], "teacher_failure_selected_gg_v4"
+        )
         self.assertEqual(resumed["eligibility_reason"], "invalid_episode")
         persisted = json.loads(record_path.read_text(encoding="utf-8"))
         self.assertFalse(persisted["condition_comparison_eligible"])

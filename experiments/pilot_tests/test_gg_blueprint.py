@@ -253,7 +253,7 @@ class GeneralGuidanceBlueprintTests(unittest.TestCase):
             material_paragraph_budgets(3501)["max_paragraphs_per_section"], 4
         )
 
-    def test_fallback_excludes_truncated_invalid_and_forbidden(self) -> None:
+    def test_fallback_uses_closest_safe_candidate_regardless_of_format(self) -> None:
         records = [
             {"version": 0, "completion_tokens": 1600, "finish_reason": "stop",
              "semantic_completeness_passed": True, "forbidden_content": [],
@@ -261,15 +261,19 @@ class GeneralGuidanceBlueprintTests(unittest.TestCase):
             {"version": 1, "completion_tokens": 900, "finish_reason": "stop",
              "semantic_completeness_passed": True, "forbidden_content": [],
              "state": "TOO_SHORT"},
-            {"version": 2, "completion_tokens": 1200, "finish_reason": "length",
+            {"version": 2, "completion_tokens": 1198, "finish_reason": "length",
              "semantic_completeness_passed": True, "forbidden_content": [],
              "state": "TRUNCATED_TOO_LONG"},
             {"version": 3, "completion_tokens": 1210, "finish_reason": "stop",
              "semantic_completeness_passed": False, "forbidden_content": [],
              "state": "INVALID_CONTENT"},
+            {"version": 4, "completion_tokens": 1200, "finish_reason": "stop",
+             "semantic_completeness_passed": False,
+             "forbidden_content": ["complete_solution_code"],
+             "state": "FORBIDDEN_CONTENT"},
         ]
         selected = select_material_fallback(records, 1200, 1080, 1320)
-        self.assertEqual(selected["version"], 1)
+        self.assertEqual(selected["version"], 2)
 
     def test_duplicate_request_signature_detection_is_deterministic(self) -> None:
         records = [
@@ -317,7 +321,7 @@ class GeneralGuidanceBlueprintTests(unittest.TestCase):
             [2048, 2048, 8192, 8192, 8192],
         )
 
-    def test_all_semantically_invalid_material_has_no_fallback(self) -> None:
+    def test_all_semantically_invalid_material_selects_closest_fallback(self) -> None:
         key = MockModelClient.key
         runner, model = self.runner({
             key("general_guidance_blueprint", PROBLEM_ID, "blueprint_initial"): [
@@ -337,16 +341,23 @@ class GeneralGuidanceBlueprintTests(unittest.TestCase):
                 item("again generic", 1000)
             ],
         })
-        with self.assertRaises(GGContentValidationError):
-            runner._matched_guidance(
-                self.root / "problem", PROBLEM_ID, PUBLIC_PROBLEM, 1000
-            )
+        result = runner._matched_guidance(
+            self.root / "problem", PROBLEM_ID, PUBLIC_PROBLEM, 1000
+        )
         match = json.loads(
             (self.root / "problem/teaching_materials/general_guidance/match.json")
             .read_text(encoding="utf-8")
         )
-        self.assertIsNone(match["fallback_version"])
-        self.assertIsNone(match["selected_version"])
+        self.assertEqual(match["fallback_version"], 0)
+        self.assertEqual(match["selected_version"], 0)
+        self.assertEqual(
+            match["selection_experiment_tier"], "formal_format_exception"
+        )
+        self.assertEqual(
+            match["token_interval_outcome"],
+            "fallback_within_tolerance_format_exception",
+        )
+        self.assertEqual(result["response"].output_tokens, 1000)
         self.assertEqual(match["invalid_versions"], [0, 1, 2])
         self.assertEqual(len(model.calls), 4)
 
