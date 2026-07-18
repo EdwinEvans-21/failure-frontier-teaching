@@ -16,6 +16,7 @@ from experiments.pilot.provenance_ff import (
     DirectFact, EvidenceGroundedInference, FailureFrontierRecord,
     OrganizerHypothesis, SelectedLowConfidenceExcerpt, SourceArtifact,
     classify_information, parse_organizer_record,
+    parse_organizer_record_with_audit,
     render_flat_failure_payload, render_shared_failure_payload, sha256_text,
     standardized_error_type,
     validate_direct_instruction,
@@ -193,7 +194,7 @@ class ProvenancePayloadTests(unittest.TestCase):
         ):
             self.assertNotIn(forbidden, flat)
 
-    def test_organizer_requires_verbatim_provenance(self) -> None:
+    def test_nonverbatim_excerpt_is_rejected_without_losing_record(self) -> None:
         code, planning, final, analysis, _ = fixture_bundle()
         raw = json.dumps({
             "evidence_grounded_inferences": [],
@@ -206,8 +207,38 @@ class ProvenancePayloadTests(unittest.TestCase):
             }],
             "organizer_hypotheses": [],
         })
-        with self.assertRaisesRegex(ValueError, "not verbatim"):
-            parse_organizer_record(
+        parsed = parse_organizer_record_with_audit(
+            raw, final_error_type="WRONG_ANSWER",
+            code_artifact="code.py", code_sha256=sha256_text(code),
+            planning_artifact=planning.source_artifact,
+            failure_analysis_artifact=analysis.source_artifact,
+            sources={s.source_type: s for s in (planning, final, analysis)},
+            full_code=code)
+        self.assertEqual(parsed.record.selected_low_confidence_excerpts, ())
+        audit = parsed.rejection_audit()
+        self.assertEqual(audit["received_excerpt_count"], 1)
+        self.assertEqual(audit["accepted_excerpt_count"], 0)
+        self.assertEqual(audit["rejected_excerpt_count"], 1)
+        rejected = audit["rejected_excerpts"][0]
+        self.assertEqual(rejected["reason_code"], "NOT_VERBATIM_SUBSTRING")
+        self.assertEqual(rejected["exact_source_excerpt"],
+                         "a rewritten claim not in source")
+
+    def test_excerpt_source_hash_mismatch_remains_fatal(self) -> None:
+        code, planning, final, analysis, _ = fixture_bundle()
+        raw = json.dumps({
+            "evidence_grounded_inferences": [],
+            "selected_low_confidence_excerpts": [{
+                "source_type": planning.source_type,
+                "source_artifact": planning.source_artifact,
+                "source_sha256": "0" * 64,
+                "exact_source_excerpt": planning.content,
+                "confidence_note": "unverified",
+            }],
+            "organizer_hypotheses": [],
+        })
+        with self.assertRaisesRegex(ValueError, "source hash mismatch"):
+            parse_organizer_record_with_audit(
                 raw, final_error_type="WRONG_ANSWER",
                 code_artifact="code.py", code_sha256=sha256_text(code),
                 planning_artifact=planning.source_artifact,
@@ -497,6 +528,15 @@ class V2RunnerBoundaryTests(unittest.TestCase):
             ).read_text())
             self.assertEqual(manifest["shared_payload_sha256"],
                              provenance["shared_payload_sha256"])
+            self.assertEqual(provenance["rejected_excerpt_count"], 0)
+            rejection_path = (
+                runner.run_dir / "problems/lc-0009-palindrome-number/"
+                "teaching_materials/provenance_ff_v2/"
+                "rejected_low_confidence_excerpts.json")
+            rejection_audit = json.loads(rejection_path.read_text())
+            self.assertEqual(rejection_audit["policy"],
+                             "reject_nonverbatim_excerpt_continue_v1")
+            self.assertEqual(rejection_audit["rejected_excerpts"], [])
             self.assertEqual(sum(call["role"] == "teacher_failure_analysis_v2"
                                  for call in model.calls), 1)
             self.assertEqual(sum(call["role"] == "ff_organizer_v2"

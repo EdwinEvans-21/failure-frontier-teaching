@@ -247,6 +247,38 @@ class FailureFrontierRecord:
         )
 
 
+@dataclass(frozen=True)
+class RejectedLowConfidenceExcerpt:
+    received_index: int
+    reason_code: str
+    reason: str
+    source_type: str
+    source_artifact: str
+    source_sha256: str
+    exact_source_excerpt: str
+    confidence_note: str
+
+
+@dataclass(frozen=True)
+class OrganizerParseResult:
+    record: FailureFrontierRecord
+    received_excerpt_count: int
+    rejected_excerpts: tuple[RejectedLowConfidenceExcerpt, ...]
+
+    @property
+    def accepted_excerpt_count(self) -> int:
+        return len(self.record.selected_low_confidence_excerpts)
+
+    def rejection_audit(self) -> dict[str, Any]:
+        return {
+            "policy": "reject_nonverbatim_excerpt_continue_v1",
+            "received_excerpt_count": self.received_excerpt_count,
+            "accepted_excerpt_count": self.accepted_excerpt_count,
+            "rejected_excerpt_count": len(self.rejected_excerpts),
+            "rejected_excerpts": [asdict(item) for item in self.rejected_excerpts],
+        }
+
+
 def classify_information(*, source: str, raw_objective: bool = False,
                          short_visible_evidence_chain: bool = False) -> str:
     if raw_objective and source == "SYSTEM_RECORD":
@@ -286,6 +318,21 @@ def parse_organizer_record(raw: str, *, final_error_type: str,
                            failure_analysis_artifact: str,
                            sources: dict[str, SourceArtifact],
                            full_code: str) -> FailureFrontierRecord:
+    return parse_organizer_record_with_audit(
+        raw, final_error_type=final_error_type,
+        code_artifact=code_artifact, code_sha256=code_sha256,
+        planning_artifact=planning_artifact,
+        failure_analysis_artifact=failure_analysis_artifact,
+        sources=sources, full_code=full_code,
+    ).record
+
+
+def parse_organizer_record_with_audit(
+    raw: str, *, final_error_type: str, code_artifact: str,
+    code_sha256: str, planning_artifact: str,
+    failure_analysis_artifact: str, sources: dict[str, SourceArtifact],
+    full_code: str,
+) -> OrganizerParseResult:
     text = raw.strip()
     match = re.fullmatch(r"```json\s*(.*?)\s*```", text, re.DOTALL)
     if match:
@@ -301,6 +348,59 @@ def parse_organizer_record(raw: str, *, final_error_type: str,
                       "recommended_fix", "algorithm_recommendation"}
     if forbidden_keys & set(data):
         raise ValueError("FF organizer returned a forbidden field")
+    raw_serialized = stable_json(data)
+    if full_code and full_code in raw_serialized:
+        raise ValueError("FF record duplicates the full submitted code")
+    lowered = raw_serialized.lower()
+    for phrase in FORBIDDEN_RECORD_GUIDANCE:
+        if phrase in lowered:
+            raise ValueError("FF record contains prohibited guidance or code")
+    _reject_detailed_evaluation(raw_serialized)
+
+    raw_excerpts = data.get("selected_low_confidence_excerpts", [])
+    if not isinstance(raw_excerpts, list):
+        raise ValueError("selected_low_confidence_excerpts must be an array")
+    if len(raw_excerpts) > 8:
+        raise ValueError("at most eight selected low-confidence excerpts")
+    accepted: list[SelectedLowConfidenceExcerpt] = []
+    rejected: list[RejectedLowConfidenceExcerpt] = []
+    for index, raw_item in enumerate(raw_excerpts):
+        if not isinstance(raw_item, dict):
+            raise ValueError("selected excerpt must be an object")
+        try:
+            item = SelectedLowConfidenceExcerpt(**raw_item)
+        except TypeError as error:
+            raise ValueError("selected excerpt has an invalid schema") from error
+        if item.source_type == "FF_ORGANIZER_HYPOTHESIS":
+            raise ValueError("organizer hypotheses use their dedicated section")
+        source = sources.get(item.source_type)
+        if source is None:
+            raise ValueError("selected excerpt has no registered raw source")
+        if item.source_type != source.source_type:
+            raise ValueError("low-confidence source type mismatch")
+        if item.source_artifact != source.source_artifact:
+            raise ValueError("low-confidence source artifact mismatch")
+        if item.source_sha256 != source.source_sha256:
+            raise ValueError("low-confidence source hash mismatch")
+        if item.exact_source_excerpt not in source.content:
+            rejected.append(RejectedLowConfidenceExcerpt(
+                received_index=index,
+                reason_code="NOT_VERBATIM_SUBSTRING",
+                reason=("exact_source_excerpt is not an exact Unicode substring "
+                        "of the registered source content"),
+                source_type=item.source_type,
+                source_artifact=item.source_artifact,
+                source_sha256=item.source_sha256,
+                exact_source_excerpt=item.exact_source_excerpt,
+                confidence_note=item.confidence_note,
+            ))
+            continue
+        accepted.append(item)
+
+    data = dict(data)
+    data["selected_low_confidence_excerpts"] = [
+        asdict(item) for item in accepted
+    ]
     data.update({
         "policy_version": FAILURE_FRONTIER_POLICY,
         "final_error_type": final_error_type,
@@ -310,22 +410,11 @@ def parse_organizer_record(raw: str, *, final_error_type: str,
         "failure_analysis_artifact": failure_analysis_artifact,
     })
     record = FailureFrontierRecord.from_dict(data)
-    serialized = stable_json(record.to_dict())
-    if full_code and full_code in serialized:
-        raise ValueError("FF record duplicates the full submitted code")
-    for item in record.selected_low_confidence_excerpts:
-        if item.source_type == "FF_ORGANIZER_HYPOTHESIS":
-            raise ValueError("organizer hypotheses use their dedicated section")
-        source = sources.get(item.source_type)
-        if source is None:
-            raise ValueError("selected excerpt has no registered raw source")
-        item.validate_against(source)
-    lowered = serialized.lower()
-    for phrase in FORBIDDEN_RECORD_GUIDANCE:
-        if phrase in lowered:
-            raise ValueError("FF record contains prohibited guidance or code")
-    _reject_detailed_evaluation(serialized)
-    return record
+    return OrganizerParseResult(
+        record=record,
+        received_excerpt_count=len(raw_excerpts),
+        rejected_excerpts=tuple(rejected),
+    )
 
 
 def render_ff_record(record: FailureFrontierRecord) -> str:

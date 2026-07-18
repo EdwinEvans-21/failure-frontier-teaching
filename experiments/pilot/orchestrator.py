@@ -40,7 +40,7 @@ from .provenance_ff import (
     BASELINE_CONDITION, CRITICAL_CONDITION, DIRECT_CONDITION, FLAT_CONDITION,
     FAILURE_FRONTIER_POLICY, FLAT_PAYLOAD_RENDERER_VERSION,
     SHARED_PAYLOAD_BUILDER_VERSION,
-    SourceArtifact, StudentTreatmentRequest, parse_organizer_record,
+    SourceArtifact, StudentTreatmentRequest, parse_organizer_record_with_audit,
     render_flat_failure_payload, render_shared_failure_payload, sha256_text,
     standardized_error_type,
     teacher_final_natural_language, validate_direct_instruction,
@@ -738,6 +738,18 @@ class PilotRunner:
                         "flat_payload_uses_same_information": True,
                         "flat_uses_direct_instruction": True,
                         "record_sha256": v2_bundle["record_sha256"],
+                        "rejected_excerpt_policy": (
+                            v2_bundle["rejection_audit"]["policy"]),
+                        "received_excerpt_count": (
+                            v2_bundle["rejection_audit"]["received_excerpt_count"]),
+                        "accepted_excerpt_count": (
+                            v2_bundle["rejection_audit"]["accepted_excerpt_count"]),
+                        "rejected_excerpt_count": (
+                            v2_bundle["rejection_audit"]["rejected_excerpt_count"]),
+                        "rejected_excerpt_audit_sha256": (
+                            v2_bundle["rejected_excerpt_audit_sha256"]),
+                        "rejected_excerpt_audit_artifact": (
+                            v2_bundle["rejected_excerpt_audit_artifact"]),
                         "source_sha256": v2_bundle["source_sha256"],
                     }
                 else:
@@ -811,8 +823,10 @@ class PilotRunner:
         flat_payload_path = root / "flat_failure_payload.txt"
         manifest_path = root / "source_manifest.json"
         record_path = root / "failure_frontier_record.json"
+        rejection_path = root / "rejected_low_confidence_excerpts.json"
         if not all(path.is_file() for path in (
-                payload_path, flat_payload_path, manifest_path, record_path)):
+                payload_path, flat_payload_path, manifest_path, record_path,
+                rejection_path)):
             raise ModelInfrastructureError("persisted provenance artifacts are missing")
         manifest = read_json(manifest_path)
         if sha256_text(payload_path.read_text(encoding="utf-8")) != (
@@ -829,6 +843,13 @@ class PilotRunner:
             separators=(",", ":"))
         if sha256_text(canonical_record) != provenance.get("record_sha256"):
             raise ModelInfrastructureError("persisted FF record hash differs")
+        canonical_rejections = json.dumps(
+            read_json(rejection_path), ensure_ascii=False, sort_keys=True,
+            separators=(",", ":"))
+        if sha256_text(canonical_rejections) != provenance.get(
+                "rejected_excerpt_audit_sha256"):
+            raise ModelInfrastructureError(
+                "persisted rejected-excerpt audit hash differs")
         for metadata in manifest.get("source_sha256", {}).values():
             path = Path(metadata.get("source_artifact", ""))
             if not path.is_file() or sha256_text(path.read_text(encoding="utf-8")) != (
@@ -1086,7 +1107,7 @@ class PilotRunner:
         code_artifact = str(
             problem_dir / "teacher" / "final" / "extracted_solution.py")
         try:
-            record = parse_organizer_record(
+            parsed = parse_organizer_record_with_audit(
                 organizer.content, final_error_type=error_type,
                 code_artifact=code_artifact, code_sha256=sha256_text(code),
                 planning_artifact=planning_path,
@@ -1095,9 +1116,13 @@ class PilotRunner:
             )
         except ValueError as error:
             raise FFContentValidationError(str(error)) from error
+        record = parsed.record
         record_dict = record.to_dict()
         record_path = root / "failure_frontier_record.json"
+        rejection_audit = parsed.rejection_audit()
+        rejection_path = root / "rejected_low_confidence_excerpts.json"
         write_json(record_path, record_dict)
+        write_json(rejection_path, rejection_audit)
         try:
             payload = render_shared_failure_payload(
                 final_error_type=error_type, code=code,
@@ -1132,6 +1157,14 @@ class PilotRunner:
             "failure_frontier_record_sha256": sha256_text(
                 json.dumps(record_dict, ensure_ascii=False, sort_keys=True,
                            separators=(",", ":"))),
+            "rejected_excerpt_policy": rejection_audit["policy"],
+            "received_excerpt_count": rejection_audit["received_excerpt_count"],
+            "accepted_excerpt_count": rejection_audit["accepted_excerpt_count"],
+            "rejected_excerpt_count": rejection_audit["rejected_excerpt_count"],
+            "rejected_excerpt_audit_sha256": sha256_text(json.dumps(
+                rejection_audit, ensure_ascii=False, sort_keys=True,
+                separators=(",", ":"))),
+            "rejected_excerpt_audit_artifact": str(rejection_path),
             "analysis_call": str(analysis_call),
             "organizer_call": str(organizer_call),
         })
@@ -1143,6 +1176,11 @@ class PilotRunner:
             "record_sha256": sha256_text(json.dumps(
                 record_dict, ensure_ascii=False, sort_keys=True,
                 separators=(",", ":"))),
+            "rejection_audit": rejection_audit,
+            "rejected_excerpt_audit_sha256": sha256_text(json.dumps(
+                rejection_audit, ensure_ascii=False, sort_keys=True,
+                separators=(",", ":"))),
+            "rejected_excerpt_audit_artifact": str(rejection_path),
             "source_sha256": source_metadata,
         }
 

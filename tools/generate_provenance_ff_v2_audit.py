@@ -336,6 +336,7 @@ def generate(root: Path, source_root: Path, output: Path) -> dict[str, object]:
         "teacher_failure_analysis_policy": "provenance_preserved_failure_analysis_v2",
         "shared_payload_builder_version": "provenance_payload_builder_v2",
         "flat_payload_renderer_version": "flat_provenance_payload_renderer_v2",
+        "rejected_excerpt_policy": "reject_nonverbatim_excerpt_continue_v1",
         "gg_acceptance_policy": "semantic_complete_no_length_v2",
         "gg_token_match_required": False,
         "information_classes": {

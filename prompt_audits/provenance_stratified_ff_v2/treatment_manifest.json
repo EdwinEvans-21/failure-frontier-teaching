@@ -46,6 +46,7 @@
     "teacher_failure_analysis_v2.md": "d2ac2ad8d9ba80bcd426117001d913cee099b4ee92e72f4fde11f577126234a7",
     "teacher_failure_analysis_v2_user.md": "3b2cb39071b232abd2ddbb75fc5cb0d6b3cdedd9e6b98aa8c63728de52bc71dc"
   },
+  "rejected_excerpt_policy": "reject_nonverbatim_excerpt_continue_v1",
   "shared_payload_builder_version": "provenance_payload_builder_v2",
   "shared_pipeline_model_calls": [
     "teacher_failure_analysis_v2",
