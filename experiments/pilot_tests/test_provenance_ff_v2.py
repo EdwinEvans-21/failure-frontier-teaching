@@ -355,6 +355,23 @@ class PromptIsolationTests(unittest.TestCase):
         for phrase in ("Do not recommend an algorithm", "Do not rewrite a Teacher claim",
                        "Do not claim to know the failure root cause"):
             self.assertIn(phrase.lower(), organizer.lower())
+        for exact_source in (
+            "PUBLIC_PROBLEM", "PUBLIC_CONSTRAINTS", "TEACHER_SUBMITTED_CODE",
+            "FINAL_ERROR_TYPE",
+        ):
+            self.assertIn(exact_source, organizer)
+        self.assertIn(
+            "Never use TEACHER_PLANNING, TEACHER_FINAL_NATURAL_LANGUAGE, "
+            "TEACHER_FAILURE_ANALYSIS", organizer)
+        self.assertIn(
+            "Claim: The code contains an outer and inner loop over n.",
+            organizer)
+        self.assertIn("Evidence source: TEACHER_SUBMITTED_CODE", organizer)
+        self.assertIn("Claim: The method is dynamic programming.", organizer)
+        self.assertIn("Evidence source: TEACHER_PLANNING", organizer)
+        self.assertIn("exact Unicode substring", organizer)
+        self.assertIn("The boundary may be wrong.", organizer)
+        self.assertIn("If exact copying is uncertain, omit the excerpt", organizer)
 
     def test_v2_gg_has_no_length_matching_requirement(self) -> None:
         blueprint = self.runner._rendered_call(
