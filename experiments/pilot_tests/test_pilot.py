@@ -227,6 +227,21 @@ class PilotConfigurationTests(unittest.TestCase):
         self.assertEqual(token_relative_error(100, 105), 0.05)
         self.assertIsNone(token_relative_error(100, None))
 
+    def test_expanded_student_order_is_deterministic_and_balanced(self):
+        config = replace(
+            load_config(CONFIG),
+            baseline_id="failure-frontier-baseline-v3-expanded",
+        )
+        runner = PilotRunner(config, None, judge=FakeJudge(), project_root=ROOT)
+        ids = [f"lc-{index:04d}-sentinel" for index in range(200)]
+        first = [runner._student_order("expanded-run", item) for item in ids]
+        second = [runner._student_order("expanded-run", item) for item in ids]
+        self.assertEqual(first, second)
+        self.assertEqual(len(set(first)), 6)
+        self.assertTrue(all(set(order) == {
+            "success_only", "failure_frontier", "general_guidance"
+        } for order in first))
+
 
 class PilotIntegrationTests(unittest.TestCase):
     def setUp(self):

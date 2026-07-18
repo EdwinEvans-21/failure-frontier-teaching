@@ -49,6 +49,14 @@ VERDICT_MAP = {
     Verdict.INTERNAL_ERROR: "JUDGE_ERROR",
 }
 STUDENT_CONDITIONS = ("success_only", "failure_frontier", "general_guidance")
+STUDENT_ORDER_PERMUTATIONS = (
+    ("success_only", "failure_frontier", "general_guidance"),
+    ("success_only", "general_guidance", "failure_frontier"),
+    ("failure_frontier", "success_only", "general_guidance"),
+    ("failure_frontier", "general_guidance", "success_only"),
+    ("general_guidance", "success_only", "failure_frontier"),
+    ("general_guidance", "failure_frontier", "success_only"),
+)
 GG_REQUIRED_SECTIONS = (
     "## Constraint Analysis",
     "## Algorithmic Directions",
@@ -168,7 +176,10 @@ class PilotRunner:
         self.verify_baseline()
         run_id = run_id or datetime.now(timezone.utc).strftime("pilot-%Y%m%dT%H%M%SZ")
         self.run_dir = self._path(self.config.execution.output_root) / run_id
-        self.run_dir.mkdir(parents=True, exist_ok=True)
+        self.run_dir.mkdir(
+            parents=True,
+            exist_ok=self.config.mode != "dry-run",
+        )
         write_json(self.run_dir / "config.snapshot.yaml", self.config.public_snapshot())
         write_json(self.run_dir / "run.state.json", {
             "run_id": run_id,
@@ -360,13 +371,27 @@ class PilotRunner:
             spec = ProblemSpec.load(self._path(item.problem))
             problem = self.renderer.formatted_problem(
                 self._path(item.problem), self._path(item.public_tests))
-            calls.extend(self._dry_problem_calls(spec.problem_id, problem))
+            calls.extend(self._dry_problem_calls(run_id, spec.problem_id, problem))
+        orders = {
+            ProblemSpec.load(self._path(item.problem)).problem_id:
+                list(self._student_order(run_id, ProblemSpec.load(
+                    self._path(item.problem)).problem_id))
+            for item in self.config.problems
+        }
         plan = {"run_id": run_id, "mode": "dry-run", "model_calls": calls,
-                "api_accessed": False, "judge_accessed": False}
+                "api_accessed": False, "judge_accessed": False,
+                "problem_count": len(self.config.problems),
+                "minimum_model_calls_if_all_teacher_success":
+                    9 * len(self.config.problems),
+                "maximum_model_calls_under_configured_gg_attempts":
+                    14 * len(self.config.problems),
+                "expected_judge_submissions": 4 * len(self.config.problems),
+                "student_execution_orders": orders}
         write_json(self.run_dir / "dry_run_plan.json", plan)
         return plan
 
-    def _dry_problem_calls(self, problem_id: str, problem: str) -> list[dict[str, Any]]:
+    def _dry_problem_calls(self, run_id: str, problem_id: str,
+                           problem: str) -> list[dict[str, Any]]:
         calls = [
             self._rendered_solver_call("planning", "teacher", problem_id, "teacher", problem),
             self._rendered_solver_call(
@@ -437,7 +462,7 @@ class PilotRunner:
                 self.config.teaching_material.gg_material_max_output_tokens
             )
             calls.append(revised)
-        for condition in STUDENT_CONDITIONS:
+        for condition in self._student_order(run_id, problem_id):
             for stage in ("planning", "final"):
                 calls.append(self._rendered_solver_call(
                     stage, "student", problem_id, condition, problem,
@@ -446,6 +471,14 @@ class PilotRunner:
                     planning_status="<planning-status>",
                 ))
         return calls
+
+    def _student_order(self, run_id: str, problem_id: str) -> tuple[str, ...]:
+        if self.config.baseline_id != "failure-frontier-baseline-v3-expanded":
+            return STUDENT_CONDITIONS
+        digest = hashlib.sha256(f"{run_id}{problem_id}".encode("utf-8")).digest()
+        return STUDENT_ORDER_PERMUTATIONS[
+            int.from_bytes(digest, "big") % len(STUDENT_ORDER_PERMUTATIONS)
+        ]
 
     def _run_problem(self, run_id: str, item: ProblemConfig) -> dict[str, Any]:
         assert self.run_dir is not None
@@ -542,7 +575,9 @@ class PilotRunner:
                     "failure_frontier": ff.content,
                     "general_guidance": gg["response"].content,
                 }
-            for condition in STUDENT_CONDITIONS:
+            student_order = self._student_order(run_id, spec.problem_id)
+            record["student_execution_order"] = list(student_order)
+            for condition in student_order:
                 student = self._solver_stage(
                     problem_dir / f"student_{condition}", "student", spec.problem_id,
                     condition, problem, item, spec,
