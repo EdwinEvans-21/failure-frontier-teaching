@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "experiment_id": "fixed-material-repeated-student-v1",
+  "eligibility_policy": "fixed_material_student_comparison_v1",
+  "prompts_dir": "experiments/prompts",
+  "model": {
+    "provider": "deepseek",
+    "model_name": "deepseek-v4-flash",
+    "reasoning_mode": false,
+    "temperature": 0.2,
+    "top_p": 1.0,
+    "max_output_tokens": 8192,
+    "base_url": "https://api.deepseek.com",
+    "api_key_env": "DEEPSEEK_API_KEY",
+    "seed": null,
+    "network_retry_limit": 2,
+    "network_retry_backoff_seconds": 1.0,
+    "mock_responses_path": null,
+    "tokenizer_name": null,
+    "tokenizer_revision": null,
+    "thinking": {
+      "type": "disabled"
+    }
+  },
+  "solver": {
+    "protocol": "two_stage_v1",
+    "planning_max_output_tokens": 2048,
+    "final_max_output_tokens": 8192
+  },
+  "execution": {
+    "judge_image": "ffjudge-python:latest",
+    "judge_phase": "hidden",
+    "resume": true
+  },
+  "problems": 7,
+  "conditions": [
+    "baseline",
+    "naive_ff",
+    "critical_ff",
+    "general_guidance"
+  ],
+  "replicates": 10
+}
