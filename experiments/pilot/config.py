@@ -29,10 +29,14 @@ class ModelConfig:
 class TeachingMaterialConfig:
     token_match_tolerance: float
     gg_generation_policy: str
+    failure_frontier_max_output_tokens: int
     gg_blueprint_max_output_tokens: int
     gg_blueprint_repair_attempts: int
     gg_material_max_output_tokens: int
     gg_material_revision_attempts: int
+    gg_short_expand_overshoot_factor: float
+    gg_min_expand_scale: float
+    gg_max_expand_scale: float
 
 
 @dataclass(frozen=True)
@@ -154,6 +158,8 @@ def _validate(config: PilotConfig) -> None:
         raise ValueError("token_match_tolerance must be in [0, 1)")
     if config.teaching_material.gg_generation_policy != "blueprint_render_v1":
         raise ValueError("gg_generation_policy must be blueprint_render_v1")
+    if config.teaching_material.failure_frontier_max_output_tokens <= 0:
+        raise ValueError("failure_frontier_max_output_tokens must be positive")
     if config.teaching_material.gg_blueprint_max_output_tokens <= 0:
         raise ValueError("gg_blueprint_max_output_tokens must be positive")
     if config.teaching_material.gg_blueprint_repair_attempts != 1:
@@ -162,7 +168,20 @@ def _validate(config: PilotConfig) -> None:
         raise ValueError("gg_material_max_output_tokens must be positive")
     if config.teaching_material.gg_material_revision_attempts != 2:
         raise ValueError("gg_material_revision_attempts must be exactly 2")
+    if config.teaching_material.gg_short_expand_overshoot_factor <= 1:
+        raise ValueError("gg_short_expand_overshoot_factor must be greater than 1")
+    if config.teaching_material.gg_min_expand_scale < 1:
+        raise ValueError("gg_min_expand_scale must be at least 1")
+    if (config.teaching_material.gg_max_expand_scale <
+            config.teaching_material.gg_min_expand_scale):
+        raise ValueError("gg_max_expand_scale must be at least gg_min_expand_scale")
     if config.execution.judge_phase != "hidden":
         raise ValueError("pilot v1 formal submissions must use the hidden phase")
-    if len(config.problems) != 5:
-        raise ValueError("pilot v1 requires exactly the five frozen problems")
+    expected_problem_count = (
+        31 if config.baseline_id == "failure-frontier-baseline-v3-expanded"
+        else 5
+    )
+    if len(config.problems) != expected_problem_count:
+        raise ValueError(
+            f"configured baseline requires exactly {expected_problem_count} problems"
+        )

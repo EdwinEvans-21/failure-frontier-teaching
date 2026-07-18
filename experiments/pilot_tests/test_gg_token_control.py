@@ -18,6 +18,7 @@ from experiments.pilot.orchestrator import (
     GGContentValidationError,
     PilotRunner,
     condition_comparison_eligible,
+    guidance_anchor_records,
     guidance_candidate_state,
     guidance_distance_to_interval,
     guidance_token_bounds,
@@ -154,7 +155,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             execution=replace(base.execution, output_root=str(self.root / "runs")),
             prompts_dir=str(ROOT / "experiments/prompts"),
             baseline_manifest=str(
-                ROOT / "experiments/baseline_v2/baseline_manifest.json"
+                ROOT / "experiments/baseline_v3/baseline_manifest.json"
             ),
         )
 
@@ -297,7 +298,13 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertTrue(result["metrics"]["token_match_passed"])
         self.assertEqual(match["matched_version"], 1)
         self.assertEqual(len(model.calls), 2)
-        self.assertIn("scale 1.5000", model.calls[1]["system_prompt"])
+        self.assertIn("Requested expansion scale: 1.800000", model.calls[1]["system_prompt"])
+        self.assertIn("SHORT", model.calls[1]["user_prompt"])
+        self.assertEqual(
+            match["versions"][1]["operation"],
+            "bounded_expand_short_anchor",
+        )
+        self.assertEqual(match["versions"][1]["source_version"], 0)
         self.assertEqual(
             [call["max_output_tokens"] for call in model.calls], [8192, 8192]
         )
@@ -601,9 +608,276 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
             [item["state"] for item in match["versions"]],
             ["TRUNCATED_TOO_LONG", "TOO_SHORT", "TRUNCATED_TOO_LONG"],
         )
-        self.assertIsNone(match["versions"][2]["source_version"])
-        self.assertEqual(match["versions"][2]["operation"], "expand_render")
+        self.assertEqual(match["versions"][2]["source_version"], 1)
+        self.assertEqual(
+            match["versions"][2]["operation"],
+            "bounded_expand_short_anchor",
+        )
+        self.assertIn("SHORT V1", model.calls[2]["user_prompt"])
+        self.assertNotIn("TRUNCATED V0", model.calls[2]["user_prompt"])
         self.assertEqual(len(model.calls), 3)
+
+    def test_3962_short_anchor_bounded_expansion_matches(self) -> None:
+        key = MockModelClient.key
+        result, match, model, _ = self.direct({
+            key("general_guidance", PROBLEM_ID, "initial"): [
+                item(guidance("V0_3962_SHORT"), 666)
+            ],
+            key("general_guidance_adjust", PROBLEM_ID, "expand_1"): [
+                item(guidance("V1_3962_MATCH"), 805)
+            ],
+        }, target=800)
+        self.assertTrue(result["metrics"]["token_match_passed"])
+        self.assertEqual((match["lower_bound"], match["upper_bound"]), (720, 880))
+        revision = match["versions"][1]
+        self.assertEqual(revision["operation"], "bounded_expand_short_anchor")
+        self.assertEqual(revision["source_material_version"], 0)
+        self.assertEqual(revision["source_material_tokens"], 666)
+        self.assertAlmostEqual(revision["raw_feedback_scale"], 800 / 666)
+        self.assertAlmostEqual(
+            revision["requested_expand_scale"], (800 / 666) * 1.08
+        )
+        self.assertEqual(revision["section_budget"], {
+            "constraints": 120,
+            "approaches": 360,
+            "correctness": 160,
+            "implementation": 160,
+        })
+        self.assertTrue(revision["source_candidate_complete"])
+        self.assertTrue(revision["source_candidate_semantically_valid"])
+        self.assertIn("V0_3962_SHORT", model.calls[1]["user_prompt"])
+        self.assertIn("Do not introduce a new algorithmic direction", model.calls[1]["system_prompt"])
+        self.assertFalse(match["fallback_used"])
+
+    def test_invalid_expansion_returns_to_earlier_valid_short_anchor(self) -> None:
+        key = MockModelClient.key
+        invalid = guidance("V1_INVALID").split("## Implementation Checks", 1)[0]
+        result, match, model, _ = self.direct({
+            key("general_guidance", PROBLEM_ID, "initial"): [
+                item(guidance("V0_VALID_SHORT"), 666)
+            ],
+            key("general_guidance_adjust", PROBLEM_ID, "expand_1"): [
+                item(invalid, 559)
+            ],
+            key("general_guidance_adjust", PROBLEM_ID, "expand_2"): [
+                item(guidance("V2_MATCH"), 790)
+            ],
+        }, target=800)
+        self.assertTrue(result["metrics"]["token_match_passed"])
+        self.assertEqual(
+            [item["state"] for item in match["versions"]],
+            ["TOO_SHORT", "INVALID_CONTENT", "MATCHED"],
+        )
+        second, third = match["versions"][1:]
+        self.assertEqual(second["source_material_version"], 0)
+        self.assertEqual(third["source_material_version"], 0)
+        self.assertEqual(third["feedback_source_version"], 1)
+        self.assertNotEqual(
+            second["requested_expand_scale"], third["requested_expand_scale"]
+        )
+        self.assertIn("implementation", third["missing_categories_feedback"])
+        self.assertIn("V0_VALID_SHORT", model.calls[2]["user_prompt"])
+        self.assertNotIn("V1_INVALID", model.calls[2]["user_prompt"])
+        self.assertIn("omitted implementation", model.calls[2]["system_prompt"])
+
+    def test_consecutive_short_expansions_use_actual_token_feedback(self) -> None:
+        key = MockModelClient.key
+        result, match, model, _ = self.direct({
+            key("general_guidance", PROBLEM_ID, "initial"): [
+                item(guidance("V0_SHORT"), 600)
+            ],
+            key("general_guidance_adjust", PROBLEM_ID, "expand_1"): [
+                item(guidance("V1_SHORT"), 680)
+            ],
+            key("general_guidance_adjust", PROBLEM_ID, "expand_2"): [
+                item(guidance("V2_MATCH"), 790)
+            ],
+        }, target=800)
+        self.assertTrue(result["metrics"]["token_match_passed"])
+        first, second = match["versions"][1:]
+        self.assertEqual(second["source_material_version"], 1)
+        self.assertEqual(second["previous_observed_tokens"], 680)
+        self.assertNotEqual(
+            first["requested_expand_scale"], second["requested_expand_scale"]
+        )
+        self.assertNotEqual(first["section_budget"], second["section_budget"])
+        self.assertEqual(
+            second["ratio_strategy"],
+            "actual_token_feedback_from_previous_expansion",
+        )
+        self.assertIn("V1_SHORT", model.calls[2]["user_prompt"])
+
+    def test_short_expansion_to_long_switches_to_compression(self) -> None:
+        key = MockModelClient.key
+        result, match, model, _ = self.direct({
+            key("general_guidance", PROBLEM_ID, "initial"): [
+                item(guidance("V0_SHORT"), 666)
+            ],
+            key("general_guidance_adjust", PROBLEM_ID, "expand_1"): [
+                item(guidance("V1_LONG"), 950)
+            ],
+            key("general_guidance_adjust", PROBLEM_ID, "compress_2"): [
+                item(guidance("V2_MATCH"), 810)
+            ],
+        }, target=800)
+        self.assertTrue(result["metrics"]["token_match_passed"])
+        self.assertEqual(
+            [item["state"] for item in match["versions"]],
+            ["TOO_SHORT", "COMPLETE_TOO_LONG", "MATCHED"],
+        )
+        self.assertEqual(
+            match["versions"][1]["operation"],
+            "bounded_expand_short_anchor",
+        )
+        self.assertEqual(match["versions"][2]["operation"], "compress")
+        self.assertEqual(match["versions"][2]["source_material_version"], 1)
+        self.assertIn("V1_LONG", model.calls[2]["user_prompt"])
+        self.assertNotIn("V0_SHORT", model.calls[2]["user_prompt"])
+
+    def test_invalid_forbidden_and_truncated_candidates_are_not_anchors(self) -> None:
+        base = {
+            "completion_tokens": 700,
+            "accepted_lower_bound": 720,
+            "distance_to_target": 100,
+            "valid_candidate": False,
+            "semantic_completeness_passed": False,
+            "forbidden_content": [],
+            "obviously_truncated": False,
+            "is_complete_short_candidate": False,
+            "is_complete_long_candidate": False,
+            "matched": False,
+        }
+        records = [
+            {**base, "version": 0, "state": "TRUNCATED_TOO_LONG",
+             "finish_reason": "length", "semantic_completeness_passed": True},
+            {**base, "version": 1, "state": "INVALID_CONTENT",
+             "finish_reason": "stop"},
+            {**base, "version": 2, "state": "FORBIDDEN_CONTENT",
+             "finish_reason": "stop", "semantic_completeness_passed": True,
+             "forbidden_content": ["complete_code"]},
+            {**base, "version": 3, "state": "TOO_SHORT",
+             "finish_reason": "stop", "semantic_completeness_passed": False,
+             "is_complete_short_candidate": True},
+        ]
+        anchors = guidance_anchor_records(records)
+        self.assertIsNone(anchors["short"])
+        self.assertIsNone(anchors["long"])
+
+    def test_bounded_expansion_prompt_excludes_external_information(self) -> None:
+        key = MockModelClient.key
+        _, _, model, _ = self.direct({
+            key("general_guidance", PROBLEM_ID, "initial"): [
+                item(guidance("SAFE_SHORT_SOURCE"), 666)
+            ],
+            key("general_guidance_adjust", PROBLEM_ID, "expand_1"): [
+                item(guidance("SAFE_MATCH"), 805)
+            ],
+        }, target=800)
+        visible = (
+            model.calls[1]["system_prompt"] + "\n" +
+            model.calls[1]["user_prompt"]
+        )
+        forbidden = (
+            "TEACHER_PLANNING_SENTINEL", "TEACHER_FINAL_SENTINEL",
+            "TEACHER_CODE_SENTINEL", "VERDICT_SENTINEL",
+            "FF_CONTENT_SENTINEL", "HIDDEN_TEST_SENTINEL",
+            "JUDGE_SENTINEL", "ORACLE_SENTINEL", "CHECKER_SENTINEL",
+        )
+        self.assertFalse(any(item in visible for item in forbidden))
+        self.assertIn(FORMATTED_PROBLEM, visible)
+        self.assertIn("SAFE_SHORT_SOURCE", visible)
+
+    def test_resume_after_invalid_expansion_returns_to_valid_short_anchor(self) -> None:
+        key = MockModelClient.key
+        invalid = guidance("INVALID_REVISION").split(
+            "## Implementation Checks", 1
+        )[0]
+        first_config = self.config({
+            key("general_guidance", PROBLEM_ID, "initial"): [
+                item(guidance("PERSISTED_VALID_SHORT"), 666)
+            ],
+            key("general_guidance_adjust", PROBLEM_ID, "expand_1"): [
+                item(invalid, 559)
+            ],
+        }, attempts=1)
+        first_model = MockModelClient(first_config.model)
+        problem_dir = self.root / "resume-problem"
+        first_runner = PilotRunner(
+            first_config, first_model, judge=NoJudge(), project_root=ROOT
+        )
+        lower, upper = guidance_token_bounds(800, 0.10)
+        first_runner._validated_guidance_blueprint(
+            problem_dir / "teaching_materials/general_guidance",
+            PROBLEM_ID, FORMATTED_PROBLEM, 800, lower, upper,
+        )
+        first_model.calls.clear()
+        first_runner._matched_guidance(
+            problem_dir, PROBLEM_ID, FORMATTED_PROBLEM, 800
+        )
+
+        resumed_config = self.config({
+            key("general_guidance_adjust", PROBLEM_ID, "expand_2"): [
+                item(guidance("RESUMED_MATCH"), 790)
+            ],
+        }, attempts=2)
+        resumed_model = MockModelClient(resumed_config.model)
+        resumed = PilotRunner(
+            resumed_config, resumed_model, judge=NoJudge(), project_root=ROOT
+        )
+        result = resumed._matched_guidance(
+            problem_dir, PROBLEM_ID, FORMATTED_PROBLEM, 800
+        )
+        match = json.loads((
+            problem_dir / "teaching_materials/general_guidance/match.json"
+        ).read_text(encoding="utf-8"))
+        self.assertTrue(result["metrics"]["token_match_passed"])
+        self.assertEqual(len(resumed_model.calls), 1)
+        self.assertEqual(match["versions"][2]["source_material_version"], 0)
+        self.assertEqual(match["versions"][2]["feedback_source_version"], 1)
+        self.assertIn("PERSISTED_VALID_SHORT", resumed_model.calls[0]["user_prompt"])
+        self.assertNotIn("INVALID_REVISION", resumed_model.calls[0]["user_prompt"])
+
+    def test_resume_legacy_material_fields_warns_without_rewriting(self) -> None:
+        key = MockModelClient.key
+        config = self.config({
+            key("general_guidance", PROBLEM_ID, "initial"): [
+                item(guidance("LEGACY_MATCH"), 800)
+            ],
+        })
+        model = MockModelClient(config.model)
+        problem_dir = self.root / "legacy-fields"
+        runner = PilotRunner(config, model, judge=NoJudge(), project_root=ROOT)
+        lower, upper = guidance_token_bounds(800, 0.10)
+        runner._validated_guidance_blueprint(
+            problem_dir / "teaching_materials/general_guidance",
+            PROBLEM_ID, FORMATTED_PROBLEM, 800, lower, upper,
+        )
+        model.calls.clear()
+        runner._matched_guidance(problem_dir, PROBLEM_ID, FORMATTED_PROBLEM, 800)
+        version_path = (
+            problem_dir /
+            "teaching_materials/general_guidance/version_0/version.json"
+        )
+        legacy = json.loads(version_path.read_text(encoding="utf-8"))
+        legacy.pop("raw_feedback_scale")
+        version_path.write_text(json.dumps(legacy), encoding="utf-8")
+        before = version_path.read_bytes()
+
+        resumed_model = MockModelClient(config.model)
+        resumed = PilotRunner(
+            config, resumed_model, judge=NoJudge(), project_root=ROOT
+        )
+        resumed._matched_guidance(
+            problem_dir, PROBLEM_ID, FORMATTED_PROBLEM, 800
+        )
+        match = json.loads((
+            problem_dir / "teaching_materials/general_guidance/match.json"
+        ).read_text(encoding="utf-8"))
+        warning = "legacy_material_candidate_missing_bounded_expansion_audit_fields"
+        self.assertIn(warning, match["compatibility_warnings"])
+        self.assertIn(warning, match["versions"][0]["compatibility_warnings"])
+        self.assertEqual(version_path.read_bytes(), before)
+        self.assertEqual(resumed_model.calls, [])
 
     def test_finish_reason_length_inside_interval_is_never_matched(self) -> None:
         key = MockModelClient.key
@@ -1080,15 +1354,119 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         final_calls = [call for call in model.calls
                        if call["role"].endswith("_final")]
         solver_calls = planning_calls + final_calls
+        failure_frontier_calls = [
+            call for call in model.calls
+            if call["role"] == "failure_frontier"
+        ]
         material_calls = [call for call in model.calls
                           if not call["role"].startswith("general_guidance") and
-                          call not in solver_calls]
+                          call not in solver_calls and
+                          call not in failure_frontier_calls]
         self.assertTrue(all(call["max_output_tokens"] == 2048
                             for call in planning_calls))
         self.assertTrue(all(call["max_output_tokens"] == 8192
                             for call in final_calls))
+        self.assertEqual(len(failure_frontier_calls), 1)
+        self.assertEqual(
+            failure_frontier_calls[0]["max_output_tokens"], 8192
+        )
         self.assertTrue(all(call["max_output_tokens"] == 16384
                             for call in material_calls))
+
+    def test_mock_full_chain_short_anchor_expands_once_to_match(self) -> None:
+        config = self.config(self.full_failure_responses([
+            (666, "CHAIN_A_SHORT"), (805, "CHAIN_A_MATCH")
+        ], target=800, conditions=["initial", "expand_1"]))
+        model = MockModelClient(config.model)
+        summary = PilotRunner(
+            config, model, judge=MarkerJudge(), project_root=ROOT
+        ).run("short-expand-chain-a")
+        match = json.loads((
+            self.root / "runs/short-expand-chain-a/problems" / PROBLEM_ID /
+            "teaching_materials/general_guidance/match.json"
+        ).read_text(encoding="utf-8"))
+        self.assertEqual(summary["condition_comparison_eligible_count"], 1)
+        self.assertEqual(match["matched_version"], 1)
+        self.assertEqual(
+            match["versions"][1]["operation"],
+            "bounded_expand_short_anchor",
+        )
+        self.assertEqual(match["versions"][1]["source_material_version"], 0)
+
+    def test_mock_full_chain_invalid_expansion_returns_to_short_anchor(self) -> None:
+        key = MockModelClient.key
+        responses = self.full_failure_responses([
+            (666, "CHAIN_B_SHORT"),
+            (559, "CHAIN_B_UNUSED"),
+            (790, "CHAIN_B_MATCH"),
+        ], target=800, conditions=["initial", "expand_1", "expand_2"])
+        responses[key("general_guidance_adjust", PROBLEM_ID, "expand_1")] = [
+            item(guidance("CHAIN_B_INVALID").split(
+                "## Implementation Checks", 1
+            )[0], 559)
+        ]
+        config = self.config(responses)
+        model = MockModelClient(config.model)
+        summary = PilotRunner(
+            config, model, judge=MarkerJudge(), project_root=ROOT
+        ).run("short-expand-chain-b")
+        match = json.loads((
+            self.root / "runs/short-expand-chain-b/problems" / PROBLEM_ID /
+            "teaching_materials/general_guidance/match.json"
+        ).read_text(encoding="utf-8"))
+        self.assertEqual(summary["condition_comparison_eligible_count"], 1)
+        self.assertEqual(match["versions"][2]["source_material_version"], 0)
+        self.assertEqual(match["versions"][2]["feedback_source_version"], 1)
+
+    def test_mock_full_chain_short_to_long_switches_to_compression(self) -> None:
+        config = self.config(self.full_failure_responses([
+            (666, "CHAIN_C_SHORT"),
+            (950, "CHAIN_C_LONG"),
+            (810, "CHAIN_C_MATCH"),
+        ], target=800, conditions=["initial", "expand_1", "compress_2"]))
+        model = MockModelClient(config.model)
+        summary = PilotRunner(
+            config, model, judge=MarkerJudge(), project_root=ROOT
+        ).run("short-expand-chain-c")
+        match = json.loads((
+            self.root / "runs/short-expand-chain-c/problems" / PROBLEM_ID /
+            "teaching_materials/general_guidance/match.json"
+        ).read_text(encoding="utf-8"))
+        self.assertEqual(summary["condition_comparison_eligible_count"], 1)
+        self.assertEqual(match["versions"][1]["state"], "COMPLETE_TOO_LONG")
+        self.assertEqual(match["versions"][2]["operation"], "compress")
+        self.assertEqual(match["versions"][2]["source_material_version"], 1)
+
+    def test_failure_frontier_at_8192_is_explicitly_ineligible(self) -> None:
+        config = self.config(self.full_failure_responses([
+            (8192, "GG MATCH"),
+        ], target=8192, conditions=["initial"]))
+        model = MockModelClient(config.model)
+        PilotRunner(
+            config, model, judge=MarkerJudge(), project_root=ROOT
+        ).run("ff-output-limit")
+        record = json.loads(
+            (self.root / "runs/ff-output-limit/problems" / PROBLEM_ID /
+             "record.json").read_text(encoding="utf-8")
+        )
+        material = record["teaching_material"]
+        self.assertEqual(material["failure_frontier_tokens"], 8192)
+        self.assertEqual(
+            material["failure_frontier_max_output_tokens"], 8192
+        )
+        self.assertTrue(material["failure_frontier_output_limit_reached"])
+        self.assertFalse(record["condition_comparison_eligible"])
+        self.assertFalse(record["exploratory_comparison_eligible"])
+        self.assertEqual(
+            record["eligibility_reason"],
+            "failure_frontier_output_limit_reached",
+        )
+        ff_calls = [
+            call for call in model.calls
+            if call["role"] == "failure_frontier"
+        ]
+        self.assertEqual(len(ff_calls), 1)
+        self.assertEqual(ff_calls[0]["max_output_tokens"], 8192)
 
     def test_mock_full_chain_long_short_interpolation_matches_from_long(self) -> None:
         config = self.config(self.full_failure_responses([
@@ -1196,7 +1574,7 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         resumed = runner._run_problem("resume-run", config.problems[0])
 
         self.assertFalse(resumed["condition_comparison_eligible"])
-        self.assertEqual(resumed["eligibility_policy"], "teacher_failure_strict_v2")
+        self.assertEqual(resumed["eligibility_policy"], "teacher_failure_strict_v3")
         self.assertEqual(resumed["eligibility_reason"], "invalid_episode")
         persisted = json.loads(record_path.read_text(encoding="utf-8"))
         self.assertFalse(persisted["condition_comparison_eligible"])

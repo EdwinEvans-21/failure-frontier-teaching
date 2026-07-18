@@ -131,15 +131,44 @@ def material_paragraph_budgets(target_tokens: int) -> dict[str, Any]:
     }
 
 
-def scaled_section_budgets(
+def short_expansion_feedback(
     target_tokens: int,
-    observed_tokens: int | None,
-) -> tuple[dict[str, int], float]:
-    scale = 1.0
-    if observed_tokens and observed_tokens > 0 and observed_tokens < target_tokens:
-        scale = min(1.5, target_tokens / observed_tokens)
-    base = material_section_budgets(target_tokens)
-    return ({key: math.ceil(value * scale) for key, value in base.items()}, scale)
+    observed_tokens: int,
+    *,
+    overshoot_factor: float,
+    min_expand_scale: float,
+    max_expand_scale: float,
+    previous_requested_scale: float | None = None,
+    previous_observed_tokens: int | None = None,
+) -> dict[str, Any]:
+    if observed_tokens <= 0:
+        raise ValueError("observed_tokens must be positive")
+    raw_scale = target_tokens / observed_tokens
+    if previous_requested_scale is None or previous_observed_tokens is None:
+        requested_scale = raw_scale * overshoot_factor
+        strategy = "target_over_short_anchor_with_overshoot"
+        budget_tokens = target_tokens
+    else:
+        requested_scale = (
+            previous_requested_scale * target_tokens / previous_observed_tokens
+        )
+        strategy = "actual_token_feedback_from_previous_expansion"
+        budget_tokens = math.ceil(target_tokens * target_tokens /
+                                  previous_observed_tokens)
+    requested_scale = min(
+        max_expand_scale, max(min_expand_scale, requested_scale)
+    )
+    budget_tokens = min(
+        math.floor(target_tokens * 1.10),
+        max(math.ceil(target_tokens * 0.90), budget_tokens),
+    )
+    return {
+        "raw_feedback_scale": raw_scale,
+        "requested_expand_scale": requested_scale,
+        "ratio_strategy": strategy,
+        "section_budgets": material_section_budgets(budget_tokens),
+        "section_budget_tokens": budget_tokens,
+    }
 
 
 def select_material_fallback(

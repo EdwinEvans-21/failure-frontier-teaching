@@ -102,7 +102,7 @@ class GeneralGuidanceBlueprintTests(unittest.TestCase):
             execution=replace(base.execution, output_root=str(self.root / "runs")),
             prompts_dir=str(ROOT / "experiments/prompts"),
             baseline_manifest=str(
-                ROOT / "experiments/baseline_v2/baseline_manifest.json"
+                ROOT / "experiments/baseline_v3/baseline_manifest.json"
             ),
         )
 

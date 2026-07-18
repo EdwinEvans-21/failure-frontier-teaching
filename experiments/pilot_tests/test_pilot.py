@@ -141,23 +141,64 @@ class PilotConfigurationTests(unittest.TestCase):
         self.assertEqual(config.solver.planning_max_output_tokens, 2048)
         self.assertEqual(config.solver.final_max_output_tokens, 8192)
 
+    def test_all_four_solvers_share_comment_free_final_prompt(self):
+        config = load_config(CONFIG)
+        runner = PilotRunner(
+            config, None, judge=FakeJudge(), project_root=ROOT
+        )
+        rendered = []
+        for role, condition in (
+            ("teacher", "teacher"),
+            ("student", "success_only"),
+            ("student", "failure_frontier"),
+            ("student", "general_guidance"),
+        ):
+            rendered.append(
+                runner._rendered_solver_call(
+                    "final",
+                    role,
+                    PROBLEM_ID,
+                    condition,
+                    "FORMATTED_PROBLEM",
+                    additional_material=(
+                        "MATERIAL" if condition != "success_only" else ""
+                    ),
+                    planning_content="PLANNING",
+                    planning_status="complete",
+                )["system_prompt"]
+            )
+        self.assertEqual(len(set(rendered)), 1)
+        final_prompt = rendered[0]
+        self.assertIn("do not include comments of any kind", final_prompt)
+        self.assertIn("Do not use `#` line comments", final_prompt)
+        self.assertIn("reasoning disguised as source text", final_prompt)
+
     def test_five_problem_config_uses_one_non_reasoning_model_policy(self):
         config = load_config(CONFIG)
         self.assertEqual(len(config.problems), 5)
-        self.assertEqual(config.baseline_id, "failure-frontier-baseline-v2")
+        self.assertEqual(config.baseline_id, "failure-frontier-baseline-v3")
         self.assertEqual(
             config.baseline_manifest,
-            "experiments/baseline_v2/baseline_manifest.json",
+            "experiments/baseline_v3/baseline_manifest.json",
         )
         self.assertFalse(config.model.reasoning_mode)
         self.assertEqual(config.execution.judge_phase, "hidden")
         self.assertEqual(config.teaching_material.token_match_tolerance, 0.10)
+        self.assertEqual(
+            config.teaching_material.failure_frontier_max_output_tokens,
+            8192,
+        )
         self.assertEqual(
             config.teaching_material.gg_blueprint_max_output_tokens, 2048
         )
         self.assertEqual(config.teaching_material.gg_blueprint_repair_attempts, 1)
         self.assertEqual(config.teaching_material.gg_material_max_output_tokens, 8192)
         self.assertEqual(config.teaching_material.gg_material_revision_attempts, 2)
+        self.assertEqual(
+            config.teaching_material.gg_short_expand_overshoot_factor, 1.08
+        )
+        self.assertEqual(config.teaching_material.gg_min_expand_scale, 1.05)
+        self.assertEqual(config.teaching_material.gg_max_expand_scale, 3.50)
         snapshot = json.dumps(config.public_snapshot())
         self.assertNotIn("api_key\"", snapshot)
         self.assertIn("api_key_env", snapshot)
@@ -204,7 +245,7 @@ class PilotIntegrationTests(unittest.TestCase):
             model=replace(base.model, mock_responses_path=str(script)),
             execution=replace(base.execution, output_root=str(self.root / "runs")),
             prompts_dir=str(ROOT / "experiments" / "prompts"),
-            baseline_manifest=str(ROOT / "experiments" / "baseline_v2" / "baseline_manifest.json"),
+            baseline_manifest=str(ROOT / "experiments" / "baseline_v3" / "baseline_manifest.json"),
         )
 
     @staticmethod
@@ -488,7 +529,7 @@ class PilotIntegrationTests(unittest.TestCase):
         data["execution"]["output_root"] = str(self.root / "cli-runs")
         data["prompts_dir"] = str(ROOT / "experiments" / "prompts")
         data["baseline_manifest"] = str(
-            ROOT / "experiments" / "baseline_v2" / "baseline_manifest.json")
+            ROOT / "experiments" / "baseline_v3" / "baseline_manifest.json")
         config_path = self.root / "cli.yaml"
         config_path.write_text(json.dumps(data), encoding="utf-8")
         completed = subprocess.run(

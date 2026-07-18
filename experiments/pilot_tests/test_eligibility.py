@@ -89,6 +89,20 @@ class EligibilityDerivationTests(unittest.TestCase):
         self.assertEqual(result.eligibility_reason, "eligible")
         self.assertEqual(result.eligibility_policy, ELIGIBILITY_POLICY)
 
+    def test_failure_frontier_at_output_limit_is_never_comparable(self) -> None:
+        record = failure_record()
+        material = record["teaching_material"]
+        material["failure_frontier_tokens"] = 8192
+        material["failure_frontier_max_output_tokens"] = 8192
+        material["failure_frontier_output_limit_reached"] = True
+        result = derive_comparison_eligibility(record)
+        self.assertFalse(result.condition_comparison_eligible)
+        self.assertFalse(result.exploratory_comparison_eligible)
+        self.assertEqual(
+            result.eligibility_reason,
+            "failure_frontier_output_limit_reached",
+        )
+
     def test_inconsistent_token_match_metadata_is_ineligible(self) -> None:
         record = failure_record()
         record["teaching_material"]["selected_within_token_interval"] = False

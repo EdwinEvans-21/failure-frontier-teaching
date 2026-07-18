@@ -29,7 +29,7 @@ from .gg_controller import (
     duplicate_material_request,
     material_paragraph_budgets,
     material_section_budgets,
-    scaled_section_budgets,
+    short_expansion_feedback,
     select_material_fallback,
     validate_blueprint_response,
 )
@@ -141,11 +141,17 @@ class PilotRunner:
         return candidate if candidate.is_absolute() else self.project_root / candidate
 
     def verify_baseline(self) -> None:
-        verifier_name = (
-            "verify_baseline_v2_manifest.py"
-            if self.config.baseline_id == "failure-frontier-baseline-v2"
-            else "verify_baseline_manifest.py"
-        )
+        verifier_name = {
+            "failure-frontier-baseline-v1": "verify_baseline_manifest.py",
+            "failure-frontier-baseline-v2": "verify_baseline_v2_manifest.py",
+            "failure-frontier-baseline-v3": "verify_baseline_v3_manifest.py",
+            "failure-frontier-baseline-v3-expanded":
+                "verify_baseline_v3_expanded_manifest.py",
+        }.get(self.config.baseline_id)
+        if verifier_name is None:
+            raise ValueError(
+                f"unsupported baseline_id: {self.config.baseline_id}"
+            )
         verifier = self.project_root / "tools" / verifier_name
         completed = subprocess.run(
             [sys.executable, str(verifier), "--manifest",
@@ -377,6 +383,9 @@ class PilotRunner:
                                          teacher_planning="<teacher-planning>",
                                          teacher_raw_response="<teacher-response>",
                                          teacher_code="<teacher-code>", teacher_verdict="<coarse-verdict>"))
+        calls[-1]["max_output_tokens"] = (
+            self.config.teaching_material.failure_frontier_max_output_tokens
+        )
         blueprint = self._rendered_call(
             "general_guidance_blueprint", problem_id, "blueprint_initial", problem,
             target_tokens="<failure-frontier-output-tokens>",
@@ -502,10 +511,25 @@ class PilotRunner:
                 student_materials = {condition: material.content for condition in STUDENT_CONDITIONS}
             else:
                 ff = self._failure_material(problem_dir, spec.problem_id, problem, teacher)
+                ff_limit = (
+                    self.config.teaching_material
+                    .failure_frontier_max_output_tokens
+                )
+                ff_at_output_limit = (
+                    ff.truncated
+                    or (
+                        isinstance(ff.output_tokens, int)
+                        and ff.output_tokens >= ff_limit
+                    )
+                )
                 record["teaching_material"].update({
                     "type": "failure",
                     "failure_frontier_tokens": ff.output_tokens,
                     "failure_frontier_truncated": ff.truncated,
+                    "failure_frontier_max_output_tokens": ff_limit,
+                    "failure_frontier_output_limit_reached": (
+                        ff_at_output_limit
+                    ),
                 })
                 gg = self._matched_guidance(problem_dir, spec.problem_id, problem, ff.output_tokens)
                 record["teaching_material"].update(gg["metrics"])
@@ -717,7 +741,11 @@ class PilotRunner:
             teacher_verdict=teacher["verdict"],
         )
         return self._call(problem_dir / "teaching_materials" / "failure_frontier",
-                          "failure_frontier", problem_id, "failure", rendered)[0]
+                          "failure_frontier", problem_id, "failure", rendered,
+                          max_output_tokens=(
+                              self.config.teaching_material
+                              .failure_frontier_max_output_tokens
+                          ))[0]
 
     def _matched_guidance(self, problem_dir: Path, problem_id: str, problem: str,
                           target_tokens: int | None) -> dict[str, Any]:
@@ -771,6 +799,7 @@ class PilotRunner:
 
         responses: dict[int, ModelResponse] = {}
         version_records: list[dict[str, Any]] = []
+        resume_compatibility_warnings: list[str] = []
         matched_version: int | None = None
         stop_reason = "maximum_material_revisions_reached"
 
@@ -785,6 +814,30 @@ class PilotRunner:
             ):
                 old_record = read_json(persisted_version)
                 if old_record.get("gg_generation_policy") == GG_GENERATION_POLICY:
+                    expansion_audit_fields = {
+                        "source_material_tokens",
+                        "raw_feedback_scale",
+                        "requested_expand_scale",
+                        "min_expand_scale",
+                        "max_expand_scale",
+                        "overshoot_factor",
+                        "source_candidate_complete",
+                        "source_candidate_semantically_valid",
+                    }
+                    if not expansion_audit_fields.issubset(old_record):
+                        warning = (
+                            "legacy_material_candidate_missing_bounded_"
+                            "expansion_audit_fields"
+                        )
+                        resume_compatibility_warnings.append(warning)
+                        old_record = dict(old_record)
+                        old_record["compatibility_warnings"] = list(
+                            dict.fromkeys(
+                                list(old_record.get(
+                                    "compatibility_warnings", []
+                                )) + [warning]
+                            )
+                        )
                     saved_call = read_json(persisted_call)
                     response = ModelResponse(**saved_call["response"])
                     responses[version] = response
@@ -812,6 +865,14 @@ class PilotRunner:
             section_budget = dict(base_section_budget)
             budget_scale = 1.0
             missing_feedback: list[str] = []
+            raw_feedback_scale: float | None = None
+            requested_expand_scale: float | None = None
+            source_material_tokens: int | None = None
+            source_candidate_complete: bool | None = None
+            source_candidate_semantically_valid: bool | None = None
+            overshoot_factor: float | None = None
+            min_expand_scale: float | None = None
+            max_expand_scale: float | None = None
             source_reason: str
             source_content = ""
 
@@ -876,6 +937,70 @@ class PilotRunner:
                     revision_index=version,
                     direction="compress",
                 )
+            elif short_anchor is not None:
+                operation = "bounded_expand_short_anchor"
+                prompt_type = "bounded_expand_short_anchor"
+                source_version = short_anchor["version"]
+                source_reason = "expand_best_complete_short_candidate"
+                role = "general_guidance_adjust"
+                condition = f"material_expand_{version}"
+                source_content = responses[source_version].content
+                source_material_tokens = short_anchor["completion_tokens"]
+                source_candidate_complete = True
+                source_candidate_semantically_valid = True
+                overshoot_factor = teaching.gg_short_expand_overshoot_factor
+                min_expand_scale = teaching.gg_min_expand_scale
+                max_expand_scale = teaching.gg_max_expand_scale
+                previous_expansion = guidance_latest_expansion(version_records)
+                previous_scale = None
+                previous_observed = None
+                if previous_expansion is not None:
+                    previous_scale = previous_expansion.get(
+                        "requested_expand_scale"
+                    )
+                    previous_observed = previous_expansion.get(
+                        "completion_tokens"
+                    )
+                    feedback_source_version = previous_expansion["version"]
+                    revision_feedback = guidance_expansion_feedback(
+                        previous_expansion
+                    )
+                    missing_feedback = list(
+                        previous_expansion.get("missing_categories", [])
+                    )
+                feedback = short_expansion_feedback(
+                    target_tokens,
+                    source_material_tokens,
+                    overshoot_factor=overshoot_factor,
+                    min_expand_scale=min_expand_scale,
+                    max_expand_scale=max_expand_scale,
+                    previous_requested_scale=previous_scale,
+                    previous_observed_tokens=previous_observed,
+                )
+                raw_feedback_scale = feedback["raw_feedback_scale"]
+                requested_expand_scale = feedback["requested_expand_scale"]
+                ratio_strategy = feedback["ratio_strategy"]
+                section_budget = feedback["section_budgets"]
+                budget_scale = requested_expand_scale
+                expand_ratio = requested_expand_scale - 1.0
+                rendered = self._rendered_call(
+                    role, problem_id, condition, problem,
+                    blueprint=blueprint_json,
+                    target_tokens=target_tokens,
+                    lower_bound=lower_bound,
+                    upper_bound=upper_bound,
+                    section_budget=json.dumps(section_budget, sort_keys=True),
+                    paragraph_budget=json.dumps(paragraph_budget, sort_keys=True),
+                    previous_candidate_tokens=source_material_tokens,
+                    observed_tokens=source_material_tokens,
+                    requested_scale=f"{requested_expand_scale:.6f}",
+                    budget_scale=f"{requested_expand_scale:.6f}",
+                    general_guidance=source_content,
+                    revision_feedback=revision_feedback or "",
+                    missing_categories_feedback=json.dumps(missing_feedback),
+                    revision_index=version,
+                    direction="bounded_expand",
+                )
             elif previous is not None and previous["state"] == "TRUNCATED_TOO_LONG":
                 operation = "recovery_render"
                 prompt_type = "blueprint_truncation_recovery"
@@ -920,30 +1045,6 @@ class PilotRunner:
                     revision_feedback=revision_feedback,
                     revision_index=version,
                     direction="material_repair",
-                )
-            elif short_anchor is not None:
-                operation = "expand_render"
-                prompt_type = "blueprint_length_repair"
-                source_reason = "rerender_from_blueprint_after_short_candidate"
-                role = "general_guidance_adjust"
-                condition = f"material_expand_{version}"
-                section_budget, budget_scale = scaled_section_budgets(
-                    target_tokens, short_anchor["completion_tokens"]
-                )
-                expand_ratio = budget_scale - 1.0
-                ratio_strategy = "scaled_blueprint_section_budgets"
-                rendered = self._rendered_call(
-                    role, problem_id, condition, problem,
-                    blueprint=blueprint_json,
-                    target_tokens=target_tokens,
-                    lower_bound=lower_bound,
-                    upper_bound=upper_bound,
-                    section_budget=json.dumps(section_budget, sort_keys=True),
-                    paragraph_budget=json.dumps(paragraph_budget, sort_keys=True),
-                    previous_candidate_tokens=short_anchor["completion_tokens"],
-                    budget_scale=f"{budget_scale:.4f}",
-                    revision_index=version,
-                    direction="material_expand",
                 )
             else:
                 operation = "repair_render"
@@ -1084,6 +1185,22 @@ class PilotRunner:
                 "contains_forbidden_content": bool(
                     validation["forbidden_content"]
                 ),
+                "source_material_tokens": source_material_tokens,
+                "previous_observed_tokens": (
+                    None if feedback_source_version is None
+                    else version_records[feedback_source_version][
+                        "completion_tokens"
+                    ]
+                ),
+                "raw_feedback_scale": raw_feedback_scale,
+                "requested_expand_scale": requested_expand_scale,
+                "min_expand_scale": min_expand_scale,
+                "max_expand_scale": max_expand_scale,
+                "overshoot_factor": overshoot_factor,
+                "source_candidate_complete": source_candidate_complete,
+                "source_candidate_semantically_valid": (
+                    source_candidate_semantically_valid
+                ),
             })
             version_records.append(record)
             write_json(version_dir / "version.json", record)
@@ -1201,7 +1318,9 @@ class PilotRunner:
                 for item in version_records
             ),
             "selected_validation": selected_validation,
-            "compatibility_warnings": [],
+            "compatibility_warnings": list(dict.fromkeys(
+                resume_compatibility_warnings
+            )),
             "versions": version_records,
         }
         write_json(stage_root / "match.json", match_record)
@@ -1518,12 +1637,26 @@ class PilotRunner:
                 paragraph_budget=values["paragraph_budget"],
                 previous_candidate_tokens=values.get("previous_candidate_tokens", ""),
                 budget_scale=values.get("budget_scale", ""),
+                observed_tokens=values.get("observed_tokens", ""),
+                requested_scale=values.get("requested_scale", ""),
+                missing_categories_feedback=values.get(
+                    "missing_categories_feedback", "[]"
+                ),
                 previous_outcomes=values.get("previous_outcomes", "[]"),
                 deduplication_instruction=values.get("deduplication_instruction", ""),
             )
             if values["direction"] == "compress":
                 user = self.renderer.render(
                     self.renderer.template("general_guidance_compress_user.md"),
+                    formatted_problem=problem,
+                    blueprint=values["blueprint"],
+                    general_guidance=values["general_guidance"],
+                )
+            elif values["direction"] == "bounded_expand":
+                user = self.renderer.render(
+                    self.renderer.template(
+                        "general_guidance_bounded_expand_user.md"
+                    ),
                     formatted_problem=problem,
                     blueprint=values["blueprint"],
                     general_guidance=values["general_guidance"],
@@ -1872,6 +2005,16 @@ def guidance_candidate_state(
 def guidance_anchor_records(
     records: list[dict[str, Any]],
 ) -> dict[str, dict[str, Any] | None]:
+    def safe_anchor(item: dict[str, Any], state: str) -> bool:
+        return (
+            item.get("state") == state
+            and item.get("finish_reason") == "stop"
+            and item.get("valid_candidate") is True
+            and item.get("semantic_completeness_passed") is True
+            and not item.get("forbidden_content")
+            and item.get("obviously_truncated") is not True
+        )
+
     def closest(candidates: list[dict[str, Any]]) -> dict[str, Any] | None:
         return min(
             candidates,
@@ -1879,17 +2022,67 @@ def guidance_anchor_records(
             default=None,
         )
 
+    short_candidates = [
+        item for item in records if safe_anchor(item, "TOO_SHORT")
+    ]
+    short = min(
+        short_candidates,
+        key=lambda item: (
+            item["accepted_lower_bound"] - item["completion_tokens"],
+            item["distance_to_target"],
+            item["version"],
+        ),
+        default=None,
+    )
     return {
         "long": closest([
-            item for item in records if item["is_complete_long_candidate"]
+            item for item in records
+            if safe_anchor(item, "COMPLETE_TOO_LONG")
         ]),
-        "short": closest([
-            item for item in records if item["is_complete_short_candidate"]
-        ]),
+        "short": short,
         "matched": closest([
             item for item in records if item["matched"]
         ]),
     }
+
+
+def guidance_latest_expansion(
+    records: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    return max(
+        (
+            item for item in records
+            if item.get("operation") == "bounded_expand_short_anchor"
+            and item.get("requested_expand_scale") is not None
+            and item.get("finish_reason") == "stop"
+        ),
+        key=lambda item: item["version"],
+        default=None,
+    )
+
+
+def guidance_expansion_feedback(previous: dict[str, Any]) -> str:
+    missing = list(previous.get("missing_categories", []))
+    if missing:
+        return (
+            "The previous bounded expansion was invalid because it omitted "
+            + ", ".join(missing)
+            + ". Return to the complete valid short anchor, preserve all four "
+              "semantic categories, and give the missing categories substantive "
+              "coverage without introducing a new algorithmic direction."
+        )
+    if previous.get("completion_tokens", 0) < previous.get(
+        "accepted_lower_bound", 0
+    ):
+        return (
+            "The previous bounded expansion remained below the registered "
+            "interval. Expand more strongly from the best complete valid short "
+            "anchor using the updated token feedback."
+        )
+    return (
+        "Use the previous bounded-expansion outcome only as length feedback; "
+        "preserve the selected complete valid short anchor."
+    )
 
 
 def guidance_retain_ratio(

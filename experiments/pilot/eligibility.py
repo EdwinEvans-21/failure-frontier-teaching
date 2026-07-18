@@ -4,11 +4,12 @@ from dataclasses import dataclass
 from typing import Any
 
 
-ELIGIBILITY_POLICY = "teacher_failure_strict_v2"
+ELIGIBILITY_POLICY = "teacher_failure_strict_v3"
 ELIGIBILITY_REASON_PRECEDENCE = (
     "infrastructure_error",
     "invalid_episode",
     "teacher_success_branch",
+    "failure_frontier_output_limit_reached",
     "token_match_failed",
     "fallback_candidate_used",
     "gg_candidate_invalid",
@@ -93,6 +94,7 @@ def _student_materials_valid(material: dict[str, Any]) -> bool:
         and isinstance(failure_frontier_tokens, int)
         and failure_frontier_tokens > 0
         and material.get("failure_frontier_truncated") is not True
+        and material.get("failure_frontier_output_limit_reached") is not True
     )
 
 
@@ -128,6 +130,8 @@ def derive_comparison_eligibility(
         fallback_used = material.get("fallback_used") is True
         students_completed = _students_completed(record)
 
+        if material.get("failure_frontier_output_limit_reached") is True:
+            reasons.append("failure_frontier_output_limit_reached")
         if not token_match_passed:
             reasons.append("token_match_failed")
         if fallback_used:
@@ -162,6 +166,7 @@ def derive_comparison_eligibility(
         and not record.get("infrastructure_error")
         and record.get("protocol_output_invalid") is not True
         and material.get("fallback_used") is True
+        and material.get("failure_frontier_output_limit_reached") is not True
         and _gg_semantically_valid(material)
         and _students_completed(record)
         and _student_materials_valid(material)

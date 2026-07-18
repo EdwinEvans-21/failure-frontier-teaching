@@ -12,3 +12,5 @@ class Solution:
 ```
 
 Do not output any text before or after that code fence. Do not output Markdown headings, an approach explanation, exploratory notes, alternative algorithms, patches, multiple programs, pseudocode, or requests for more information. The only visible content outside the Python source must be the opening and closing code-fence markers.
+
+Inside the Python source, do not include comments of any kind. Do not use `#` line comments, end-of-line comments, explanatory docstrings, commented-out code, TODOs, notes, or reasoning disguised as source text. Output only the executable Python source required for the final solution.

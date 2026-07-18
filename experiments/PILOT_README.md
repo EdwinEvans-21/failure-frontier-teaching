@@ -93,8 +93,16 @@ anchor using deletion, merging, and abbreviation only. The initial retain ratio
 is `clamp(target/source, 0.50, 0.98)`. A later compression uses observed token
 feedback and keeps the same complete long anchor; missing semantic categories
 produce deterministic validator feedback, including concrete implementation
-coverage. With no long anchor, a complete short result is rerendered from the
-Blueprint using scaled section budgets. A truncated result is never copied: the
+coverage. With no long anchor, a complete and semantically valid short GG
+candidate is retained as a bounded-expansion anchor. Bounded
+expansion preserves its substantive content and the validated Blueprint while
+allowing deeper explanation, correctness analysis, edge cases, and
+implementation detail within the existing directions. It may not introduce a
+new algorithmic direction. The closest valid short candidate to the registered
+lower bound is selected; invalid, forbidden, or truncated candidates are never
+expansion anchors. Expansion strength and absolute section budgets are updated
+deterministically from actual API completion-token feedback. A truncated result
+is never copied: the
 next call rerenders the same Blueprint under a dedicated bounded recovery prompt.
 Requests record their signatures, and duplicate regeneration is replaced by a
 deterministic recovery form.
@@ -121,12 +129,15 @@ Execution validity and treatment-comparison eligibility are separate concepts.
 infrastructure level. `condition_comparison_eligible` is exclusively the gate
 for the preregistered strict Baseline / FF / GG treatment comparison.
 
-The canonical `teacher_failure_strict_v2` policy is derived once from finalized
+The canonical `teacher_failure_strict_v3` policy is derived once from finalized
 episode state immediately before `record.json` is written. A strict comparison
 requires a Teacher-failure branch, a valid episode, a normally finished and
 semantically valid GG within the registered token interval, no fallback, all
 three required Student stages completed, valid Student materials, and no
-infrastructure error. The record also stores deterministic reason codes.
+infrastructure error. Failure Frontier generation has an independent 8192-token
+output limit; reaching that limit is recorded as
+`failure_frontier_output_limit_reached` and makes both strict and exploratory
+comparisons ineligible. The record also stores deterministic reason codes.
 
 Teacher-success episodes are never treatment-comparison eligible, even when
 the Teacher and all Students are AC, because all three Student slots receive
