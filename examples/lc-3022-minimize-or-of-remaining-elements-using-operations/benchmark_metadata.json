@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-3022-minimize-or-of-remaining-elements-using-operations",
+  "topic": "bit_string_expression",
+  "memorization_risk": "low",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

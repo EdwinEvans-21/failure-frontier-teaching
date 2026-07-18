@@ -1,0 +1,24 @@
+[
+  {
+    "args": [
+      [
+        "a",
+        "aba",
+        "ababa",
+        "aa"
+      ]
+    ],
+    "expected": 4
+  },
+  {
+    "args": [
+      [
+        "pa",
+        "papa",
+        "ma",
+        "mama"
+      ]
+    ],
+    "expected": 2
+  }
+]

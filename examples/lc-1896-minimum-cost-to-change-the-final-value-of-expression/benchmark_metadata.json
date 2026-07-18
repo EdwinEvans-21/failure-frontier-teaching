@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-1896-minimum-cost-to-change-the-final-value-of-expression",
+  "topic": "bit_string_expression",
+  "memorization_risk": "medium",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

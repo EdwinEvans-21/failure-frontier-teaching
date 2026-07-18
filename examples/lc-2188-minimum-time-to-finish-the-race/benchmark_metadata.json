@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-2188-minimum-time-to-finish-the-race",
+  "topic": "dynamic_programming_optimization",
+  "memorization_risk": "medium",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

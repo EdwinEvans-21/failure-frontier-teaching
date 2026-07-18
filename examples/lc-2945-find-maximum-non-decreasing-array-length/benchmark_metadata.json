@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-2945-find-maximum-non-decreasing-array-length",
+  "topic": "dynamic_programming_optimization",
+  "memorization_risk": "low",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

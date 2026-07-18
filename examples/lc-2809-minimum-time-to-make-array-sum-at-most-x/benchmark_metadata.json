@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-2809-minimum-time-to-make-array-sum-at-most-x",
+  "topic": "dynamic_programming_optimization",
+  "memorization_risk": "low",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

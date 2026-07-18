@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-1611-minimum-one-bit-operations-to-make-integers-zero",
+  "topic": "bit_string_expression",
+  "memorization_risk": "high",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

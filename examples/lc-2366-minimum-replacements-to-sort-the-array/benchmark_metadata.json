@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-2366-minimum-replacements-to-sort-the-array",
+  "topic": "greedy_offline_data_structures",
+  "memorization_risk": "medium",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

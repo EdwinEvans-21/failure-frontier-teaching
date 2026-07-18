@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-2421-number-of-good-paths",
+  "topic": "graph_connectivity",
+  "memorization_risk": "medium",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

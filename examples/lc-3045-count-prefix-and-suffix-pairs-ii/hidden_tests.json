@@ -1,0 +1,171 @@
+[
+  {
+    "args": [
+      [
+        "a"
+      ]
+    ],
+    "expected": 0
+  },
+  {
+    "args": [
+      [
+        "x",
+        "x",
+        "xx",
+        "x"
+      ]
+    ],
+    "expected": 5
+  },
+  {
+    "args": [
+      [
+        "babaccc"
+      ]
+    ],
+    "expected": 0
+  },
+  {
+    "args": [
+      [
+        "cc"
+      ]
+    ],
+    "expected": 0
+  },
+  {
+    "args": [
+      [
+        "ac",
+        "caaa",
+        "bbbbcb",
+        "cac",
+        "abbabaa",
+        "b",
+        "abcbaca",
+        "bbb",
+        "abba",
+        "bcab",
+        "ccb",
+        "a",
+        "bbcaa",
+        "bac",
+        "bbbcc"
+      ]
+    ],
+    "expected": 2
+  },
+  {
+    "args": [
+      [
+        "ac",
+        "a",
+        "baccba",
+        "abacc",
+        "aacc",
+        "bbabbb",
+        "ba",
+        "abac",
+        "bc",
+        "b",
+        "bcb",
+        "cbccb",
+        "aa",
+        "abccacb"
+      ]
+    ],
+    "expected": 2
+  },
+  {
+    "args": [
+      [
+        "abcbaa",
+        "c",
+        "acbacb",
+        "a",
+        "acacbbc",
+        "c",
+        "bab",
+        "ccba",
+        "cbaca",
+        "bbcb",
+        "b"
+      ]
+    ],
+    "expected": 1
+  },
+  {
+    "args": [
+      [
+        "bba",
+        "ccbc",
+        "cc",
+        "c",
+        "ccab",
+        "aba",
+        "ccca",
+        "aaaccca",
+        "cccacc"
+      ]
+    ],
+    "expected": 2
+  },
+  {
+    "args": [
+      [
+        "bcbac",
+        "bbbccc",
+        "bca",
+        "aacaaa",
+        "aac",
+        "ab",
+        "aba"
+      ]
+    ],
+    "expected": 0
+  },
+  {
+    "args": [
+      [
+        "bba",
+        "bacc",
+        "abb",
+        "bbcaba",
+        "ac",
+        "baccbbc",
+        "bbb",
+        "bbaaac"
+      ]
+    ],
+    "expected": 0
+  },
+  {
+    "args": [
+      [
+        "ccabc",
+        "bcac",
+        "abbcbc",
+        "c",
+        "aab",
+        "accc",
+        "b",
+        "baaccbb",
+        "ab",
+        "acbcbcb",
+        "cbbb",
+        "cbcaab"
+      ]
+    ],
+    "expected": 1
+  },
+  {
+    "args": [
+      [
+        "bac",
+        "acacbba"
+      ]
+    ],
+    "expected": 0
+  }
+]

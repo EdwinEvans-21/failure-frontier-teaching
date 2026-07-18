@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-3116-kth-smallest-amount-with-single-denomination-combination",
+  "title": "Kth Smallest Amount With Single Denomination Combination",
+  "difficulty": "hard",
+  "role": "hard_greedy_offline_data_structures_candidate",
+  "source_url": "https://leetcode.com/problems/kth-smallest-amount-with-single-denomination-combination/",
+  "description": "Return the k-th positive amount divisible by at least one coin denomination; amounts are not formed by adding different coins. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.",
+  "input_contract": "Parameters in order: coins: list[int], k: int. 1 <= len(coins) <=15; distinct values <=25; 1 <= k <=2e9; count the sorted union of multiples without duplicates.",
+  "output_contract": "Return long using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "findKthSmallest"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 4.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-3022-minimize-or-of-remaining-elements-using-operations",
+  "title": "Minimize Or Of Remaining Elements Using Operations",
+  "difficulty": "hard",
+  "role": "hard_bit_string_expression_candidate",
+  "source_url": "https://leetcode.com/problems/minimize-or-of-remaining-elements-using-operations/",
+  "description": "At most k times replace adjacent values by their bitwise AND; minimize the bitwise OR of the remaining array. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.",
+  "input_contract": "Parameters in order: nums: list[int], k: int. 1 <= len(nums) <=100000; 0<=nums[i]<2^30; 0<=k<len(nums); each operation reduces length by one.",
+  "output_contract": "Return integer using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "minOrAfterOperations"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 4.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}

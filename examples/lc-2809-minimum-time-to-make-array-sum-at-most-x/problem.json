@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-2809-minimum-time-to-make-array-sum-at-most-x",
+  "title": "Minimum Time To Make Array Sum At Most X",
+  "difficulty": "hard",
+  "role": "hard_dynamic_programming_optimization_candidate",
+  "source_url": "https://leetcode.com/problems/minimum-time-to-make-array-sum-at-most-x/",
+  "description": "At each second all nums1 values grow by nums2, then one chosen index may be reset to zero; return the minimum seconds to make the sum at most x, or -1. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.",
+  "input_contract": "Parameters in order: nums1: list[int], nums2: list[int], x: int. nums1 and nums2 have equal length 1..1000; all entries and x are nonnegative <=1000/1e6 respectively.",
+  "output_contract": "Return integer using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "minimumTime"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 4.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}

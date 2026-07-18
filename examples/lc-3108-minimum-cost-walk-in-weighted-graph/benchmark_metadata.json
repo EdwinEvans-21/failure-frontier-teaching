@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-3108-minimum-cost-walk-in-weighted-graph",
+  "topic": "graph_connectivity",
+  "memorization_risk": "low",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

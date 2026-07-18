@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-1611-minimum-one-bit-operations-to-make-integers-zero",
+  "title": "Minimum One Bit Operations To Make Integers Zero",
+  "difficulty": "hard",
+  "role": "medium_bit_string_expression_candidate",
+  "source_url": "https://leetcode.com/problems/minimum-one-bit-operations-to-make-integers-zero/",
+  "description": "Return the minimum operations to turn n into zero when bit 0 may flip anytime and bit i may flip only if bit i-1 is 1 and all lower bits are 0. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.",
+  "input_contract": "Parameters in order: n: int. 0 <= n <=1e9; bit positions are zero-indexed; return an integer operation count.",
+  "output_contract": "Return integer using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "minimumOneBitOperations"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 4.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}

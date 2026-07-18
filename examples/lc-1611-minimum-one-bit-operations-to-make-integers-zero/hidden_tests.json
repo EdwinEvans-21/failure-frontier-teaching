@@ -1,0 +1,74 @@
+[
+  {
+    "args": [
+      0
+    ],
+    "expected": 0
+  },
+  {
+    "args": [
+      1023
+    ],
+    "expected": 682
+  },
+  {
+    "args": [
+      2021
+    ],
+    "expected": 1350
+  },
+  {
+    "args": [
+      589
+    ],
+    "expected": 905
+  },
+  {
+    "args": [
+      1191
+    ],
+    "expected": 1850
+  },
+  {
+    "args": [
+      194
+    ],
+    "expected": 131
+  },
+  {
+    "args": [
+      1830
+    ],
+    "expected": 1476
+  },
+  {
+    "args": [
+      1562
+    ],
+    "expected": 1043
+  },
+  {
+    "args": [
+      661
+    ],
+    "expected": 793
+  },
+  {
+    "args": [
+      1715
+    ],
+    "expected": 1245
+  },
+  {
+    "args": [
+      482
+    ],
+    "expected": 323
+  },
+  {
+    "args": [
+      75
+    ],
+    "expected": 114
+  }
+]

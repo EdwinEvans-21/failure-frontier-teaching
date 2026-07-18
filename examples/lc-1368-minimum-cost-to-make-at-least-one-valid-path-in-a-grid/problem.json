@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid",
+  "title": "Minimum Cost To Make At Least One Valid Path In A Grid",
+  "difficulty": "hard",
+  "role": "medium_graph_connectivity_candidate",
+  "source_url": "https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/",
+  "description": "Each grid value 1/2/3/4 points right/left/down/up. Change directions at unit cost and return the minimum cost of a valid path from top-left to bottom-right. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.",
+  "input_contract": "Parameters in order: grid: list[list[int]]. 1 <= rows,cols <= 100; grid values are 1,2,3,4 for right,left,down,up; input may be modified.",
+  "output_contract": "Return integer using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "minCost"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 4.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}

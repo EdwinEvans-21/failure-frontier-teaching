@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid",
+  "topic": "graph_connectivity",
+  "memorization_risk": "high",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

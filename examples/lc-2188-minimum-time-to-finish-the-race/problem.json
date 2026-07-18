@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-2188-minimum-time-to-finish-the-race",
+  "title": "Minimum Time To Finish The Race",
+  "difficulty": "hard",
+  "role": "hard_dynamic_programming_optimization_candidate",
+  "source_url": "https://leetcode.com/problems/minimum-time-to-finish-the-race/",
+  "description": "Minimize race time over numLaps consecutive laps; tire [f,r] takes f*r^j on its j-th consecutive lap and changing tires costs changeTime between laps. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.",
+  "input_contract": "Parameters in order: tires: list[list[int]], changeTime: int, numLaps: int. 1 <= len(tires) <= 100000; f,r,changeTime <= 100000; 1 <= numLaps <= 1000; Python integers are unbounded.",
+  "output_contract": "Return integer using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "minimumFinishTime"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 4.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}

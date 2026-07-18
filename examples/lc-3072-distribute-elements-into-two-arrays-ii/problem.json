@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-3072-distribute-elements-into-two-arrays-ii",
+  "title": "Distribute Elements Into Two Arrays Ii",
+  "difficulty": "hard",
+  "role": "hard_greedy_offline_data_structures_candidate",
+  "source_url": "https://leetcode.com/problems/distribute-elements-into-two-arrays-ii/",
+  "description": "Distribute nums from left to right into two arrays by greater-element counts, then smaller length, then first array; return their concatenation. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.",
+  "input_contract": "Parameters in order: nums: list[int]. 3 <= len(nums) <=100000; positive values <=1e9; equal values are not greater; preserve element multiplicity.",
+  "output_contract": "Return integer[] using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "resultArray"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 4.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}

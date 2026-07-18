@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-1786-number-of-restricted-paths-from-first-to-last-node",
+  "topic": "graph_connectivity",
+  "memorization_risk": "medium",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

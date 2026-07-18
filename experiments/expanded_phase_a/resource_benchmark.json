@@ -1,0 +1,1123 @@
+{
+  "clock": "time.perf_counter",
+  "scope": "Solution method only; JSON parsing and process/container startup excluded",
+  "repetitions": 3,
+  "results": [
+    {
+      "problem_id": "lc-3123-find-edges-in-shortest-paths",
+      "stress_input_bytes": 11783361,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            126.016,
+            142.33,
+            130.64
+          ],
+          "median_ms": 130.64
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            180.851,
+            131.989,
+            160.934
+          ],
+          "median_ms": 160.934
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            129.516,
+            147.978,
+            151.557
+          ],
+          "median_ms": 147.978
+        }
+      ],
+      "median_ms": 142.33,
+      "maximum_ms": 180.851
+    },
+    {
+      "problem_id": "lc-3108-minimum-cost-walk-in-weighted-graph",
+      "stress_input_bytes": 19941702,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            240.609,
+            182.744,
+            219.295
+          ],
+          "median_ms": 219.295
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            248.887,
+            192.509,
+            204.702
+          ],
+          "median_ms": 204.702
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            217.129,
+            239.306,
+            190.091
+          ],
+          "median_ms": 217.129
+        }
+      ],
+      "median_ms": 217.129,
+      "maximum_ms": 248.887
+    },
+    {
+      "problem_id": "lc-2421-number-of-good-paths",
+      "stress_input_bytes": 5864142,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            88.074,
+            90.244,
+            80.93
+          ],
+          "median_ms": 88.074
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            86.277,
+            96.912,
+            78.102
+          ],
+          "median_ms": 86.277
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            78.347,
+            79.032,
+            69.998
+          ],
+          "median_ms": 78.347
+        }
+      ],
+      "median_ms": 80.93,
+      "maximum_ms": 96.912
+    },
+    {
+      "problem_id": "lc-1697-checking-existence-of-edge-length-limited-paths",
+      "stress_input_bytes": 22400328,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            236.797,
+            211.063,
+            205.377
+          ],
+          "median_ms": 211.063
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            202.681,
+            264.872,
+            177.598
+          ],
+          "median_ms": 202.681
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            213.527,
+            215.98,
+            227.198
+          ],
+          "median_ms": 215.98
+        }
+      ],
+      "median_ms": 213.527,
+      "maximum_ms": 264.872
+    },
+    {
+      "problem_id": "lc-1786-number-of-restricted-paths-from-first-to-last-node",
+      "stress_input_bytes": 3953406,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            43.855,
+            44.951,
+            46.432
+          ],
+          "median_ms": 44.951
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            44.906,
+            45.715,
+            44.949
+          ],
+          "median_ms": 44.949
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            39.305,
+            44.133,
+            44.761
+          ],
+          "median_ms": 44.133
+        }
+      ],
+      "median_ms": 44.906,
+      "maximum_ms": 46.432
+    },
+    {
+      "problem_id": "lc-1970-last-day-where-you-can-still-cross",
+      "stress_input_bytes": 2903064,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            50.513,
+            58.975,
+            46.466
+          ],
+          "median_ms": 50.513
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            45.566,
+            46.374,
+            48.079
+          ],
+          "median_ms": 46.374
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            53.879,
+            51.312,
+            51.437
+          ],
+          "median_ms": 51.437
+        }
+      ],
+      "median_ms": 50.513,
+      "maximum_ms": 58.975
+    },
+    {
+      "problem_id": "lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid",
+      "stress_input_bytes": 396196,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            11.64,
+            12.178,
+            12.39
+          ],
+          "median_ms": 12.178
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            9.716,
+            9.321,
+            9.926
+          ],
+          "median_ms": 9.716
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            12.759,
+            13.336,
+            13.675
+          ],
+          "median_ms": 13.336
+        }
+      ],
+      "median_ms": 12.178,
+      "maximum_ms": 13.675
+    },
+    {
+      "problem_id": "lc-2203-minimum-weighted-subgraph-with-the-required-paths",
+      "stress_input_bytes": 20033667,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            354.211,
+            321.932,
+            351.956
+          ],
+          "median_ms": 351.956
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            317.652,
+            347.615,
+            314.138
+          ],
+          "median_ms": 317.652
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            343.831,
+            312.132,
+            335.029
+          ],
+          "median_ms": 335.029
+        }
+      ],
+      "median_ms": 335.029,
+      "maximum_ms": 354.211
+    },
+    {
+      "problem_id": "lc-3117-minimum-sum-of-values-by-dividing-array",
+      "stress_input_bytes": 450705,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            135.995,
+            137.453,
+            136.763
+          ],
+          "median_ms": 136.763
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            152.717,
+            145.119,
+            157.303
+          ],
+          "median_ms": 152.717
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            139.839,
+            142.067,
+            132.487
+          ],
+          "median_ms": 139.839
+        }
+      ],
+      "median_ms": 139.839,
+      "maximum_ms": 157.303
+    },
+    {
+      "problem_id": "lc-3077-maximum-strength-of-k-disjoint-subarrays",
+      "stress_input_bytes": 74106,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            386.873,
+            378.471,
+            388.581
+          ],
+          "median_ms": 386.873
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            408.648,
+            367.949,
+            380.705
+          ],
+          "median_ms": 380.705
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            392.599,
+            363.264,
+            367.784
+          ],
+          "median_ms": 367.784
+        }
+      ],
+      "median_ms": 380.705,
+      "maximum_ms": 408.648
+    },
+    {
+      "problem_id": "lc-2188-minimum-time-to-finish-the-race",
+      "stress_input_bytes": 290967,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            19.851,
+            20.757,
+            18.573
+          ],
+          "median_ms": 19.851
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            19.132,
+            21.409,
+            21.309
+          ],
+          "median_ms": 21.309
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            21.021,
+            21.081,
+            21.099
+          ],
+          "median_ms": 21.081
+        }
+      ],
+      "median_ms": 21.021,
+      "maximum_ms": 21.409
+    },
+    {
+      "problem_id": "lc-2809-minimum-time-to-make-array-sum-at-most-x",
+      "stress_input_bytes": 77598,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            194.855,
+            191.963,
+            194.993
+          ],
+          "median_ms": 194.855
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            187.949,
+            187.774,
+            187.851
+          ],
+          "median_ms": 187.851
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            187.195,
+            173.002,
+            200.764
+          ],
+          "median_ms": 187.195
+        }
+      ],
+      "median_ms": 187.949,
+      "maximum_ms": 200.764
+    },
+    {
+      "problem_id": "lc-2478-number-of-beautiful-partitions",
+      "stress_input_bytes": 3251,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            8.842,
+            8.803,
+            8.821
+          ],
+          "median_ms": 8.821
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            11.201,
+            11.324,
+            9.909
+          ],
+          "median_ms": 11.201
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            0.125,
+            0.121,
+            0.118
+          ],
+          "median_ms": 0.121
+        }
+      ],
+      "median_ms": 8.821,
+      "maximum_ms": 11.324
+    },
+    {
+      "problem_id": "lc-2719-count-of-integers",
+      "stress_input_bytes": 399,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            4.284,
+            4.141,
+            4.406
+          ],
+          "median_ms": 4.284
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            8.236,
+            9.132,
+            9.023
+          ],
+          "median_ms": 9.023
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            9.122,
+            8.528,
+            8.471
+          ],
+          "median_ms": 8.528
+        }
+      ],
+      "median_ms": 8.471,
+      "maximum_ms": 9.132
+    },
+    {
+      "problem_id": "lc-2945-find-maximum-non-decreasing-array-length",
+      "stress_input_bytes": 4466888,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            60.536,
+            64.131,
+            63.363
+          ],
+          "median_ms": 63.363
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            68.032,
+            68.146,
+            66.775
+          ],
+          "median_ms": 68.032
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            64.378,
+            62.207,
+            61.576
+          ],
+          "median_ms": 62.207
+        }
+      ],
+      "median_ms": 64.131,
+      "maximum_ms": 68.146
+    },
+    {
+      "problem_id": "lc-2926-maximum-balanced-subsequence-sum",
+      "stress_input_bytes": 5816870,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            400.836,
+            404.222,
+            407.771
+          ],
+          "median_ms": 404.222
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            405.662,
+            408.906,
+            405.76
+          ],
+          "median_ms": 405.76
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            409.228,
+            446.745,
+            426.712
+          ],
+          "median_ms": 426.712
+        }
+      ],
+      "median_ms": 407.771,
+      "maximum_ms": 446.745
+    },
+    {
+      "problem_id": "lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference",
+      "stress_input_bytes": 1827,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            118.492,
+            115.803,
+            121.238
+          ],
+          "median_ms": 118.492
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            131.416,
+            115.999,
+            106.417
+          ],
+          "median_ms": 115.999
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            116.59,
+            115.168,
+            125.717
+          ],
+          "median_ms": 116.59
+        }
+      ],
+      "median_ms": 116.59,
+      "maximum_ms": 131.416
+    },
+    {
+      "problem_id": "lc-1547-minimum-cost-to-cut-a-stick",
+      "stress_input_bytes": 5022,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            15.299,
+            15.01,
+            14.594
+          ],
+          "median_ms": 15.01
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            15.136,
+            16.018,
+            16.836
+          ],
+          "median_ms": 16.018
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            19.165,
+            19.535,
+            18.338
+          ],
+          "median_ms": 19.165
+        }
+      ],
+      "median_ms": 16.018,
+      "maximum_ms": 19.535
+    },
+    {
+      "problem_id": "lc-2071-maximum-number-of-tasks-you-can-assign",
+      "stress_input_bytes": 4505883,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            142.447,
+            137.733,
+            127.957
+          ],
+          "median_ms": 137.733
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            131.483,
+            148.409,
+            148.54
+          ],
+          "median_ms": 148.409
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            156.494,
+            134.952,
+            167.537
+          ],
+          "median_ms": 156.494
+        }
+      ],
+      "median_ms": 142.447,
+      "maximum_ms": 167.537
+    },
+    {
+      "problem_id": "lc-1851-minimum-interval-to-include-each-query",
+      "stress_input_bytes": 24209595,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            303.127,
+            236.644,
+            275.908
+          ],
+          "median_ms": 275.908
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            301.794,
+            235.826,
+            289.759
+          ],
+          "median_ms": 289.759
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            214.242,
+            251.777,
+            262.341
+          ],
+          "median_ms": 251.777
+        }
+      ],
+      "median_ms": 262.341,
+      "maximum_ms": 303.127
+    },
+    {
+      "problem_id": "lc-2940-find-building-where-alice-and-bob-can-meet",
+      "stress_input_bytes": 11913645,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            225.056,
+            209.456,
+            196.217
+          ],
+          "median_ms": 209.456
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            208.468,
+            206.238,
+            220.776
+          ],
+          "median_ms": 208.468
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            178.675,
+            193.412,
+            187.347
+          ],
+          "median_ms": 187.347
+        }
+      ],
+      "median_ms": 206.238,
+      "maximum_ms": 225.056
+    },
+    {
+      "problem_id": "lc-3072-distribute-elements-into-two-arrays-ii",
+      "stress_input_bytes": 10731123,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            335.991,
+            342.357,
+            311.762
+          ],
+          "median_ms": 335.991
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            316.986,
+            314.642,
+            312.44
+          ],
+          "median_ms": 314.642
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            299.756,
+            307.296,
+            296.169
+          ],
+          "median_ms": 299.756
+        }
+      ],
+      "median_ms": 312.44,
+      "maximum_ms": 342.357
+    },
+    {
+      "problem_id": "lc-2366-minimum-replacements-to-sort-the-array",
+      "stress_input_bytes": 5668760,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            33.02,
+            32.708,
+            33.712
+          ],
+          "median_ms": 33.02
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            31.984,
+            30.493,
+            30.485
+          ],
+          "median_ms": 30.493
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            30.372,
+            31.025,
+            31.561
+          ],
+          "median_ms": 31.025
+        }
+      ],
+      "median_ms": 31.561,
+      "maximum_ms": 33.712
+    },
+    {
+      "problem_id": "lc-3102-minimize-manhattan-distances",
+      "stress_input_bytes": 17033532,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            279.171,
+            296.685,
+            258.241
+          ],
+          "median_ms": 279.171
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            319.286,
+            251.554,
+            321.376
+          ],
+          "median_ms": 319.286
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            241.816,
+            317.045,
+            253.032
+          ],
+          "median_ms": 253.032
+        }
+      ],
+      "median_ms": 279.171,
+      "maximum_ms": 321.376
+    },
+    {
+      "problem_id": "lc-3116-kth-smallest-amount-with-single-denomination-combination",
+      "stress_input_bytes": 585,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            15.841,
+            16.925,
+            17.26
+          ],
+          "median_ms": 16.925
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            16.903,
+            16.065,
+            16.508
+          ],
+          "median_ms": 16.508
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            15.385,
+            14.995,
+            16.453
+          ],
+          "median_ms": 15.385
+        }
+      ],
+      "median_ms": 16.453,
+      "maximum_ms": 17.26
+    },
+    {
+      "problem_id": "lc-1611-minimum-one-bit-operations-to-make-integers-zero",
+      "stress_input_bytes": 222,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            0.012,
+            0.005,
+            0.003
+          ],
+          "median_ms": 0.005
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            0.003,
+            0.003,
+            0.003
+          ],
+          "median_ms": 0.003
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            0.003,
+            0.003,
+            0.003
+          ],
+          "median_ms": 0.003
+        }
+      ],
+      "median_ms": 0.003,
+      "maximum_ms": 0.012
+    },
+    {
+      "problem_id": "lc-1896-minimum-cost-to-change-the-final-value-of-expression",
+      "stress_input_bytes": 280173,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            125.806,
+            123.56,
+            127.827
+          ],
+          "median_ms": 125.806
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            125.914,
+            139.9,
+            125.85
+          ],
+          "median_ms": 125.914
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            57.681,
+            49.827,
+            49.398
+          ],
+          "median_ms": 49.827
+        }
+      ],
+      "median_ms": 125.806,
+      "maximum_ms": 139.9
+    },
+    {
+      "problem_id": "lc-0995-minimum-number-of-k-consecutive-bit-flips",
+      "stress_input_bytes": 3300232,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            33.32,
+            31.848,
+            33.302
+          ],
+          "median_ms": 33.302
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            29.916,
+            29.925,
+            29.893
+          ],
+          "median_ms": 29.916
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            29.491,
+            30.4,
+            30.337
+          ],
+          "median_ms": 30.337
+        }
+      ],
+      "median_ms": 30.337,
+      "maximum_ms": 33.32
+    },
+    {
+      "problem_id": "lc-3022-minimize-or-of-remaining-elements-using-operations",
+      "stress_input_bytes": 5684067,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            191.994,
+            187.632,
+            185.749
+          ],
+          "median_ms": 187.632
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            192.488,
+            220.078,
+            184.278
+          ],
+          "median_ms": 192.488
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            184.09,
+            188.902,
+            185.504
+          ],
+          "median_ms": 185.504
+        }
+      ],
+      "median_ms": 187.632,
+      "maximum_ms": 220.078
+    },
+    {
+      "problem_id": "lc-3045-count-prefix-and-suffix-pairs-ii",
+      "stress_input_bytes": 1687716,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            83.481,
+            85.328,
+            85.202
+          ],
+          "median_ms": 85.202
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            82.444,
+            82.364,
+            79.738
+          ],
+          "median_ms": 82.364
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            88.084,
+            77.753,
+            84.62
+          ],
+          "median_ms": 84.62
+        }
+      ],
+      "median_ms": 83.481,
+      "maximum_ms": 88.084
+    },
+    {
+      "problem_id": "lc-0761-special-binary-string",
+      "stress_input_bytes": 473,
+      "stress_case_count": 3,
+      "variants": [
+        {
+          "case_index": 0,
+          "samples_ms": [
+            0.076,
+            0.041,
+            0.039
+          ],
+          "median_ms": 0.041
+        },
+        {
+          "case_index": 1,
+          "samples_ms": [
+            0.026,
+            0.014,
+            0.014
+          ],
+          "median_ms": 0.014
+        },
+        {
+          "case_index": 2,
+          "samples_ms": [
+            0.036,
+            0.036,
+            0.035
+          ],
+          "median_ms": 0.036
+        }
+      ],
+      "median_ms": 0.036,
+      "maximum_ms": 0.076
+    }
+  ]
+}

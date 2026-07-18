@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-2478-number-of-beautiful-partitions",
+  "title": "Number Of Beautiful Partitions",
+  "difficulty": "hard",
+  "role": "hard_dynamic_programming_optimization_candidate",
+  "source_url": "https://leetcode.com/problems/number-of-beautiful-partitions/",
+  "description": "Count partitions of a digit string into k pieces of length at least minLength, each starting with a prime digit and ending with a non-prime digit, modulo 1e9+7. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.",
+  "input_contract": "Parameters in order: s: str, k: int, minLength: int. 1 <= len(s) <= 1000; s contains digits; 1 <= k,minLength <= len(s); answer modulo 1000000007.",
+  "output_contract": "Return integer using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "beautifulPartitions"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 4.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}

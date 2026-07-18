@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-3117-minimum-sum-of-values-by-dividing-array",
+  "topic": "dynamic_programming_optimization",
+  "memorization_risk": "low",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

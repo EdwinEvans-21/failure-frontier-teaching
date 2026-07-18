@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-2478-number-of-beautiful-partitions",
+  "topic": "dynamic_programming_optimization",
+  "memorization_risk": "medium",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

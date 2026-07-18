@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-1547-minimum-cost-to-cut-a-stick",
+  "topic": "dynamic_programming_optimization",
+  "memorization_risk": "high",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

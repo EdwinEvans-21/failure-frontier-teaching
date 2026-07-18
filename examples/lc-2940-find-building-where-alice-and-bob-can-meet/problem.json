@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-2940-find-building-where-alice-and-bob-can-meet",
+  "title": "Find Building Where Alice And Bob Can Meet",
+  "difficulty": "hard",
+  "role": "hard_greedy_offline_data_structures_candidate",
+  "source_url": "https://leetcode.com/problems/find-building-where-alice-and-bob-can-meet/",
+  "description": "For each query, two people may repeatedly move right to a strictly taller building; return the leftmost building both can reach, or -1. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.",
+  "input_contract": "Parameters in order: heights: list[int], queries: list[list[int]]. 1 <= heights length <=50000; queries<=50000; indices are 0-based; a move must go right to a strictly taller building.",
+  "output_contract": "Return integer[] using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "leftmostBuildingQueries"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 4.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}

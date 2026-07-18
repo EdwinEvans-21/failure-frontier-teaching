@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-3102-minimize-manhattan-distances",
+  "topic": "greedy_offline_data_structures",
+  "memorization_risk": "low",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-2945-find-maximum-non-decreasing-array-length",
+  "title": "Find Maximum Non Decreasing Array Length",
+  "difficulty": "hard",
+  "role": "hard_dynamic_programming_optimization_candidate",
+  "source_url": "https://leetcode.com/problems/find-maximum-non-decreasing-array-length/",
+  "description": "Repeatedly replace contiguous subarrays by their sums; return the maximum possible length of a nondecreasing final array. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.",
+  "input_contract": "Parameters in order: nums: list[int]. 1 <= len(nums) <= 100000; nums are positive <=100000; operations may be applied repeatedly.",
+  "output_contract": "Return integer using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "findMaximumLength"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 4.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-1970-last-day-where-you-can-still-cross",
+  "topic": "graph_connectivity",
+  "memorization_risk": "high",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

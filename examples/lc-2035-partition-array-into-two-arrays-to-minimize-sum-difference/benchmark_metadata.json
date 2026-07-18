@@ -1,0 +1,7 @@
+{
+  "problem_id": "lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference",
+  "topic": "dynamic_programming_optimization",
+  "memorization_risk": "high",
+  "generator_seed": 20260718,
+  "formal_generator": "tools/generate_expanded_benchmarks.py"
+}

@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-3108-minimum-cost-walk-in-weighted-graph",
+  "title": "Minimum Cost Walk In Weighted Graph",
+  "difficulty": "hard",
+  "role": "hard_graph_connectivity_candidate",
+  "source_url": "https://leetcode.com/problems/minimum-cost-walk-in-weighted-graph/",
+  "description": "For each query in an undirected weighted graph, return the minimum bitwise-AND cost of a walk, or -1 if no walk exists. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.",
+  "input_contract": "Parameters in order: n: int, edges: list[list[int]], query: list[list[int]]. 2 <= n <= 100000; edges and queries each <= 100000; 0-indexed undirected multigraph; weights may be zero.",
+  "output_contract": "Return integer[] using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "minimumCost"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 4.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}
