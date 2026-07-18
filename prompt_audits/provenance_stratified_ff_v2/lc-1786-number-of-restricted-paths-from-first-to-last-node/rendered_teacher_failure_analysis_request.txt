@@ -1,0 +1,121 @@
+=== SYSTEM PROMPT ===
+You are the same Teacher reflecting on your own unsuccessful submission.
+
+The only evaluation information available is the standardized final submission error type in the request. You do not know any concrete failing case, expected or actual output, hidden test, test count, detailed compiler diagnostic, traceback, execution time, memory usage, or Judge diagnostic.
+
+Describe your attempted approach, implementation intent, assumptions, attempted methods, possible risks, possible failure explanations, and remaining uncertainty. Every explanation you produce is an unverified hypothesis. Do not present an explanation as an objective fact or claim a definitive root cause. Do not infer a concrete hidden failing case or infer a specific cause solely from the error type.
+
+Do not propose a next algorithm, fix, modification route, future search direction, or new candidate solution. Do not output code or pseudocode. Do not use the labels DIRECT_FACT, EVIDENCE_GROUNDED_INFERENCE, or LOW_CONFIDENCE_HYPOTHESIS; classification is performed later by the FF organizer and deterministic material builder.
+
+=== USER PROMPT ===
+# Public Problem
+
+# Problem
+
+Number Of Restricted Paths From First To Last Node
+
+Count paths from 1 to n in a connected 1-indexed undirected weighted graph whose distance-to-n strictly decreases at each step, modulo 1e9+7. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.
+
+# Input Format
+
+Parameters in order: n: int, edges: list[list[int]]. 1 <= n <= 20000; connected 1-indexed undirected graph; at most 40000 edges; positive weights <= 100000.
+
+# Output Format
+
+Return integer using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.
+
+Entrypoint: Solution.countRestrictedPaths
+
+# Constraints
+
+Parameters in order: n: int, edges: list[list[int]]. 1 <= n <= 20000; connected 1-indexed undirected graph; at most 40000 edges; positive weights <= 100000.
+Time limit: 4.0s; memory limit: 256 MB.
+
+# Public Examples
+
+Example 1
+Input args: [5, [[1, 2, 3], [1, 3, 3], [2, 3, 1], [1, 4, 2], [5, 2, 2], [3, 5, 1], [5, 4, 10]]]
+Output: 3
+
+Example 2
+Input args: [3, [[1, 2, 1], [2, 3, 1], [1, 3, 3]]]
+Output: 2
+
+
+# Your Planning
+
+## Candidate Analysis
+
+**Candidate 1: Dijkstra from node n + DP on DAG of decreasing distance**
+- Compute shortest distance from every node to n using Dijkstra (since weights positive, O((n+m) log n)).
+- A restricted path from 1 to n must have strictly decreasing distance-to-n at each step. This defines a DAG: edge u→v exists if dist[u] > dist[v].
+- Count number of paths from 1 to n in this DAG via DP (topological order by decreasing dist).  
+- Correctness: Strictly decreasing distance ensures no cycles; DP counts all paths.  
+- Complexity: Dijkstra O((n+m) log n) ~ 60000 log 20000; DP O(n+m). Well within limits.
+
+**Candidate 2: BFS-like DP on original graph with memoization**
+- Without precomputing distances, attempt to define DP[u] = number of restricted paths from u to n, recursively using neighbors where dist[u] > dist[v].  
+- But dist values are unknown; computing them on the fly would require solving shortest paths anyway.  
+- Rejected: Inefficient and redundant; Dijkstra is necessary for correctness.
+
+## Selected Algorithm
+
+Dijkstra from node n to compute dist[] (shortest distance to n), then DP on DAG sorted by decreasing dist.
+
+## State or Invariant
+
+- `dist[v]` = shortest distance from v to n (Dijkstra invariant: settled nodes have correct distance).
+- `dp[v]` = number of restricted paths from v to n.  
+- Process nodes in decreasing order of dist (strictly decreasing ensures topological order).  
+- Base: `dp[n] = 1`.  
+- Transition: For each edge (v, u) with dist[v] > dist[u], `dp[v] = (dp[v] + dp[u]) % MOD`.
+
+## Complexity
+
+- Time: O((n + m) log n) for Dijkstra + O(n + m) for DP = O((n+m) log n).  
+- Space: O(n + m) for adjacency list, dist array, dp array.  
+- With n ≤ 20000, m ≤ 40000, easily fits 256 MB and 4 seconds.
+
+# Your Final Natural-Language Response
+
+
+
+# Your Exact Submitted Code
+
+```python
+class Solution:
+    def countRestrictedPaths(self, n: int, edges: list[list[int]]) -> int:
+        MOD = 1000000007
+        adj = [[] for _ in range(n + 1)]
+        for u, v, w in edges:
+            adj[u].append((v, w))
+            adj[v].append((u, w))
+        import heapq
+        dist = [float('inf')] * (n + 1)
+        dist[n] = 0
+        pq = [(0, n)]
+        while pq:
+            d, u = heapq.heappop(pq)
+            if d != dist[u]:
+                continue
+            for v, w in adj[u]:
+                nd = d + w
+                if nd < dist[v]:
+                    dist[v] = nd
+                    heapq.heappush(pq, (nd, v))
+        order = list(range(1, n + 1))
+        order.sort(key=lambda x: dist[x], reverse=True)
+        dp = [0] * (n + 1)
+        dp[n] = 1
+        for u in order:
+            if dp[u] == 0:
+                continue
+            for v, _ in adj[u]:
+                if dist[u] > dist[v]:
+                    dp[u] = (dp[u] + dp[v]) % MOD
+        return dp[1]
+```
+
+# Standardized Final Submission Error Type
+
+WRONG_ANSWER

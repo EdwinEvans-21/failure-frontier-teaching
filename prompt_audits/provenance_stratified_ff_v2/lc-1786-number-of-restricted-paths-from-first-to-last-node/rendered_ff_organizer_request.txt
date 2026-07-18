@@ -1,0 +1,147 @@
+=== SYSTEM PROMPT ===
+You are an FF organizer (evidence-grounding organizer), not a formal, independent, or static verifier.
+
+Organize a compact provenance-preserving Failure Frontier Record from the public problem, public constraints, exact submitted code, standardized final error type, and the three verbatim low-confidence Teacher sources. You may select exact Teacher excerpts, deduplicate them without rewriting them, add short evidence-grounded inferences independently grounded in the public problem, constraints, submitted code, or final error type, and add explicitly marked organizer hypotheses only when necessary.
+
+All Teacher-generated natural language is LOW_CONFIDENCE_HYPOTHESIS regardless of tone. An EVIDENCE_GROUNDED_INFERENCE remains fallible model-generated analysis, not a fact or formal proof. It must have a short visible evidence chain, use only allowed evidence sources, avoid unique causal claims from a coarse error type, and use PROVISIONALLY_SUPPORTED or PARTIALLY_SUPPORTED. Anything ambiguous must be omitted or placed in the low-confidence organizer-hypothesis section.
+
+Do not rewrite a Teacher claim as an unsourced conclusion. Selected Teacher content must be an exact source excerpt with its supplied source type, artifact, and SHA-256. Do not reproduce the full code, full Planning, full Final natural language, or full failure analysis; they are supplied separately to Students.
+
+Do not recommend an algorithm, fix, modification route, next step, future search direction, new candidate solution, code, or pseudocode. Do not claim to know the failure root cause. Do not mention or invent detailed evaluation information.
+
+Return exactly one JSON object, optionally inside one json fence, with only these arrays:
+{"evidence_grounded_inferences":[{"claim":"...","evidence":"...","evidence_sources":["PUBLIC_PROBLEM"],"support_status":"PROVISIONALLY_SUPPORTED","reproducibility_note":"..."}],"selected_low_confidence_excerpts":[{"source_type":"TEACHER_PLANNING","source_artifact":"...","source_sha256":"...","exact_source_excerpt":"...","confidence_note":"..."}],"organizer_hypotheses":[{"hypothesis":"...","evidence_limitation":"..."}]}
+
+Use at most 6 inferences, 8 selected excerpts, and 3 organizer hypotheses. Empty arrays are valid and preferable to quota filling.
+
+=== USER PROMPT ===
+# Public Problem and Constraints
+
+# Problem
+
+Number Of Restricted Paths From First To Last Node
+
+Count paths from 1 to n in a connected 1-indexed undirected weighted graph whose distance-to-n strictly decreases at each step, modulo 1e9+7. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.
+
+# Input Format
+
+Parameters in order: n: int, edges: list[list[int]]. 1 <= n <= 20000; connected 1-indexed undirected graph; at most 40000 edges; positive weights <= 100000.
+
+# Output Format
+
+Return integer using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.
+
+Entrypoint: Solution.countRestrictedPaths
+
+# Constraints
+
+Parameters in order: n: int, edges: list[list[int]]. 1 <= n <= 20000; connected 1-indexed undirected graph; at most 40000 edges; positive weights <= 100000.
+Time limit: 4.0s; memory limit: 256 MB.
+
+# Public Examples
+
+Example 1
+Input args: [5, [[1, 2, 3], [1, 3, 3], [2, 3, 1], [1, 4, 2], [5, 2, 2], [3, 5, 1], [5, 4, 10]]]
+Output: 3
+
+Example 2
+Input args: [3, [[1, 2, 1], [2, 3, 1], [1, 3, 3]]]
+Output: 2
+
+
+# Verbatim Low-Confidence Sources
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_PLANNING">
+Artifact: teacher/planning/content.md
+SHA-256: 6ec2ae26265b4e52e479f6da4758542198f5368a9722a25d062043b9892216f8
+Verbatim content:
+## Candidate Analysis
+
+**Candidate 1: Dijkstra from node n + DP on DAG of decreasing distance**
+- Compute shortest distance from every node to n using Dijkstra (since weights positive, O((n+m) log n)).
+- A restricted path from 1 to n must have strictly decreasing distance-to-n at each step. This defines a DAG: edge u→v exists if dist[u] > dist[v].
+- Count number of paths from 1 to n in this DAG via DP (topological order by decreasing dist).  
+- Correctness: Strictly decreasing distance ensures no cycles; DP counts all paths.  
+- Complexity: Dijkstra O((n+m) log n) ~ 60000 log 20000; DP O(n+m). Well within limits.
+
+**Candidate 2: BFS-like DP on original graph with memoization**
+- Without precomputing distances, attempt to define DP[u] = number of restricted paths from u to n, recursively using neighbors where dist[u] > dist[v].  
+- But dist values are unknown; computing them on the fly would require solving shortest paths anyway.  
+- Rejected: Inefficient and redundant; Dijkstra is necessary for correctness.
+
+## Selected Algorithm
+
+Dijkstra from node n to compute dist[] (shortest distance to n), then DP on DAG sorted by decreasing dist.
+
+## State or Invariant
+
+- `dist[v]` = shortest distance from v to n (Dijkstra invariant: settled nodes have correct distance).
+- `dp[v]` = number of restricted paths from v to n.  
+- Process nodes in decreasing order of dist (strictly decreasing ensures topological order).  
+- Base: `dp[n] = 1`.  
+- Transition: For each edge (v, u) with dist[v] > dist[u], `dp[v] = (dp[v] + dp[u]) % MOD`.
+
+## Complexity
+
+- Time: O((n + m) log n) for Dijkstra + O(n + m) for DP = O((n+m) log n).  
+- Space: O(n + m) for adjacency list, dist array, dp array.  
+- With n ≤ 20000, m ≤ 40000, easily fits 256 MB and 4 seconds.
+</LOW_CONFIDENCE_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_FINAL_NATURAL_LANGUAGE">
+Artifact: teacher/final/natural_language.md
+SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Verbatim content:
+
+</LOW_CONFIDENCE_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_FAILURE_ANALYSIS">
+Artifact: teacher_failure_analysis/content.md
+SHA-256: d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1
+Verbatim content:
+Representative offline fixture: I am uncertain which assumption or implementation detail is associated with the standardized failure. This is not a root-cause claim.
+</LOW_CONFIDENCE_SOURCE>
+
+# Exact Submitted Code
+
+```python
+class Solution:
+    def countRestrictedPaths(self, n: int, edges: list[list[int]]) -> int:
+        MOD = 1000000007
+        adj = [[] for _ in range(n + 1)]
+        for u, v, w in edges:
+            adj[u].append((v, w))
+            adj[v].append((u, w))
+        import heapq
+        dist = [float('inf')] * (n + 1)
+        dist[n] = 0
+        pq = [(0, n)]
+        while pq:
+            d, u = heapq.heappop(pq)
+            if d != dist[u]:
+                continue
+            for v, w in adj[u]:
+                nd = d + w
+                if nd < dist[v]:
+                    dist[v] = nd
+                    heapq.heappush(pq, (nd, v))
+        order = list(range(1, n + 1))
+        order.sort(key=lambda x: dist[x], reverse=True)
+        dp = [0] * (n + 1)
+        dp[n] = 1
+        for u in order:
+            if dp[u] == 0:
+                continue
+            for v, _ in adj[u]:
+                if dist[u] > dist[v]:
+                    dp[u] = (dp[u] + dp[v]) % MOD
+        return dp[1]
+```
+
+# Standardized Final Submission Error Type
+
+WRONG_ANSWER
+
+# Registered Source Metadata
+
+{"TEACHER_FAILURE_ANALYSIS": {"source_artifact": "teacher_failure_analysis/content.md", "source_sha256": "d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1", "source_type": "TEACHER_FAILURE_ANALYSIS"}, "TEACHER_FINAL_NATURAL_LANGUAGE": {"source_artifact": "teacher/final/natural_language.md", "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "source_type": "TEACHER_FINAL_NATURAL_LANGUAGE"}, "TEACHER_PLANNING": {"source_artifact": "teacher/planning/content.md", "source_sha256": "6ec2ae26265b4e52e479f6da4758542198f5368a9722a25d062043b9892216f8", "source_type": "TEACHER_PLANNING"}}

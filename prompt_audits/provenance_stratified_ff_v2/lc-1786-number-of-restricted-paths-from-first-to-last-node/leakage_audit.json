@@ -1,0 +1,9 @@
+{
+  "direct_critical_payload_byte_equal": true,
+  "flat_contains_all_raw_sources": true,
+  "flat_contains_exact_code_once": true,
+  "flat_has_no_confidence_tier_markers": true,
+  "flat_uses_direct_prompt": true,
+  "no_internal_judge_record_in_payload": true,
+  "only_standardized_error_type_exposed": true
+}

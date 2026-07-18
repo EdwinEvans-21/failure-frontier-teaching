@@ -1,0 +1,166 @@
+=== SYSTEM PROMPT ===
+You are an FF organizer (evidence-grounding organizer), not a formal, independent, or static verifier.
+
+Organize a compact provenance-preserving Failure Frontier Record from the public problem, public constraints, exact submitted code, standardized final error type, and the three verbatim low-confidence Teacher sources. You may select exact Teacher excerpts, deduplicate them without rewriting them, add short evidence-grounded inferences independently grounded in the public problem, constraints, submitted code, or final error type, and add explicitly marked organizer hypotheses only when necessary.
+
+All Teacher-generated natural language is LOW_CONFIDENCE_HYPOTHESIS regardless of tone. An EVIDENCE_GROUNDED_INFERENCE remains fallible model-generated analysis, not a fact or formal proof. It must have a short visible evidence chain, use only allowed evidence sources, avoid unique causal claims from a coarse error type, and use PROVISIONALLY_SUPPORTED or PARTIALLY_SUPPORTED. Anything ambiguous must be omitted or placed in the low-confidence organizer-hypothesis section.
+
+Do not rewrite a Teacher claim as an unsourced conclusion. Selected Teacher content must be an exact source excerpt with its supplied source type, artifact, and SHA-256. Do not reproduce the full code, full Planning, full Final natural language, or full failure analysis; they are supplied separately to Students.
+
+Do not recommend an algorithm, fix, modification route, next step, future search direction, new candidate solution, code, or pseudocode. Do not claim to know the failure root cause. Do not mention or invent detailed evaluation information.
+
+Return exactly one JSON object, optionally inside one json fence, with only these arrays:
+{"evidence_grounded_inferences":[{"claim":"...","evidence":"...","evidence_sources":["PUBLIC_PROBLEM"],"support_status":"PROVISIONALLY_SUPPORTED","reproducibility_note":"..."}],"selected_low_confidence_excerpts":[{"source_type":"TEACHER_PLANNING","source_artifact":"...","source_sha256":"...","exact_source_excerpt":"...","confidence_note":"..."}],"organizer_hypotheses":[{"hypothesis":"...","evidence_limitation":"..."}]}
+
+Use at most 6 inferences, 8 selected excerpts, and 3 organizer hypotheses. Empty arrays are valid and preferable to quota filling.
+
+=== USER PROMPT ===
+# Public Problem and Constraints
+
+# Problem
+
+Find Building Where Alice And Bob Can Meet
+
+For each query, two people may repeatedly move right to a strictly taller building; return the leftmost building both can reach, or -1. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.
+
+# Input Format
+
+Parameters in order: heights: list[int], queries: list[list[int]]. 1 <= heights length <=50000; queries<=50000; indices are 0-based; a move must go right to a strictly taller building.
+
+# Output Format
+
+Return integer[] using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.
+
+Entrypoint: Solution.leftmostBuildingQueries
+
+# Constraints
+
+Parameters in order: heights: list[int], queries: list[list[int]]. 1 <= heights length <=50000; queries<=50000; indices are 0-based; a move must go right to a strictly taller building.
+Time limit: 4.0s; memory limit: 256 MB.
+
+# Public Examples
+
+Example 1
+Input args: [[6, 4, 8, 5, 2, 7], [[0, 1], [0, 3], [2, 4], [3, 4], [2, 2]]]
+Output: [2, 5, -1, 5, 2]
+
+Example 2
+Input args: [[1, 2, 3], [[0, 1], [2, 0]]]
+Output: [1, 2]
+
+
+# Verbatim Low-Confidence Sources
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_PLANNING">
+Artifact: teacher/planning/content.md
+SHA-256: 7018d2c7b62ac0cceac8156d4d2828e5197c0983a2dfe73aef0cad3d16da5dd7
+Verbatim content:
+## Candidate Analysis
+
+**Candidate 1: Binary lifting on next greater element (NGE) tree**  
+For each index, compute the next strictly taller building to the right (NGE). This forms a forest (or tree with a virtual root). For each query (i, j), we need the leftmost building reachable from both. This is equivalent to finding the lowest common ancestor (LCA) in the NGE tree, but only if we consider the "leftmost" constraint: the LCA might not be the leftmost common reachable building because both can stop earlier. However, since moves are only to the right and to strictly taller buildings, the set of reachable buildings from a given index is exactly the path from that index up the NGE tree (including itself). The leftmost common reachable building is the LCA in this tree, because any common ancestor is reachable by both, and the LCA is the deepest (closest to the leaves) common ancestor, which corresponds to the leftmost index among common ancestors (since tree edges go rightward, deeper nodes have larger indices). So LCA works. Preprocess NGE in O(n) using a monotonic stack, then binary lifting for LCA in O(log n) per query. Total O((n+q) log n). This is correct and efficient.
+
+**Candidate 2: Segment tree with range maximum queries and binary search**  
+For each query (i, j), we need the smallest index k >= max(i, j) such that heights[k] > heights[i] and heights[k] > heights[j] (or k equals i or j if the other is reachable). This can be solved by binary searching on k using a segment tree that answers "is there a building taller than both in [l, r]?" via range maximum. For each query, we can binary search the leftmost k in O(log^2 n). This is also correct but slower (O(q log^2 n)) and more complex to implement. Given constraints (5e4 queries, 5e4 buildings), O(q log^2 n) is borderline but likely acceptable in 4 seconds in Python. However, the LCA approach is simpler and faster.
+
+## Selected Algorithm
+
+Binary lifting on the next greater element (NGE) tree to answer LCA queries.
+
+## State or Invariant
+
+- `nxt[i]`: index of the next strictly taller building to the right of i, or n (sentinel) if none.
+- `up[k][i]`: 2^k-th ancestor of i in the NGE tree (with sentinel n as root).
+- `depth[i]`: distance from i to sentinel root.
+- For each query (a, b): if a == b, answer is a. Else, let u = a, v = b. If heights[u] < heights[v] and nxt[u] == v, answer is v (and symmetric). Otherwise, lift the deeper node to same depth, then lift both together until parents differ; answer is parent (or -1 if sentinel).
+
+## Complexity
+
+- Preprocessing: O(n log n) time, O(n log n) memory.
+- Each query: O(log n) time.
+- Total: O((n+q) log n) time, O(n log n) memory.
+</LOW_CONFIDENCE_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_FINAL_NATURAL_LANGUAGE">
+Artifact: teacher/final/natural_language.md
+SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Verbatim content:
+
+</LOW_CONFIDENCE_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_FAILURE_ANALYSIS">
+Artifact: teacher_failure_analysis/content.md
+SHA-256: d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1
+Verbatim content:
+Representative offline fixture: I am uncertain which assumption or implementation detail is associated with the standardized failure. This is not a root-cause claim.
+</LOW_CONFIDENCE_SOURCE>
+
+# Exact Submitted Code
+
+```python
+class Solution:
+    def leftmostBuildingQueries(self, heights: list[int], queries: list[list[int]]) -> list[int]:
+        n = len(heights)
+        nxt = [n] * n
+        stack = []
+        for i in range(n - 1, -1, -1):
+            while stack and heights[stack[-1]] <= heights[i]:
+                stack.pop()
+            if stack:
+                nxt[i] = stack[-1]
+            stack.append(i)
+        LOG = (n + 1).bit_length()
+        up = [[n] * (n + 1) for _ in range(LOG)]
+        depth = [0] * (n + 1)
+        for i in range(n - 1, -1, -1):
+            up[0][i] = nxt[i]
+        for k in range(1, LOG):
+            for i in range(n + 1):
+                up[k][i] = up[k - 1][up[k - 1][i]]
+        for i in range(n - 1, -1, -1):
+            depth[i] = depth[nxt[i]] + 1
+        res = []
+        for a, b in queries:
+            if a == b:
+                res.append(a)
+                continue
+            if a > b:
+                a, b = b, a
+            if heights[a] < heights[b] and nxt[a] == b:
+                res.append(b)
+                continue
+            if heights[b] < heights[a] and nxt[b] == a:
+                res.append(a)
+                continue
+            u, v = a, b
+            if depth[u] < depth[v]:
+                u, v = v, u
+            diff = depth[u] - depth[v]
+            k = 0
+            while diff:
+                if diff & 1:
+                    u = up[k][u]
+                diff >>= 1
+                k += 1
+            if u == v:
+                res.append(u)
+                continue
+            for k in range(LOG - 1, -1, -1):
+                if up[k][u] != up[k][v]:
+                    u = up[k][u]
+                    v = up[k][v]
+            lca = up[0][u]
+            if lca == n:
+                res.append(-1)
+            else:
+                res.append(lca)
+        return res
+```
+
+# Standardized Final Submission Error Type
+
+WRONG_ANSWER
+
+# Registered Source Metadata
+
+{"TEACHER_FAILURE_ANALYSIS": {"source_artifact": "teacher_failure_analysis/content.md", "source_sha256": "d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1", "source_type": "TEACHER_FAILURE_ANALYSIS"}, "TEACHER_FINAL_NATURAL_LANGUAGE": {"source_artifact": "teacher/final/natural_language.md", "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "source_type": "TEACHER_FINAL_NATURAL_LANGUAGE"}, "TEACHER_PLANNING": {"source_artifact": "teacher/planning/content.md", "source_sha256": "7018d2c7b62ac0cceac8156d4d2828e5197c0983a2dfe73aef0cad3d16da5dd7", "source_type": "TEACHER_PLANNING"}}

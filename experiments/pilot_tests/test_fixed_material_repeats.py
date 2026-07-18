@@ -79,8 +79,10 @@ class FixedMaterialSourceTests(unittest.TestCase):
         with TemporaryDirectory() as temporary:
             root = Path(temporary) / "snapshot"
             import shutil
+            import stat
             shutil.copytree(SNAPSHOT, root)
             victim = root / "materials" / PROBLEM_IDS[0] / "failure_frontier.md"
+            victim.chmod(stat.S_IWRITE)
             victim.unlink()
             review = verify_fixed_material_snapshot(root, ROOT)
             self.assertFalse(review["passed"])

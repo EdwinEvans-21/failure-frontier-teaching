@@ -1,0 +1,181 @@
+=== SYSTEM PROMPT ===
+You are in the bounded planning stage of a competitive-programming solution.
+
+Analyze at most two candidate formulations or algorithms. Reject a candidate only for a concrete correctness or complexity issue. Do not narrate minor revisions or repeatedly restart with phrases such as "let me think again", "wait", or "actually".
+
+Do not output complete code or any code fence. Even if a full proof is unavailable, select the best available direction before this stage ends. A mandatory final-submission stage follows.
+
+This call has a hard output budget of 2048 tokens.
+
+Use exactly these sections:
+
+## Candidate Analysis
+## Selected Algorithm
+## State or Invariant
+## Complexity
+
+=== USER PROMPT ===
+# Problem
+
+Find Maximum Non Decreasing Array Length
+
+Repeatedly replace contiguous subarrays by their sums; return the maximum possible length of a nondecreasing final array. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.
+
+# Input Format
+
+Parameters in order: nums: list[int]. 1 <= len(nums) <= 100000; nums are positive <=100000; operations may be applied repeatedly.
+
+# Output Format
+
+Return integer using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.
+
+Entrypoint: Solution.findMaximumLength
+
+# Constraints
+
+Parameters in order: nums: list[int]. 1 <= len(nums) <= 100000; nums are positive <=100000; operations may be applied repeatedly.
+Time limit: 4.0s; memory limit: 256 MB.
+
+# Public Examples
+
+Example 1
+Input args: [[5, 2, 2]]
+Output: 1
+
+Example 2
+Input args: [[1, 2, 3, 4]]
+Output: 4
+
+# Condition Instruction
+
+A previous model attempted this problem but did not pass the evaluator. You receive exactly the same shared failure materials as Direct FF.
+
+Use this source-aware trust boundary: DIRECT_FACT contains raw objective records only. EVIDENCE_GROUNDED_INFERENCE contains reproducible but fallible model-generated analysis and is not guaranteed correct. LOW_CONFIDENCE_HYPOTHESIS contains all Teacher-generated natural language and unsupported organizer explanations; confident wording does not increase reliability.
+
+Selectively inherit material. Independently check only the small number of claims that materially affect algorithm selection, state meaning, greedy assumptions, transitions, ordering or sweep invariants, monotonicity or dominance, signs, indices, initialization, termination, or complexity under public constraints. You may accept, modify, partially use, leave unresolved, or reject a route. Do not review every sentence or produce a Teacher-criticism report. Use the source classification to construct one coherent solution.
+
+# Shared Failure Materials
+
+<DIRECT_FACT_SOURCE type="FINAL_ERROR_TYPE">
+WRONG_ANSWER
+</DIRECT_FACT_SOURCE>
+
+<DIRECT_FACT_SOURCE type="TEACHER_SUBMITTED_CODE">
+Artifact: teacher/final/extracted_solution.py
+Code SHA-256: 7515d79e7b0764500a474eb09f1831376b88f84c32493fe91c77c10f4b31cd2d
+
+The following is the exact submitted code:
+```python
+class Solution:
+    def findMaximumLength(self, nums: list[int]) -> int:
+        n = len(nums)
+        prefix = [0] * (n + 1)
+        for i in range(n):
+            prefix[i + 1] = prefix[i] + nums[i]
+        last = 0
+        pos = 0
+        length = 0
+        while pos < n:
+            lo, hi = pos, n
+            while lo < hi:
+                mid = (lo + hi) // 2
+                if prefix[mid + 1] - prefix[pos] >= last:
+                    hi = mid
+                else:
+                    lo = mid + 1
+            if lo == n:
+                break
+            last = prefix[lo + 1] - prefix[pos]
+            pos = lo + 1
+            length += 1
+        return length
+```
+</DIRECT_FACT_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_PLANNING">
+Confidence notice: The following text is model-generated natural language. It is unverified and is not an objective fact.
+Original artifact: teacher/planning/content.md
+Original artifact SHA-256: eb2b5de3fb188b64a9bf4795800f2f2a8bd67a31c85ce87b5c94d9e6540949ab
+
+Verbatim content:
+## Candidate Analysis
+
+**Candidate 1: Greedy left-to-right with prefix sums and binary search**  
+We process the array from left to right, maintaining the last value of the constructed nondecreasing sequence. For each new element, we try to extend the sequence by taking the smallest possible suffix sum that is ≥ last value. This can be done using prefix sums and binary searching for the earliest index where the sum from current position to that index meets the requirement. This is a known approach for similar "split array into nondecreasing sums" problems.  
+Correctness: Greedy works because taking the smallest possible sum leaves more room for later elements.  
+Complexity: O(n log n) with careful pointer management.
+
+**Candidate 2: DP with monotonic queue**  
+Define dp[i] = maximum length achievable for prefix ending at i, with last segment sum. Maintain a deque of candidate start positions where the segment sum is nondecreasing. This is more complex and may have O(n) amortized, but the greedy approach is simpler and sufficient.
+
+## Selected Algorithm
+
+Greedy left-to-right with prefix sums and binary search.
+
+## State or Invariant
+
+- `prefix[i]` = sum of nums[0..i-1] (size n+1, prefix[0]=0).
+- `last` = sum of the last segment in the constructed nondecreasing sequence.
+- `pos` = current index in nums (0-based) where we are building the next segment.
+- Invariant: We always extend the sequence by the shortest possible segment starting at `pos` whose sum ≥ `last`. This minimizes the last sum and maximizes future flexibility.
+
+## Complexity
+
+- Time: O(n log n) — each element is processed once, and for each we may binary search over the remaining suffix (O(log n)).
+- Space: O(n) for prefix sums array.
+</LOW_CONFIDENCE_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_FINAL_NATURAL_LANGUAGE">
+Confidence notice: The following text is model-generated natural language. It is unverified and is not an objective fact.
+Original artifact: teacher/final/natural_language.md
+Original artifact SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+Verbatim content:
+
+</LOW_CONFIDENCE_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_FAILURE_ANALYSIS">
+Confidence notice: The following text is model-generated natural language. It is unverified and is not an objective fact.
+Original artifact: teacher_failure_analysis/content.md
+Original artifact SHA-256: d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1
+
+Verbatim content:
+Representative offline fixture: I am uncertain which assumption or implementation detail is associated with the standardized failure. This is not a root-cause claim.
+</LOW_CONFIDENCE_SOURCE>
+
+<FAILURE_FRONTIER_RECORD>
+FAILURE FRONTIER RECORD
+
+## 1. DIRECT_FACT REFERENCES
+
+Final submission error type: WRONG_ANSWER
+Teacher submitted-code artifact: teacher/final/extracted_solution.py
+Teacher submitted-code SHA-256: 7515d79e7b0764500a474eb09f1831376b88f84c32493fe91c77c10f4b31cd2d
+Teacher Planning artifact: teacher/planning/content.md
+Teacher failure-analysis artifact: teacher_failure_analysis/content.md
+Fact boundary notice: This section contains only references to raw objective records and no natural-language interpretation.
+
+## 2. EVIDENCE_GROUNDED_INFERENCE
+
+Inference E1
+Claim: The submitted artifact begins with the quoted exact line.
+Evidence: class Solution:
+Evidence source: TEACHER_SUBMITTED_CODE
+Organizer source: FF_ORGANIZER
+Support status: PROVISIONALLY_SUPPORTED
+Reproducibility note: Compare the evidence with the first submitted-code line.
+
+## 3. LOW_CONFIDENCE_HYPOTHESIS
+
+Hypothesis L1
+Source type: TEACHER_PLANNING
+Source artifact: teacher/planning/content.md
+Source SHA-256: eb2b5de3fb188b64a9bf4795800f2f2a8bd67a31c85ce87b5c94d9e6540949ab
+Exact source excerpt: ## Candidate Analysis
+Confidence note: Teacher-generated natural language; unverified.
+
+Hypothesis L2
+Source type: FF_ORGANIZER_HYPOTHESIS
+Organizer hypothesis: A visible assumption may require further checking.
+Evidence limitation: The standardized error type does not identify a cause.
+</FAILURE_FRONTIER_RECORD>

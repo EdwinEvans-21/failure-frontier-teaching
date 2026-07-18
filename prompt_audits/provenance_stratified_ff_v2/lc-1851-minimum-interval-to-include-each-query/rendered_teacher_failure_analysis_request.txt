@@ -1,0 +1,116 @@
+=== SYSTEM PROMPT ===
+You are the same Teacher reflecting on your own unsuccessful submission.
+
+The only evaluation information available is the standardized final submission error type in the request. You do not know any concrete failing case, expected or actual output, hidden test, test count, detailed compiler diagnostic, traceback, execution time, memory usage, or Judge diagnostic.
+
+Describe your attempted approach, implementation intent, assumptions, attempted methods, possible risks, possible failure explanations, and remaining uncertainty. Every explanation you produce is an unverified hypothesis. Do not present an explanation as an objective fact or claim a definitive root cause. Do not infer a concrete hidden failing case or infer a specific cause solely from the error type.
+
+Do not propose a next algorithm, fix, modification route, future search direction, or new candidate solution. Do not output code or pseudocode. Do not use the labels DIRECT_FACT, EVIDENCE_GROUNDED_INFERENCE, or LOW_CONFIDENCE_HYPOTHESIS; classification is performed later by the FF organizer and deterministic material builder.
+
+=== USER PROMPT ===
+# Public Problem
+
+# Problem
+
+Minimum Interval To Include Each Query
+
+For each query independently, return the length of the smallest inclusive interval containing it, or -1. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.
+
+# Input Format
+
+Parameters in order: intervals: list[list[int]], queries: list[int]. 1 <= intervals,queries lengths <=100000; endpoints and query values <=1e7; intervals are inclusive and queries may repeat.
+
+# Output Format
+
+Return integer[] using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.
+
+Entrypoint: Solution.minInterval
+
+# Constraints
+
+Parameters in order: intervals: list[list[int]], queries: list[int]. 1 <= intervals,queries lengths <=100000; endpoints and query values <=1e7; intervals are inclusive and queries may repeat.
+Time limit: 4.0s; memory limit: 256 MB.
+
+# Public Examples
+
+Example 1
+Input args: [[[1, 4], [2, 4], [3, 6], [4, 4]], [2, 3, 4, 5]]
+Output: [3, 3, 1, 4]
+
+Example 2
+Input args: [[[2, 3]], [1, 2, 3, 4]]
+Output: [-1, 2, 2, -1]
+
+
+# Your Planning
+
+## Candidate Analysis
+
+**Candidate 1: Sort intervals by length, process queries sorted, use a min-heap of active intervals**  
+- Sort intervals by length ascending. Sort queries with original indices.  
+- For each query (in sorted order), add all intervals whose left endpoint ≤ query into a min-heap keyed by right endpoint.  
+- Pop from heap until top interval's right endpoint ≥ query; if heap empty, answer is -1, else answer is length of top interval.  
+- This works because we process queries in increasing order, so intervals once added remain candidates for later queries. The heap always gives the shortest interval that covers the current query among those added so far.  
+- Complexity O((N+Q) log N). Correct.
+
+**Candidate 2: Sweep line over all points, maintain a multiset of interval lengths**  
+- Collect all interval start and end+1 events. Sort events. Sweep from left to right.  
+- At a start event, add interval length to a multiset. At an end+1 event, remove that length.  
+- For each query, binary search its position in the event list and answer the minimum length in the multiset at that point.  
+- Problem: The multiset state is only defined at event points; between events it's constant, but queries may fall between events. This can be handled by processing queries sorted along with events. However, maintaining a multiset that supports removal of arbitrary lengths (not just min) requires a data structure like a balanced BST or two heaps with lazy deletion.  
+- Complexity O((N+Q) log N). Also correct, but more complex to implement than Candidate 1.
+
+**Rejection of Candidate 2**: While correct, Candidate 1 is simpler and more standard for this problem (LeetCode 1851). Candidate 2 requires careful handling of removal and event ordering. Candidate 1 is preferred.
+
+## Selected Algorithm
+
+Candidate 1: Sort intervals by length, sort queries with indices, sweep queries in ascending order while maintaining a min-heap of active intervals (keyed by right endpoint). For each query, add all intervals whose left ≤ query, then pop from heap until top interval's right ≥ query. Answer is length of top interval or -1.
+
+## State or Invariant
+
+- `intervals` sorted by length ascending.  
+- `queries` sorted ascending, each paired with its original index.  
+- A min-heap `heap` storing `(right, length)` for intervals that have been added (left ≤ current query).  
+- Invariant: Before processing query `q`, all intervals with left ≤ q are in the heap. After popping, the top of heap (if any) is the shortest interval covering `q` among all intervals with left ≤ q.
+
+## Complexity
+
+- Sorting intervals: O(N log N)  
+- Sorting queries: O(Q log Q)  
+- Each interval added once and removed at most once: O(N log N)  
+- Each query processed once: O(Q log N)  
+- Total: O((N+Q) log N)  
+- Memory: O(N + Q) for sorted arrays and heap.
+
+# Your Final Natural-Language Response
+
+
+
+# Your Exact Submitted Code
+
+```python
+class Solution:
+    def minInterval(self, intervals: list[list[int]], queries: list[int]) -> list[int]:
+        intervals.sort(key=lambda x: x[1] - x[0] + 1)
+        sorted_queries = sorted([(q, i) for i, q in enumerate(queries)])
+        res = [-1] * len(queries)
+        heap = []
+        idx = 0
+        n = len(intervals)
+        for q, orig_idx in sorted_queries:
+            while idx < n and intervals[idx][0] <= q:
+                l, r = intervals[idx]
+                heapq.heappush(heap, (r, r - l + 1))
+                idx += 1
+            while heap and heap[0][0] < q:
+                heapq.heappop(heap)
+            if heap:
+                res[orig_idx] = heap[0][1]
+            else:
+                res[orig_idx] = -1
+        return res
+```
+
+# Standardized Final Submission Error Type
+
+WRONG_ANSWER

@@ -1,0 +1,105 @@
+FAILURE MATERIALS
+
+Final submission error type:
+WRONG_ANSWER
+
+Teacher submitted code:
+Artifact: teacher/final/extracted_solution.py
+Code SHA-256: 7515d79e7b0764500a474eb09f1831376b88f84c32493fe91c77c10f4b31cd2d
+```python
+class Solution:
+    def findMaximumLength(self, nums: list[int]) -> int:
+        n = len(nums)
+        prefix = [0] * (n + 1)
+        for i in range(n):
+            prefix[i + 1] = prefix[i] + nums[i]
+        last = 0
+        pos = 0
+        length = 0
+        while pos < n:
+            lo, hi = pos, n
+            while lo < hi:
+                mid = (lo + hi) // 2
+                if prefix[mid + 1] - prefix[pos] >= last:
+                    hi = mid
+                else:
+                    lo = mid + 1
+            if lo == n:
+                break
+            last = prefix[lo + 1] - prefix[pos]
+            pos = lo + 1
+            length += 1
+        return length
+```
+
+Source material:
+Source type: TEACHER_PLANNING
+Original artifact: teacher/planning/content.md
+Original artifact SHA-256: eb2b5de3fb188b64a9bf4795800f2f2a8bd67a31c85ce87b5c94d9e6540949ab
+Verbatim content:
+## Candidate Analysis
+
+**Candidate 1: Greedy left-to-right with prefix sums and binary search**  
+We process the array from left to right, maintaining the last value of the constructed nondecreasing sequence. For each new element, we try to extend the sequence by taking the smallest possible suffix sum that is ≥ last value. This can be done using prefix sums and binary searching for the earliest index where the sum from current position to that index meets the requirement. This is a known approach for similar "split array into nondecreasing sums" problems.  
+Correctness: Greedy works because taking the smallest possible sum leaves more room for later elements.  
+Complexity: O(n log n) with careful pointer management.
+
+**Candidate 2: DP with monotonic queue**  
+Define dp[i] = maximum length achievable for prefix ending at i, with last segment sum. Maintain a deque of candidate start positions where the segment sum is nondecreasing. This is more complex and may have O(n) amortized, but the greedy approach is simpler and sufficient.
+
+## Selected Algorithm
+
+Greedy left-to-right with prefix sums and binary search.
+
+## State or Invariant
+
+- `prefix[i]` = sum of nums[0..i-1] (size n+1, prefix[0]=0).
+- `last` = sum of the last segment in the constructed nondecreasing sequence.
+- `pos` = current index in nums (0-based) where we are building the next segment.
+- Invariant: We always extend the sequence by the shortest possible segment starting at `pos` whose sum ≥ `last`. This minimizes the last sum and maximizes future flexibility.
+
+## Complexity
+
+- Time: O(n log n) — each element is processed once, and for each we may binary search over the remaining suffix (O(log n)).
+- Space: O(n) for prefix sums array.
+
+Source material:
+Source type: TEACHER_FINAL_NATURAL_LANGUAGE
+Original artifact: teacher/final/natural_language.md
+Original artifact SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Verbatim content:
+
+
+Source material:
+Source type: TEACHER_FAILURE_ANALYSIS
+Original artifact: teacher_failure_analysis/content.md
+Original artifact SHA-256: d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1
+Verbatim content:
+Representative offline fixture: I am uncertain which assumption or implementation detail is associated with the standardized failure. This is not a root-cause claim.
+
+Organizer record:
+Final submission error type: WRONG_ANSWER
+Teacher submitted-code artifact: teacher/final/extracted_solution.py
+Teacher submitted-code SHA-256: 7515d79e7b0764500a474eb09f1831376b88f84c32493fe91c77c10f4b31cd2d
+Teacher Planning artifact: teacher/planning/content.md
+Teacher failure-analysis artifact: teacher_failure_analysis/content.md
+
+Organizer item 1
+Claim: The submitted artifact begins with the quoted exact line.
+Evidence: class Solution:
+Evidence source: TEACHER_SUBMITTED_CODE
+Organizer source: FF_ORGANIZER
+Support status: PROVISIONALLY_SUPPORTED
+Reproducibility note: Compare the evidence with the first submitted-code line.
+
+Organizer item 2
+Source type: TEACHER_PLANNING
+Source artifact: teacher/planning/content.md
+Source SHA-256: eb2b5de3fb188b64a9bf4795800f2f2a8bd67a31c85ce87b5c94d9e6540949ab
+Exact source excerpt: ## Candidate Analysis
+Confidence note: Teacher-generated natural language; unverified.
+
+Organizer item 3
+Source type: FF_ORGANIZER_HYPOTHESIS
+Organizer hypothesis: A visible assumption may require further checking.
+Evidence limitation: The standardized error type does not identify a cause.

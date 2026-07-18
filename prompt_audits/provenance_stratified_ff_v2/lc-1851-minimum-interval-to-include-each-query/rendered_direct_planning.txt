@@ -1,0 +1,186 @@
+=== SYSTEM PROMPT ===
+You are in the bounded planning stage of a competitive-programming solution.
+
+Analyze at most two candidate formulations or algorithms. Reject a candidate only for a concrete correctness or complexity issue. Do not narrate minor revisions or repeatedly restart with phrases such as "let me think again", "wait", or "actually".
+
+Do not output complete code or any code fence. Even if a full proof is unavailable, select the best available direction before this stage ends. A mandatory final-submission stage follows.
+
+This call has a hard output budget of 2048 tokens.
+
+Use exactly these sections:
+
+## Candidate Analysis
+## Selected Algorithm
+## State or Invariant
+## Complexity
+
+=== USER PROMPT ===
+# Problem
+
+Minimum Interval To Include Each Query
+
+For each query independently, return the length of the smallest inclusive interval containing it, or -1. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.
+
+# Input Format
+
+Parameters in order: intervals: list[list[int]], queries: list[int]. 1 <= intervals,queries lengths <=100000; endpoints and query values <=1e7; intervals are inclusive and queries may repeat.
+
+# Output Format
+
+Return integer[] using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.
+
+Entrypoint: Solution.minInterval
+
+# Constraints
+
+Parameters in order: intervals: list[list[int]], queries: list[int]. 1 <= intervals,queries lengths <=100000; endpoints and query values <=1e7; intervals are inclusive and queries may repeat.
+Time limit: 4.0s; memory limit: 256 MB.
+
+# Public Examples
+
+Example 1
+Input args: [[[1, 4], [2, 4], [3, 6], [4, 4]], [2, 3, 4, 5]]
+Output: [3, 3, 1, 4]
+
+Example 2
+Input args: [[[2, 3]], [1, 2, 3, 4]]
+Output: [-1, 2, 2, -1]
+
+# Condition Instruction
+
+A previous model attempted this problem but did not pass the evaluator. The shared failure materials classify raw records, evidence-grounded model inferences, and low-confidence model hypotheses by provenance. Use any relevant material as context while constructing your own solution. Verify that your proposed algorithm satisfies the public constraints. Check state transitions, boundaries, initialization, termination, and complexity, and ensure the final code implements the selected solution.
+
+# Shared Failure Materials
+
+<DIRECT_FACT_SOURCE type="FINAL_ERROR_TYPE">
+WRONG_ANSWER
+</DIRECT_FACT_SOURCE>
+
+<DIRECT_FACT_SOURCE type="TEACHER_SUBMITTED_CODE">
+Artifact: teacher/final/extracted_solution.py
+Code SHA-256: 532da2192551bb82720292c705e2bdda2e5188c6c7e0823226372dcd100f0d3f
+
+The following is the exact submitted code:
+```python
+class Solution:
+    def minInterval(self, intervals: list[list[int]], queries: list[int]) -> list[int]:
+        intervals.sort(key=lambda x: x[1] - x[0] + 1)
+        sorted_queries = sorted([(q, i) for i, q in enumerate(queries)])
+        res = [-1] * len(queries)
+        heap = []
+        idx = 0
+        n = len(intervals)
+        for q, orig_idx in sorted_queries:
+            while idx < n and intervals[idx][0] <= q:
+                l, r = intervals[idx]
+                heapq.heappush(heap, (r, r - l + 1))
+                idx += 1
+            while heap and heap[0][0] < q:
+                heapq.heappop(heap)
+            if heap:
+                res[orig_idx] = heap[0][1]
+            else:
+                res[orig_idx] = -1
+        return res
+```
+</DIRECT_FACT_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_PLANNING">
+Confidence notice: The following text is model-generated natural language. It is unverified and is not an objective fact.
+Original artifact: teacher/planning/content.md
+Original artifact SHA-256: a987ce892c4e68c716798f75774bbba96e7e8e52759cdd19a49bc39e8dd089aa
+
+Verbatim content:
+## Candidate Analysis
+
+**Candidate 1: Sort intervals by length, process queries sorted, use a min-heap of active intervals**  
+- Sort intervals by length ascending. Sort queries with original indices.  
+- For each query (in sorted order), add all intervals whose left endpoint ≤ query into a min-heap keyed by right endpoint.  
+- Pop from heap until top interval's right endpoint ≥ query; if heap empty, answer is -1, else answer is length of top interval.  
+- This works because we process queries in increasing order, so intervals once added remain candidates for later queries. The heap always gives the shortest interval that covers the current query among those added so far.  
+- Complexity O((N+Q) log N). Correct.
+
+**Candidate 2: Sweep line over all points, maintain a multiset of interval lengths**  
+- Collect all interval start and end+1 events. Sort events. Sweep from left to right.  
+- At a start event, add interval length to a multiset. At an end+1 event, remove that length.  
+- For each query, binary search its position in the event list and answer the minimum length in the multiset at that point.  
+- Problem: The multiset state is only defined at event points; between events it's constant, but queries may fall between events. This can be handled by processing queries sorted along with events. However, maintaining a multiset that supports removal of arbitrary lengths (not just min) requires a data structure like a balanced BST or two heaps with lazy deletion.  
+- Complexity O((N+Q) log N). Also correct, but more complex to implement than Candidate 1.
+
+**Rejection of Candidate 2**: While correct, Candidate 1 is simpler and more standard for this problem (LeetCode 1851). Candidate 2 requires careful handling of removal and event ordering. Candidate 1 is preferred.
+
+## Selected Algorithm
+
+Candidate 1: Sort intervals by length, sort queries with indices, sweep queries in ascending order while maintaining a min-heap of active intervals (keyed by right endpoint). For each query, add all intervals whose left ≤ query, then pop from heap until top interval's right ≥ query. Answer is length of top interval or -1.
+
+## State or Invariant
+
+- `intervals` sorted by length ascending.  
+- `queries` sorted ascending, each paired with its original index.  
+- A min-heap `heap` storing `(right, length)` for intervals that have been added (left ≤ current query).  
+- Invariant: Before processing query `q`, all intervals with left ≤ q are in the heap. After popping, the top of heap (if any) is the shortest interval covering `q` among all intervals with left ≤ q.
+
+## Complexity
+
+- Sorting intervals: O(N log N)  
+- Sorting queries: O(Q log Q)  
+- Each interval added once and removed at most once: O(N log N)  
+- Each query processed once: O(Q log N)  
+- Total: O((N+Q) log N)  
+- Memory: O(N + Q) for sorted arrays and heap.
+</LOW_CONFIDENCE_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_FINAL_NATURAL_LANGUAGE">
+Confidence notice: The following text is model-generated natural language. It is unverified and is not an objective fact.
+Original artifact: teacher/final/natural_language.md
+Original artifact SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+Verbatim content:
+
+</LOW_CONFIDENCE_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_FAILURE_ANALYSIS">
+Confidence notice: The following text is model-generated natural language. It is unverified and is not an objective fact.
+Original artifact: teacher_failure_analysis/content.md
+Original artifact SHA-256: d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1
+
+Verbatim content:
+Representative offline fixture: I am uncertain which assumption or implementation detail is associated with the standardized failure. This is not a root-cause claim.
+</LOW_CONFIDENCE_SOURCE>
+
+<FAILURE_FRONTIER_RECORD>
+FAILURE FRONTIER RECORD
+
+## 1. DIRECT_FACT REFERENCES
+
+Final submission error type: WRONG_ANSWER
+Teacher submitted-code artifact: teacher/final/extracted_solution.py
+Teacher submitted-code SHA-256: 532da2192551bb82720292c705e2bdda2e5188c6c7e0823226372dcd100f0d3f
+Teacher Planning artifact: teacher/planning/content.md
+Teacher failure-analysis artifact: teacher_failure_analysis/content.md
+Fact boundary notice: This section contains only references to raw objective records and no natural-language interpretation.
+
+## 2. EVIDENCE_GROUNDED_INFERENCE
+
+Inference E1
+Claim: The submitted artifact begins with the quoted exact line.
+Evidence: class Solution:
+Evidence source: TEACHER_SUBMITTED_CODE
+Organizer source: FF_ORGANIZER
+Support status: PROVISIONALLY_SUPPORTED
+Reproducibility note: Compare the evidence with the first submitted-code line.
+
+## 3. LOW_CONFIDENCE_HYPOTHESIS
+
+Hypothesis L1
+Source type: TEACHER_PLANNING
+Source artifact: teacher/planning/content.md
+Source SHA-256: a987ce892c4e68c716798f75774bbba96e7e8e52759cdd19a49bc39e8dd089aa
+Exact source excerpt: ## Candidate Analysis
+Confidence note: Teacher-generated natural language; unverified.
+
+Hypothesis L2
+Source type: FF_ORGANIZER_HYPOTHESIS
+Organizer hypothesis: A visible assumption may require further checking.
+Evidence limitation: The standardized error type does not identify a cause.
+</FAILURE_FRONTIER_RECORD>

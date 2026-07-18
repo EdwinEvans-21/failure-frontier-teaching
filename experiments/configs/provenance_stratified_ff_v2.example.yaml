@@ -1,0 +1,65 @@
+{
+  "schema_version": "2.0",
+  "baseline_id": "failure-frontier-baseline-v3",
+  "baseline_manifest": "experiments/baseline_v3/baseline_manifest.json",
+  "mode": "dry-run",
+  "failure_frontier_policy": "provenance_stratified_ff_v2",
+  "teacher_failure_analysis_policy": "provenance_preserved_failure_analysis_v2",
+  "direct_ff_policy": "direct_ff_v2",
+  "critical_ff_policy": "critical_ff_v2",
+  "flat_ff_policy": "flat_ff_v2",
+  "baseline_policy": "baseline_v2",
+  "shared_failure_payload_builder": "provenance_payload_builder_v2",
+  "model": {
+    "provider": "deepseek",
+    "model_name": "deepseek-v4-flash",
+    "reasoning_mode": false,
+    "thinking": {"type": "disabled"},
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "max_output_tokens": 16384,
+    "base_url": "https://api.deepseek.com",
+    "api_key_env": "DEEPSEEK_API_KEY",
+    "seed": null,
+    "network_retry_limit": 2,
+    "network_retry_backoff_seconds": 1.0,
+    "mock_responses_path": null,
+    "tokenizer_name": null,
+    "tokenizer_revision": null
+  },
+  "solver": {
+    "protocol": "two_stage_v1",
+    "planning_max_output_tokens": 2048,
+    "final_max_output_tokens": 8192
+  },
+  "teaching_material": {
+    "token_match_tolerance": 0.1,
+    "gg_generation_policy": "blueprint_render_v1",
+    "failure_frontier_max_output_tokens": 8192,
+    "gg_blueprint_max_output_tokens": 2048,
+    "gg_blueprint_repair_attempts": 1,
+    "gg_material_max_output_tokens": 8192,
+    "gg_material_revision_attempts": 2,
+    "gg_short_expand_overshoot_factor": 1.08,
+    "gg_min_expand_scale": 1.05,
+    "gg_max_expand_scale": 3.5,
+    "gg_acceptance_policy": "semantic_complete_no_length_v2"
+  },
+  "execution": {
+    "output_root": "experiments/runs-provenance-v2-dry-run",
+    "judge_image": "ffjudge-python:latest",
+    "judge_phase": "hidden",
+    "resume": true
+  },
+  "prompts_dir": "experiments/prompts",
+  "problems": [
+    {"problem":"examples/palindrome_number/problem.json","public_tests":"examples/palindrome_number/public_tests.json","hidden_tests":"examples/palindrome_number/hidden_tests.json"},
+    {"problem":"examples/exact_monotone_paths/problem.json","public_tests":"examples/exact_monotone_paths/public_tests.json","hidden_tests":"examples/exact_monotone_paths/hidden_tests.json"},
+    {"problem":"examples/minimum_operations_binary_transform/problem.json","public_tests":"examples/minimum_operations_binary_transform/public_tests.json","hidden_tests":"examples/minimum_operations_binary_transform/hidden_tests.json"},
+    {"problem":"examples/sorted_gcd_pair_queries/problem.json","public_tests":"examples/sorted_gcd_pair_queries/public_tests.json","hidden_tests":"examples/sorted_gcd_pair_queries/hidden_tests.json"},
+    {"problem":"examples/maximum_subarray_sum_after_k_swaps/problem.json","public_tests":"examples/maximum_subarray_sum_after_k_swaps/public_tests.json","hidden_tests":"examples/maximum_subarray_sum_after_k_swaps/hidden_tests.json"}
+  ],
+  "student_conditions": [
+    "baseline", "direct_ff_v2", "critical_ff_v2", "flat_ff_v2", "general_guidance"
+  ]
+}

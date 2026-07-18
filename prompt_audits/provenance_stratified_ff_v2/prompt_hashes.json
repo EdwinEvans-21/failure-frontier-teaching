@@ -1,0 +1,41 @@
+{
+  "historical_prompts_unchanged": true,
+  "legacy_current": {
+    "failure_frontier.md": "cd7c0417304e1918e0d7e6dc7399a20163d8382ecda7908f90d08cb4abc453b9",
+    "failure_frontier_user.md": "d6b987ccc60f7045a8315bd178b3df227a2f559791782af4e96fac0c7c3fc118",
+    "solver_final.md": "6c0aa3cf4c0aa914176bfd5e4b0ba994512aa43b14082df6e0fd1f772adf5271",
+    "solver_final_user.md": "a951d46edf671b6930c3715f4f46a20f7a2a60572e3e008568d2427b8ced1d3a",
+    "solver_planning.md": "fd1c48daa284aeb7251827bdc9a479b22bfe1d1f4252fae8c9b2e3e2fb574bca",
+    "student_user_with_critical_ff.md": "0c701c74810a379f36fc709de9d14baa7b723503e02c2e23759b05ef10268008",
+    "student_user_with_material.md": "2a2c5d10efac68b1ab742ee43bc519a783ca4a8caf974452b7ff74f3f703dc05",
+    "success_teaching.md": "3f43c45654901ffe47cbcba2b41e03c18b16c090c0bd9cd0f022cdc2a8edd7a4",
+    "success_teaching_user.md": "0c247fec683ee7d88fab3187310d5c71abde7b56acc22355fa6343b75cf0c481"
+  },
+  "legacy_expected": {
+    "failure_frontier.md": "cd7c0417304e1918e0d7e6dc7399a20163d8382ecda7908f90d08cb4abc453b9",
+    "failure_frontier_user.md": "d6b987ccc60f7045a8315bd178b3df227a2f559791782af4e96fac0c7c3fc118",
+    "solver_final.md": "6c0aa3cf4c0aa914176bfd5e4b0ba994512aa43b14082df6e0fd1f772adf5271",
+    "solver_final_user.md": "a951d46edf671b6930c3715f4f46a20f7a2a60572e3e008568d2427b8ced1d3a",
+    "solver_planning.md": "fd1c48daa284aeb7251827bdc9a479b22bfe1d1f4252fae8c9b2e3e2fb574bca",
+    "student_user_with_critical_ff.md": "0c701c74810a379f36fc709de9d14baa7b723503e02c2e23759b05ef10268008",
+    "student_user_with_material.md": "2a2c5d10efac68b1ab742ee43bc519a783ca4a8caf974452b7ff74f3f703dc05",
+    "success_teaching.md": "3f43c45654901ffe47cbcba2b41e03c18b16c090c0bd9cd0f022cdc2a8edd7a4",
+    "success_teaching_user.md": "0c247fec683ee7d88fab3187310d5c71abde7b56acc22355fa6343b75cf0c481"
+  },
+  "new": {
+    "baseline_v2.md": "ea69b8a85993db9fd0863fc65502382f998e79363a882b9c0e73f8073e516cb9",
+    "critical_ff_v2.md": "d86ae0d7d02a699809a98f106b75c85353032f744ceb1c01f772c690c40271ac",
+    "direct_ff_v2.md": "dc5df6027ef6f6f3ddd57968791c127e5e86c0844de3c3440de07993d8409294",
+    "ff_organizer_v2.md": "8dfbe04dce69d08231b95e1813df9fdd66d796c36fdb9e965f4bfc3f9de55b1b",
+    "ff_organizer_v2_user.md": "812c002767dc63f5a60917387bb57459e1619428105a5122388ec30c0b846ced",
+    "general_guidance_blueprint_no_length_v2.md": "8231a0447030d33d5310aa400d182634561bf0d2135997b72a6958ec21765511",
+    "general_guidance_blueprint_repair_no_length_v2.md": "8128ceea09c96a82e3c5a5ea617e7618e43758062eb921f3eb45c12eae9350c2",
+    "general_guidance_material_no_length_v2.md": "f21e3acfab95195627542fce465cb05a01b261c87c42ff45b5f1a940b8c6d703",
+    "general_guidance_material_repair_no_length_v2.md": "60bc73016a6cfc84ad8a1de9e012b8baa1c097200e8e27bec0a3797f618f34cd",
+    "general_guidance_truncation_recovery_no_length_v2.md": "7a2f30d13ed51696a5e6ea6c97edd011358665dee4c9b6b1cdd49d21ef5c538a",
+    "success_teaching_v2.md": "ce8176c597fff1e825dd6349a0169abae733eb01fd487cc23cadc80c449c526c",
+    "success_teaching_v2_user.md": "409adf312f5f7b6cd47de302a3ecee27688977aa6c4f02f3aa19cd75ae358f52",
+    "teacher_failure_analysis_v2.md": "d2ac2ad8d9ba80bcd426117001d913cee099b4ee92e72f4fde11f577126234a7",
+    "teacher_failure_analysis_v2_user.md": "3b2cb39071b232abd2ddbb75fc5cb0d6b3cdedd9e6b98aa8c63728de52bc71dc"
+  }
+}

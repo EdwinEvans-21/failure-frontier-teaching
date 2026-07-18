@@ -1,0 +1,107 @@
+=== SYSTEM PROMPT ===
+You are the same Teacher reflecting on your own unsuccessful submission.
+
+The only evaluation information available is the standardized final submission error type in the request. You do not know any concrete failing case, expected or actual output, hidden test, test count, detailed compiler diagnostic, traceback, execution time, memory usage, or Judge diagnostic.
+
+Describe your attempted approach, implementation intent, assumptions, attempted methods, possible risks, possible failure explanations, and remaining uncertainty. Every explanation you produce is an unverified hypothesis. Do not present an explanation as an objective fact or claim a definitive root cause. Do not infer a concrete hidden failing case or infer a specific cause solely from the error type.
+
+Do not propose a next algorithm, fix, modification route, future search direction, or new candidate solution. Do not output code or pseudocode. Do not use the labels DIRECT_FACT, EVIDENCE_GROUNDED_INFERENCE, or LOW_CONFIDENCE_HYPOTHESIS; classification is performed later by the FF organizer and deterministic material builder.
+
+=== USER PROMPT ===
+# Public Problem
+
+# Problem
+
+Find Maximum Non Decreasing Array Length
+
+Repeatedly replace contiguous subarrays by their sums; return the maximum possible length of a nondecreasing final array. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.
+
+# Input Format
+
+Parameters in order: nums: list[int]. 1 <= len(nums) <= 100000; nums are positive <=100000; operations may be applied repeatedly.
+
+# Output Format
+
+Return integer using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.
+
+Entrypoint: Solution.findMaximumLength
+
+# Constraints
+
+Parameters in order: nums: list[int]. 1 <= len(nums) <= 100000; nums are positive <=100000; operations may be applied repeatedly.
+Time limit: 4.0s; memory limit: 256 MB.
+
+# Public Examples
+
+Example 1
+Input args: [[5, 2, 2]]
+Output: 1
+
+Example 2
+Input args: [[1, 2, 3, 4]]
+Output: 4
+
+
+# Your Planning
+
+## Candidate Analysis
+
+**Candidate 1: Greedy left-to-right with prefix sums and binary search**  
+We process the array from left to right, maintaining the last value of the constructed nondecreasing sequence. For each new element, we try to extend the sequence by taking the smallest possible suffix sum that is ≥ last value. This can be done using prefix sums and binary searching for the earliest index where the sum from current position to that index meets the requirement. This is a known approach for similar "split array into nondecreasing sums" problems.  
+Correctness: Greedy works because taking the smallest possible sum leaves more room for later elements.  
+Complexity: O(n log n) with careful pointer management.
+
+**Candidate 2: DP with monotonic queue**  
+Define dp[i] = maximum length achievable for prefix ending at i, with last segment sum. Maintain a deque of candidate start positions where the segment sum is nondecreasing. This is more complex and may have O(n) amortized, but the greedy approach is simpler and sufficient.
+
+## Selected Algorithm
+
+Greedy left-to-right with prefix sums and binary search.
+
+## State or Invariant
+
+- `prefix[i]` = sum of nums[0..i-1] (size n+1, prefix[0]=0).
+- `last` = sum of the last segment in the constructed nondecreasing sequence.
+- `pos` = current index in nums (0-based) where we are building the next segment.
+- Invariant: We always extend the sequence by the shortest possible segment starting at `pos` whose sum ≥ `last`. This minimizes the last sum and maximizes future flexibility.
+
+## Complexity
+
+- Time: O(n log n) — each element is processed once, and for each we may binary search over the remaining suffix (O(log n)).
+- Space: O(n) for prefix sums array.
+
+# Your Final Natural-Language Response
+
+
+
+# Your Exact Submitted Code
+
+```python
+class Solution:
+    def findMaximumLength(self, nums: list[int]) -> int:
+        n = len(nums)
+        prefix = [0] * (n + 1)
+        for i in range(n):
+            prefix[i + 1] = prefix[i] + nums[i]
+        last = 0
+        pos = 0
+        length = 0
+        while pos < n:
+            lo, hi = pos, n
+            while lo < hi:
+                mid = (lo + hi) // 2
+                if prefix[mid + 1] - prefix[pos] >= last:
+                    hi = mid
+                else:
+                    lo = mid + 1
+            if lo == n:
+                break
+            last = prefix[lo + 1] - prefix[pos]
+            pos = lo + 1
+            length += 1
+        return length
+```
+
+# Standardized Final Submission Error Type
+
+WRONG_ANSWER

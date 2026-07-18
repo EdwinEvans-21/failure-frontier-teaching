@@ -1,0 +1,1 @@
+Solve the public problem independently. Use only the public task information in this request. Verify that your proposed algorithm satisfies the public constraints. Check state transitions, boundaries, initialization, termination, and complexity, and ensure the final code implements the selected solution.

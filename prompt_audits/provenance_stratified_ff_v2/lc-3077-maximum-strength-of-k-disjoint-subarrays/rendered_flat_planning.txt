@@ -1,0 +1,153 @@
+=== SYSTEM PROMPT ===
+You are in the bounded planning stage of a competitive-programming solution.
+
+Analyze at most two candidate formulations or algorithms. Reject a candidate only for a concrete correctness or complexity issue. Do not narrate minor revisions or repeatedly restart with phrases such as "let me think again", "wait", or "actually".
+
+Do not output complete code or any code fence. Even if a full proof is unavailable, select the best available direction before this stage ends. A mandatory final-submission stage follows.
+
+This call has a hard output budget of 2048 tokens.
+
+Use exactly these sections:
+
+## Candidate Analysis
+## Selected Algorithm
+## State or Invariant
+## Complexity
+
+=== USER PROMPT ===
+# Problem
+
+Maximum Strength Of K Disjoint Subarrays
+
+Choose exactly k nonempty disjoint subarrays in order and maximize their alternating weighted sum with coefficients k,-(k-1),...,1. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.
+
+# Input Format
+
+Parameters in order: nums: list[int], k: int. 1 <= n <= 10000; k is positive odd and k<=n; n*k<=1000000; values fit signed 32-bit.
+
+# Output Format
+
+Return long using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.
+
+Entrypoint: Solution.maximumStrength
+
+# Constraints
+
+Parameters in order: nums: list[int], k: int. 1 <= n <= 10000; k is positive odd and k<=n; n*k<=1000000; values fit signed 32-bit.
+Time limit: 4.0s; memory limit: 256 MB.
+
+# Public Examples
+
+Example 1
+Input args: [[1, 2, 3, -1, 2], 3]
+Output: 22
+
+Example 2
+Input args: [[-1, -2, -3], 1]
+Output: -1
+
+# Condition Instruction
+
+A previous model attempted this problem but did not pass the evaluator. The shared failure materials classify raw records, evidence-grounded model inferences, and low-confidence model hypotheses by provenance. Use any relevant material as context while constructing your own solution. Verify that your proposed algorithm satisfies the public constraints. Check state transitions, boundaries, initialization, termination, and complexity, and ensure the final code implements the selected solution.
+
+# Shared Failure Materials
+
+FAILURE MATERIALS
+
+Final submission error type:
+WRONG_ANSWER
+
+Teacher submitted code:
+Artifact: teacher/final/extracted_solution.py
+Code SHA-256: 70bbd3dc76e32a7c9da966ab8f139b1c7b6e4ed0d8bf6ddef1753fa24132097a
+```python
+class Solution:
+    def maximumStrength(self, nums: list[int], k: int) -> int:
+        n = len(nums)
+        INF = 10**18
+        dp0 = [-INF] * (k + 1)
+        dp1 = [-INF] * (k + 1)
+        dp0[0] = 0
+        for i in range(n):
+            ndp0 = [-INF] * (k + 1)
+            ndp1 = [-INF] * (k + 1)
+            for j in range(k + 1):
+                if dp0[j] != -INF:
+                    ndp0[j] = max(ndp0[j], dp0[j])
+                if dp1[j] != -INF:
+                    ndp0[j] = max(ndp0[j], dp1[j])
+                if j > 0:
+                    coeff = k - j + 1
+                    val = nums[i] * coeff
+                    if dp0[j - 1] != -INF:
+                        ndp1[j] = max(ndp1[j], dp0[j - 1] + val)
+                    if dp1[j - 1] != -INF:
+                        ndp1[j] = max(ndp1[j], dp1[j - 1] + val)
+                    if dp1[j] != -INF:
+                        ndp1[j] = max(ndp1[j], dp1[j] + val)
+            dp0, dp1 = ndp0, ndp1
+        return max(dp0[k], dp1[k])
+```
+
+Source material:
+Source type: TEACHER_PLANNING
+Original artifact: teacher/planning/content.md
+Original artifact SHA-256: 0613d07f5b61034082f02d85d41aa2e82afc463554c6eac2b0affc7cb75d1d8c
+Verbatim content:
+## Candidate Analysis
+
+**Candidate 1: DP with state (i, j, taken)**
+Define dp[i][j][0/1] = max strength using first i elements, j subarrays formed, and whether the i-th element is part of the current (j-th) subarray (0 = not taken, 1 = taken). Transition: if not taken, dp[i][j][0] = max(dp[i-1][j][0], dp[i-1][j][1]); if taken, dp[i][j][1] = max(dp[i-1][j][1] + coeff(j)*nums[i-1], dp[i-1][j-1][0] + coeff(j)*nums[i-1], dp[i-1][j-1][1] + coeff(j)*nums[i-1]). Coeff for j-th subarray (1-indexed from left) = k - j + 1. Complexity O(n*k) = up to 1e6, feasible. Correctness: standard DP for disjoint subarrays with alternating weights.
+
+**Candidate 2: Greedy with Kadane-like selection**
+Select k subarrays by repeatedly extracting maximum-sum subarray, then negating its elements to allow overlap avoidance. However, alternating weights (k, -(k-1), ...) are not uniform, so greedy extraction does not respect the sign pattern and can produce suboptimal order. Rejected due to incorrectness for non-uniform weights.
+
+## Selected Algorithm
+DP with state (i, j, taken) as described in Candidate 1. Use 1-indexed subarray count, coefficient = k - j + 1 for the j-th subarray.
+
+## State or Invariant
+dp[j][t] for current i, where t=0 (not taken) or t=1 (taken). Initialize dp[0][0] = 0, dp[0][1] = -inf. For each element, update from previous row. After processing all elements, answer = max(dp[k][0], dp[k][1]).
+
+## Complexity
+Time: O(n*k) ≤ 1e6 operations. Space: O(k) using two rows (rolling array).
+
+Source material:
+Source type: TEACHER_FINAL_NATURAL_LANGUAGE
+Original artifact: teacher/final/natural_language.md
+Original artifact SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Verbatim content:
+
+
+Source material:
+Source type: TEACHER_FAILURE_ANALYSIS
+Original artifact: teacher_failure_analysis/content.md
+Original artifact SHA-256: d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1
+Verbatim content:
+Representative offline fixture: I am uncertain which assumption or implementation detail is associated with the standardized failure. This is not a root-cause claim.
+
+Organizer record:
+Final submission error type: WRONG_ANSWER
+Teacher submitted-code artifact: teacher/final/extracted_solution.py
+Teacher submitted-code SHA-256: 70bbd3dc76e32a7c9da966ab8f139b1c7b6e4ed0d8bf6ddef1753fa24132097a
+Teacher Planning artifact: teacher/planning/content.md
+Teacher failure-analysis artifact: teacher_failure_analysis/content.md
+
+Organizer item 1
+Claim: The submitted artifact begins with the quoted exact line.
+Evidence: class Solution:
+Evidence source: TEACHER_SUBMITTED_CODE
+Organizer source: FF_ORGANIZER
+Support status: PROVISIONALLY_SUPPORTED
+Reproducibility note: Compare the evidence with the first submitted-code line.
+
+Organizer item 2
+Source type: TEACHER_PLANNING
+Source artifact: teacher/planning/content.md
+Source SHA-256: 0613d07f5b61034082f02d85d41aa2e82afc463554c6eac2b0affc7cb75d1d8c
+Exact source excerpt: ## Candidate Analysis
+Confidence note: Teacher-generated natural language; unverified.
+
+Organizer item 3
+Source type: FF_ORGANIZER_HYPOTHESIS
+Organizer hypothesis: A visible assumption may require further checking.
+Evidence limitation: The standardized error type does not identify a cause.

@@ -1,0 +1,16 @@
+You are in the mandatory final-submission stage of a competitive-programming solution.
+
+You have already completed a bounded planning phase. Do not continue brainstorming, introduce new candidate approaches, or revisit rejected approaches. The planning may be incomplete or imperfect; evaluate it critically, choose the best available direction, and submit one complete solution.
+
+This call has a hard output budget of 8192 tokens.
+
+Your visible response must contain exactly one complete Python source file wrapped in exactly one `python` code fence, in this form:
+
+```python
+class Solution:
+    ...
+```
+
+Do not output any text before or after that code fence. Do not output Markdown headings, an approach explanation, exploratory notes, alternative algorithms, patches, multiple programs, pseudocode, or requests for more information. The only visible content outside the Python source must be the opening and closing code-fence markers.
+
+Inside the Python source, do not include comments of any kind. Do not use `#` line comments, end-of-line comments, explanatory docstrings, commented-out code, TODOs, notes, or reasoning disguised as source text. Output only the executable Python source required for the final solution.

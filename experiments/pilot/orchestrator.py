@@ -36,6 +36,15 @@ from .gg_controller import (
 )
 from .model_client import ModelClient, ModelInfrastructureError, ModelResponse
 from .prompts import PromptRenderer
+from .provenance_ff import (
+    BASELINE_CONDITION, CRITICAL_CONDITION, DIRECT_CONDITION, FLAT_CONDITION,
+    FAILURE_FRONTIER_POLICY, FLAT_PAYLOAD_RENDERER_VERSION,
+    SHARED_PAYLOAD_BUILDER_VERSION,
+    SourceArtifact, StudentTreatmentRequest, parse_organizer_record,
+    render_flat_failure_payload, render_shared_failure_payload, sha256_text,
+    standardized_error_type,
+    teacher_final_natural_language, validate_direct_instruction,
+)
 from .storage import read_json, write_json, write_text
 
 
@@ -51,6 +60,10 @@ VERDICT_MAP = {
 }
 STUDENT_CONDITIONS = ("success_only", "failure_frontier", "general_guidance")
 CRITICAL_FF_CONDITION = "critical_failure_frontier"
+V2_STUDENT_CONDITIONS = (
+    BASELINE_CONDITION, DIRECT_CONDITION, CRITICAL_CONDITION, FLAT_CONDITION,
+    "general_guidance"
+)
 GG_REQUIRED_SECTIONS = (
     "## Constraint Analysis",
     "## Algorithmic Directions",
@@ -118,6 +131,10 @@ class GGContentValidationError(RuntimeError):
         self.metrics = metrics or {}
 
 
+class FFContentValidationError(RuntimeError):
+    """A completed organizer response that violates the v2 FF schema."""
+
+
 def coarse_verdict(verdict: Verdict) -> str:
     return VERDICT_MAP[verdict]
 
@@ -141,6 +158,9 @@ class PilotRunner:
     def _path(self, path: str) -> Path:
         candidate = Path(path)
         return candidate if candidate.is_absolute() else self.project_root / candidate
+
+    def _uses_provenance_v2(self) -> bool:
+        return self.config.failure_frontier_policy == FAILURE_FRONTIER_POLICY
 
     def verify_baseline(self) -> None:
         verifier_name = {
@@ -347,6 +367,7 @@ class PilotRunner:
                 "formal_strict_match",
                 "formal_format_exception",
                 "exploratory_closest_fallback",
+                "formal_semantic_complete",
             }
         )
         return {
@@ -382,6 +403,36 @@ class PilotRunner:
                     self._path(item.problem)).problem_id))
             for item in self.config.problems
         }
+        direct_payload_equal = None
+        final_static_equal = None
+        direct_flat_prompt_equal = None
+        if self._uses_provenance_v2():
+            direct_payload_equal = True
+            final_static_equal = (
+                self._rendered_solver_call(
+                    "final", "student", "<problem>", DIRECT_CONDITION,
+                    "<public-problem>", additional_material="<shared-payload>",
+                    planning_content="<planning>", planning_status="<status>"
+                )["system_prompt"] ==
+                self._rendered_solver_call(
+                    "final", "student", "<problem>", CRITICAL_CONDITION,
+                    "<public-problem>", additional_material="<shared-payload>",
+                    planning_content="<planning>", planning_status="<status>"
+                )["system_prompt"]
+            )
+            direct_flat_prompt_equal = all(
+                self._rendered_solver_call(
+                    stage, "student", "<problem>", DIRECT_CONDITION,
+                    "<public-problem>", additional_material="<material>",
+                    planning_content="<planning>", planning_status="<status>"
+                )[key] == self._rendered_solver_call(
+                    stage, "student", "<problem>", FLAT_CONDITION,
+                    "<public-problem>", additional_material="<material>",
+                    planning_content="<planning>", planning_status="<status>"
+                )[key]
+                for stage in ("planning", "final")
+                for key in ("system_prompt", "user_prompt")
+            )
         plan = {"run_id": run_id, "mode": "dry-run", "model_calls": calls,
                 "api_accessed": False, "judge_accessed": False,
                 "problem_count": len(self.config.problems),
@@ -389,12 +440,35 @@ class PilotRunner:
                     (3 + 2 * len(self.config.student_conditions)) *
                     len(self.config.problems),
                 "maximum_model_calls_under_configured_gg_attempts":
-                    (8 + 2 * len(self.config.student_conditions)) *
+                    ((9 if self._uses_provenance_v2() else 8) +
+                     2 * len(self.config.student_conditions)) *
                     len(self.config.problems),
                 "expected_judge_submissions":
                     (1 + len(self.config.student_conditions)) *
                     len(self.config.problems),
-                "student_execution_orders": orders}
+                "student_execution_orders": orders,
+                "failure_frontier_policy": self.config.failure_frontier_policy,
+                "teacher_failure_analysis_policy": (
+                    self.config.teacher_failure_analysis_policy),
+                "student_treatment_policies": {
+                    "baseline": self.config.baseline_policy,
+                    "direct": self.config.direct_ff_policy,
+                    "critical": self.config.critical_ff_policy,
+                    "flat": self.config.flat_ff_policy,
+                },
+                "shared_payload_builder": self.config.shared_failure_payload_builder,
+                "gg_acceptance_policy": (
+                    self.config.teaching_material.gg_acceptance_policy),
+                "gg_token_match_required": (
+                    self.config.teaching_material.gg_acceptance_policy ==
+                    "token_interval_v1"),
+                "direct_critical_payload_byte_equal": direct_payload_equal,
+                "direct_critical_final_static_equal": final_static_equal,
+                "direct_flat_prompt_template_equal": direct_flat_prompt_equal,
+                "only_intended_treatment_difference": (
+                    "Direct/Critical instruction framing or Flat payload presentation"
+                    if self._uses_provenance_v2() else None),
+                }
         write_json(self.run_dir / "dry_run_plan.json", plan)
         return plan
 
@@ -408,7 +482,9 @@ class PilotRunner:
             ),
         ]
         # Show every possible branch without using prior model output.
-        calls.append(self._rendered_call("success_teaching", problem_id, "success", problem,
+        success_role = ("success_teaching_v2" if self._uses_provenance_v2()
+                        else "success_teaching")
+        calls.append(self._rendered_call(success_role, problem_id, "success", problem,
                                          teacher_planning="<teacher-planning>",
                                          teacher_raw_response="<teacher-response>",
                                          teacher_code="<teacher-code>"))
@@ -419,6 +495,21 @@ class PilotRunner:
         calls[-1]["max_output_tokens"] = (
             self.config.teaching_material.failure_frontier_max_output_tokens
         )
+        if self._uses_provenance_v2():
+            calls[-1] = self._rendered_call(
+                "teacher_failure_analysis_v2", problem_id, "failure", problem,
+                teacher_planning="<teacher-planning>",
+                teacher_final_natural_language="<teacher-final-natural-language>",
+                teacher_code="<teacher-code>",
+                final_error_type="<standardized-final-error-type>",
+            )
+            calls.append(self._rendered_call(
+                "ff_organizer_v2", problem_id, "failure", problem,
+                low_confidence_sources="<verbatim-low-confidence-sources>",
+                teacher_code="<teacher-code>",
+                final_error_type="<standardized-final-error-type>",
+                source_metadata_json="<source-metadata-json>",
+            ))
         blueprint = self._rendered_call(
             "general_guidance_blueprint", problem_id, "blueprint_initial", problem,
             target_tokens="<failure-frontier-output-tokens>",
@@ -500,6 +591,7 @@ class PilotRunner:
         if self.config.execution.resume and record_path.is_file():
             saved_record = read_json(record_path)
             if not saved_record.get("infrastructure_error"):
+                self._validate_completed_resume(problem_dir, saved_record)
                 finalize_comparison_eligibility(saved_record)
                 write_json(record_path, saved_record)
                 return saved_record
@@ -556,7 +648,14 @@ class PilotRunner:
                     for condition in self.config.student_conditions
                 }
             else:
-                ff = self._failure_material(problem_dir, spec.problem_id, problem, teacher)
+                v2_bundle = None
+                if self._uses_provenance_v2():
+                    v2_bundle = self._provenance_failure_material(
+                        problem_dir, spec.problem_id, problem, teacher)
+                    ff = v2_bundle["organizer_response"]
+                else:
+                    ff = self._failure_material(
+                        problem_dir, spec.problem_id, problem, teacher)
                 ff_limit = (
                     self.config.teaching_material
                     .failure_frontier_max_output_tokens
@@ -581,14 +680,45 @@ class PilotRunner:
                 record["teaching_material"].update(gg["metrics"])
                 record["artifacts"]["teaching_materials"] = str(
                     problem_dir / "teaching_materials")
-                if not gg["metrics"]["token_match_passed"]:
+                if (gg["metrics"].get("token_match_required") is True and
+                        not gg["metrics"]["token_match_passed"]):
                     record["token_match_failed"] = True
-                student_materials = {
-                    "success_only": "",
-                    "failure_frontier": ff.content,
-                    "critical_failure_frontier": ff.content,
-                    "general_guidance": gg["response"].content,
-                }
+                if v2_bundle is not None:
+                    shared_payload = v2_bundle["shared_payload"]
+                    flat_payload = v2_bundle["flat_payload"]
+                    student_materials = {
+                        BASELINE_CONDITION: "",
+                        DIRECT_CONDITION: shared_payload,
+                        CRITICAL_CONDITION: shared_payload,
+                        FLAT_CONDITION: flat_payload,
+                        "general_guidance": gg["response"].content,
+                    }
+                    record["provenance_failure_frontier"] = {
+                        "failure_frontier_policy_version": (
+                            self.config.failure_frontier_policy),
+                        "teacher_failure_analysis_policy_version": (
+                            self.config.teacher_failure_analysis_policy),
+                        "shared_payload_builder_version": (
+                            SHARED_PAYLOAD_BUILDER_VERSION),
+                        "flat_payload_renderer_version": (
+                            FLAT_PAYLOAD_RENDERER_VERSION),
+                        "gg_acceptance_policy": (
+                            self.config.teaching_material.gg_acceptance_policy),
+                        "shared_payload_sha256": sha256_text(shared_payload),
+                        "flat_payload_sha256": sha256_text(flat_payload),
+                        "direct_critical_payload_byte_equal": True,
+                        "flat_payload_uses_same_information": True,
+                        "flat_uses_direct_instruction": True,
+                        "record_sha256": v2_bundle["record_sha256"],
+                        "source_sha256": v2_bundle["source_sha256"],
+                    }
+                else:
+                    student_materials = {
+                        "success_only": "",
+                        "failure_frontier": ff.content,
+                        "critical_failure_frontier": ff.content,
+                        "general_guidance": gg["response"].content,
+                    }
                 if CRITICAL_FF_CONDITION in self.config.student_conditions:
                     record["critical_ff_pair"] = {
                         "naive_material_sha256": _hash(ff.content),
@@ -607,6 +737,12 @@ class PilotRunner:
                 )
                 record["students"][condition] = _solver_summary(student)
                 record["artifacts"][f"student_{condition}"] = student["artifact_paths"]
+        except FFContentValidationError as error:
+            record["valid_episode"] = False
+            record["model_output_validation"] = (
+                "provenance_ff_record_validation")
+            record["protocol_output_invalid"] = True
+            record["validation_error"] = str(error)
         except GGContentValidationError as error:
             record["teaching_material"].update(error.metrics)
             record["valid_episode"] = False
@@ -620,6 +756,56 @@ class PilotRunner:
         finalize_comparison_eligibility(record)
         write_json(record_path, record)
         return record
+
+    def _validate_completed_resume(
+        self, problem_dir: Path, record: dict[str, Any]
+    ) -> None:
+        provenance = record.get("provenance_failure_frontier")
+        if provenance is None:
+            if self._uses_provenance_v2():
+                raise ModelInfrastructureError(
+                    "legacy completed record cannot be upgraded to provenance v2")
+            return
+        if not self._uses_provenance_v2():
+            raise ModelInfrastructureError(
+                "provenance-v2 completed record cannot resume under a legacy policy")
+        if provenance.get("failure_frontier_policy_version") != (
+                self.config.failure_frontier_policy):
+            raise ModelInfrastructureError("persisted FF policy differs")
+        if provenance.get("teacher_failure_analysis_policy_version") != (
+                self.config.teacher_failure_analysis_policy):
+            raise ModelInfrastructureError("persisted Teacher-analysis policy differs")
+        if provenance.get("shared_payload_builder_version") != (
+                self.config.shared_failure_payload_builder):
+            raise ModelInfrastructureError("persisted payload builder differs")
+        root = problem_dir / "teaching_materials" / "provenance_ff_v2"
+        payload_path = root / "shared_failure_payload.txt"
+        flat_payload_path = root / "flat_failure_payload.txt"
+        manifest_path = root / "source_manifest.json"
+        record_path = root / "failure_frontier_record.json"
+        if not all(path.is_file() for path in (
+                payload_path, flat_payload_path, manifest_path, record_path)):
+            raise ModelInfrastructureError("persisted provenance artifacts are missing")
+        manifest = read_json(manifest_path)
+        if sha256_text(payload_path.read_text(encoding="utf-8")) != (
+                provenance.get("shared_payload_sha256")):
+            raise ModelInfrastructureError("persisted shared payload hash differs")
+        if sha256_text(flat_payload_path.read_text(encoding="utf-8")) != (
+                provenance.get("flat_payload_sha256")):
+            raise ModelInfrastructureError("persisted flat payload hash differs")
+        if provenance.get("flat_payload_renderer_version") != (
+                FLAT_PAYLOAD_RENDERER_VERSION):
+            raise ModelInfrastructureError("persisted flat payload renderer differs")
+        canonical_record = json.dumps(
+            read_json(record_path), ensure_ascii=False, sort_keys=True,
+            separators=(",", ":"))
+        if sha256_text(canonical_record) != provenance.get("record_sha256"):
+            raise ModelInfrastructureError("persisted FF record hash differs")
+        for metadata in manifest.get("source_sha256", {}).values():
+            path = Path(metadata.get("source_artifact", ""))
+            if not path.is_file() or sha256_text(path.read_text(encoding="utf-8")) != (
+                    metadata.get("source_sha256")):
+                raise ModelInfrastructureError("persisted raw source hash differs")
 
     def _solver_stage(
         self, stage_dir: Path, role: str, problem_id: str, condition: str,
@@ -778,14 +964,16 @@ class PilotRunner:
 
     def _success_material(self, problem_dir: Path, problem_id: str, problem: str,
                           teacher: dict[str, Any]) -> ModelResponse:
+        role = ("success_teaching_v2" if self._uses_provenance_v2()
+                else "success_teaching")
         rendered = self._rendered_call(
-            "success_teaching", problem_id, "success", problem,
+            role, problem_id, "success", problem,
             teacher_planning=teacher["planning_response"],
             teacher_raw_response=teacher["raw_response"],
             teacher_code=teacher["code"],
         )
         return self._call(problem_dir / "teaching_materials" / "success",
-                          "success_teaching", problem_id, "success", rendered)[0]
+                          role, problem_id, "success", rendered)[0]
 
     def _failure_material(self, problem_dir: Path, problem_id: str, problem: str,
                           teacher: dict[str, Any]) -> ModelResponse:
@@ -803,6 +991,133 @@ class PilotRunner:
                               .failure_frontier_max_output_tokens
                           ))[0]
 
+    def _provenance_failure_material(
+        self, problem_dir: Path, problem_id: str, problem: str,
+        teacher: dict[str, Any],
+    ) -> dict[str, Any]:
+        error_type = standardized_error_type(teacher)
+        if error_type is None:
+            raise ModelInfrastructureError(
+                "v2 failure material requires an approved submission error type")
+        root = problem_dir / "teaching_materials" / "provenance_ff_v2"
+        code = teacher.get("code") or "<no extractable code>"
+        final_nl = teacher_final_natural_language(
+            teacher.get("raw_response", ""), teacher.get("code"))
+        planning_path = str(problem_dir / "teacher" / "planning" / "content.md")
+        final_nl_path = root / "raw_sources" / "teacher_final_natural_language.md"
+        analysis_path = root / "raw_sources" / "teacher_failure_analysis.md"
+        write_text(final_nl_path, final_nl)
+
+        analysis_rendered = self._rendered_call(
+            "teacher_failure_analysis_v2", problem_id, "failure", problem,
+            teacher_planning=teacher["planning_response"],
+            teacher_final_natural_language=final_nl,
+            teacher_code=code, final_error_type=error_type,
+        )
+        analysis, analysis_call = self._call(
+            root / "teacher_failure_analysis", "teacher_failure_analysis_v2",
+            problem_id, "failure", analysis_rendered,
+            max_output_tokens=(
+                self.config.teaching_material.failure_frontier_max_output_tokens),
+        )
+        write_text(analysis_path, analysis.content)
+        sources = {
+            "TEACHER_PLANNING": SourceArtifact.create(
+                "TEACHER_PLANNING", planning_path,
+                teacher["planning_response"]),
+            "TEACHER_FINAL_NATURAL_LANGUAGE": SourceArtifact.create(
+                "TEACHER_FINAL_NATURAL_LANGUAGE", str(final_nl_path), final_nl),
+            "TEACHER_FAILURE_ANALYSIS": SourceArtifact.create(
+                "TEACHER_FAILURE_ANALYSIS", str(analysis_path), analysis.content),
+        }
+        source_metadata = {
+            key: {"source_type": value.source_type,
+                  "source_artifact": value.source_artifact,
+                  "source_sha256": value.source_sha256}
+            for key, value in sources.items()
+        }
+        low_sources = "\n\n".join(
+            f'<LOW_CONFIDENCE_SOURCE type="{source.source_type}">\n'
+            f'Artifact: {source.source_artifact}\nSHA-256: {source.source_sha256}\n'
+            f'Verbatim content:\n{source.content}\n</LOW_CONFIDENCE_SOURCE>'
+            for source in sources.values()
+        )
+        organizer_rendered = self._rendered_call(
+            "ff_organizer_v2", problem_id, "failure", problem,
+            low_confidence_sources=low_sources, teacher_code=code,
+            final_error_type=error_type,
+            source_metadata_json=json.dumps(
+                source_metadata, ensure_ascii=False, sort_keys=True),
+        )
+        organizer, organizer_call = self._call(
+            root / "ff_organizer", "ff_organizer_v2", problem_id, "failure",
+            organizer_rendered,
+            max_output_tokens=(
+                self.config.teaching_material.failure_frontier_max_output_tokens),
+        )
+        code_artifact = str(
+            problem_dir / "teacher" / "final" / "extracted_solution.py")
+        try:
+            record = parse_organizer_record(
+                organizer.content, final_error_type=error_type,
+                code_artifact=code_artifact, code_sha256=sha256_text(code),
+                planning_artifact=planning_path,
+                failure_analysis_artifact=str(analysis_path), sources=sources,
+                full_code=code,
+            )
+        except ValueError as error:
+            raise FFContentValidationError(str(error)) from error
+        record_dict = record.to_dict()
+        record_path = root / "failure_frontier_record.json"
+        write_json(record_path, record_dict)
+        try:
+            payload = render_shared_failure_payload(
+                final_error_type=error_type, code=code,
+                code_artifact=code_artifact,
+                planning=sources["TEACHER_PLANNING"],
+                final_natural_language=sources["TEACHER_FINAL_NATURAL_LANGUAGE"],
+                failure_analysis=sources["TEACHER_FAILURE_ANALYSIS"], record=record,
+            )
+            flat_payload = render_flat_failure_payload(
+                final_error_type=error_type, code=code,
+                code_artifact=code_artifact,
+                planning=sources["TEACHER_PLANNING"],
+                final_natural_language=sources["TEACHER_FINAL_NATURAL_LANGUAGE"],
+                failure_analysis=sources["TEACHER_FAILURE_ANALYSIS"], record=record,
+            )
+        except ValueError as error:
+            raise FFContentValidationError(str(error)) from error
+        payload_path = root / "shared_failure_payload.txt"
+        flat_payload_path = root / "flat_failure_payload.txt"
+        write_text(payload_path, payload)
+        write_text(flat_payload_path, flat_payload)
+        write_json(root / "source_manifest.json", {
+            "failure_frontier_policy_version": self.config.failure_frontier_policy,
+            "teacher_failure_analysis_policy_version": (
+                self.config.teacher_failure_analysis_policy),
+            "shared_payload_builder_version": SHARED_PAYLOAD_BUILDER_VERSION,
+            "flat_payload_renderer_version": FLAT_PAYLOAD_RENDERER_VERSION,
+            "source_sha256": source_metadata,
+            "shared_payload_sha256": sha256_text(payload),
+            "flat_payload_sha256": sha256_text(flat_payload),
+            "flat_payload_uses_same_information": True,
+            "failure_frontier_record_sha256": sha256_text(
+                json.dumps(record_dict, ensure_ascii=False, sort_keys=True,
+                           separators=(",", ":"))),
+            "analysis_call": str(analysis_call),
+            "organizer_call": str(organizer_call),
+        })
+        return {
+            "organizer_response": organizer,
+            "shared_payload": payload,
+            "flat_payload": flat_payload,
+            "record": record_dict,
+            "record_sha256": sha256_text(json.dumps(
+                record_dict, ensure_ascii=False, sort_keys=True,
+                separators=(",", ":"))),
+            "source_sha256": source_metadata,
+        }
+
     def _matched_guidance(self, problem_dir: Path, problem_id: str, problem: str,
                           target_tokens: int | None) -> dict[str, Any]:
         if target_tokens is None or target_tokens <= 0:
@@ -810,6 +1125,9 @@ class PilotRunner:
                 "reliable Failure Frontier completion token usage is required"
             )
         teaching = self.config.teaching_material
+        length_match_required = (
+            teaching.gg_acceptance_policy == "token_interval_v1"
+        )
         lower_bound, upper_bound = guidance_token_bounds(
             target_tokens, teaching.token_match_tolerance
         )
@@ -869,7 +1187,10 @@ class PilotRunner:
                 and persisted_call.is_file()
             ):
                 old_record = read_json(persisted_version)
-                if old_record.get("gg_generation_policy") == GG_GENERATION_POLICY:
+                if (old_record.get("gg_generation_policy") == GG_GENERATION_POLICY
+                        and old_record.get(
+                            "gg_acceptance_policy", "token_interval_v1") ==
+                        teaching.gg_acceptance_policy):
                     expansion_audit_fields = {
                         "source_material_tokens",
                         "raw_feedback_scale",
@@ -1186,6 +1507,14 @@ class PilotRunner:
                 validation["semantic_completeness_passed"],
                 forbidden_content=bool(validation["forbidden_content"]),
             )
+            if (
+                not length_match_required
+                and response.finish_reason == "stop"
+                and validation["semantic_completeness_passed"]
+                and not validation["forbidden_content"]
+                and not validation["obviously_truncated"]
+            ):
+                status = "MATCHED"
             request_max_tokens = read_json(call_path).get("model", {}).get(
                 "max_output_tokens", material_max_tokens
             )
@@ -1219,6 +1548,7 @@ class PilotRunner:
             )
             record.update({
                 "gg_generation_policy": GG_GENERATION_POLICY,
+                "gg_acceptance_policy": teaching.gg_acceptance_policy,
                 "prompt_type": prompt_type,
                 "prompt_hash": prompt_hash,
                 "blueprint_version": blueprint_version,
@@ -1263,19 +1593,29 @@ class PilotRunner:
 
             if record["matched"]:
                 matched_version = version
-                stop_reason = "first_strict_material_candidate_in_interval"
+                stop_reason = (
+                    "first_strict_material_candidate_in_interval"
+                    if length_match_required
+                    else "first_semantically_complete_candidate"
+                )
                 break
 
         fallback_used = False
         fallback_version: int | None = None
         if matched_version is not None:
             selected_version = matched_version
-            selection_reason = "first_strict_material_candidate_in_interval"
-            passed = True
+            selection_reason = (
+                "first_strict_material_candidate_in_interval"
+                if length_match_required
+                else "first_semantically_complete_candidate"
+            )
+            passed = True if length_match_required else None
         else:
-            passed = False
-            selected = select_material_fallback(
-                version_records, target_tokens, lower_bound, upper_bound
+            passed = False if length_match_required else None
+            selected = (
+                select_material_fallback(
+                    version_records, target_tokens, lower_bound, upper_bound)
+                if length_match_required else None
             )
             if selected is None:
                 selected_version = None
@@ -1311,7 +1651,7 @@ class PilotRunner:
             selected_record is not None
             and selected_record.get("semantic_completeness_passed") is True
         )
-        token_interval_outcome = (
+        token_interval_outcome = "not_applicable" if not length_match_required else (
             "matched_within_tolerance" if passed else
             "fallback_within_tolerance_format_exception"
             if (
@@ -1325,6 +1665,11 @@ class PilotRunner:
             "unmatched_no_fallback"
         )
         selection_experiment_tier = (
+            "formal_semantic_complete" if (
+                not length_match_required and selected_format_valid
+                and selected_complete_response
+            ) else
+            "unusable_no_safe_candidate" if not length_match_required else
             "formal_strict_match" if passed else
             "formal_format_exception"
             if (
@@ -1341,9 +1686,12 @@ class PilotRunner:
             if item["valid_candidate"]
         ]
         match_record = {
-            "target_tokens": target_tokens,
-            "lower_bound": lower_bound,
-            "upper_bound": upper_bound,
+            "target_tokens": target_tokens if length_match_required else None,
+            "lower_bound": lower_bound if length_match_required else None,
+            "upper_bound": upper_bound if length_match_required else None,
+            "length_reference_tokens": target_tokens,
+            "length_reference_source": "ff_organizer_completion_tokens",
+            "length_reference_enforced": length_match_required,
             "blueprint_status": blueprint_result["status"],
             "blueprint_version": blueprint_version,
             "blueprint_attempts_used": blueprint_result["attempts_used"],
@@ -1374,7 +1722,9 @@ class PilotRunner:
             "selection_reason": selection_reason,
             "stop_reason": stop_reason,
             "token_match_passed": passed,
-            "token_match_failed": not passed,
+            "token_match_failed": (not passed if length_match_required else None),
+            "token_match_required": length_match_required,
+            "gg_acceptance_policy": teaching.gg_acceptance_policy,
             "token_interval_outcome": token_interval_outcome,
             "selected_within_token_interval": selected_within_token_interval,
             "selected_complete_response": selected_complete_response,
@@ -1430,7 +1780,10 @@ class PilotRunner:
                     "fallback_candidate_used": False,
                     "gg_generation_failed": True,
                     "token_match_passed": False,
-                    "token_match_failed": True,
+                    "token_match_failed": (
+                        True if length_match_required else None),
+                    "token_match_required": length_match_required,
+                    "gg_acceptance_policy": teaching.gg_acceptance_policy,
                     "token_interval_outcome": "unmatched_no_fallback",
                     "general_guidance_tokens": None,
                     "truncation_recovery_used": match_record[
@@ -1444,7 +1797,7 @@ class PilotRunner:
                 },
             )
         response = responses[selected_version]
-        error = token_relative_error(target_tokens, response.output_tokens)
+        reference_error = token_relative_error(target_tokens, response.output_tokens)
         return {
             "response": response,
             "metrics": {
@@ -1452,9 +1805,12 @@ class PilotRunner:
                 "blueprint_status": blueprint_result["status"],
                 "blueprint_version": blueprint_version,
                 "blueprint_attempts_used": blueprint_result["attempts_used"],
-                "target_tokens": target_tokens,
-                "lower_bound": lower_bound,
-                "upper_bound": upper_bound,
+                "target_tokens": target_tokens if length_match_required else None,
+                "lower_bound": lower_bound if length_match_required else None,
+                "upper_bound": upper_bound if length_match_required else None,
+                "length_reference_tokens": target_tokens,
+                "length_reference_source": "ff_organizer_completion_tokens",
+                "length_reference_enforced": length_match_required,
                 "max_output_tokens": material_max_tokens,
                 "attempts_used": len(version_records),
                 "matched_version": matched_version,
@@ -1474,9 +1830,14 @@ class PilotRunner:
                     "best_complete_short_version"
                 ],
                 "general_guidance_tokens": response.output_tokens,
-                "token_relative_error": error,
+                "token_relative_error": (
+                    reference_error if length_match_required else None),
+                "length_reference_relative_error": reference_error,
                 "token_match_passed": passed,
-                "token_match_failed": not passed,
+                "token_match_failed": (
+                    not passed if length_match_required else None),
+                "token_match_required": length_match_required,
+                "gg_acceptance_policy": teaching.gg_acceptance_policy,
                 "token_interval_outcome": token_interval_outcome,
                 "selected_within_token_interval": selected_within_token_interval,
                 "selected_complete_response": selected_complete_response,
@@ -1671,6 +2032,15 @@ class PilotRunner:
                 teacher_raw_response=values["teacher_raw_response"],
                 teacher_code=values["teacher_code"],
             )
+        elif role == "success_teaching_v2":
+            system = self.renderer.template("success_teaching_v2.md")
+            user = self.renderer.render(
+                self.renderer.template("success_teaching_v2_user.md"),
+                formatted_problem=problem,
+                teacher_planning=values["teacher_planning"],
+                teacher_raw_response=values["teacher_raw_response"],
+                teacher_code=values["teacher_code"],
+            )
         elif role == "failure_frontier":
             system = self.renderer.template("failure_frontier.md")
             user = self.renderer.render(
@@ -1681,9 +2051,33 @@ class PilotRunner:
                 teacher_code=values["teacher_code"],
                 teacher_verdict=values["teacher_verdict"],
             )
+        elif role == "teacher_failure_analysis_v2":
+            system = self.renderer.template("teacher_failure_analysis_v2.md")
+            user = self.renderer.render(
+                self.renderer.template("teacher_failure_analysis_v2_user.md"),
+                formatted_problem=problem,
+                teacher_planning=values["teacher_planning"],
+                teacher_final_natural_language=values[
+                    "teacher_final_natural_language"],
+                teacher_code=values["teacher_code"],
+                final_error_type=values["final_error_type"],
+            )
+        elif role == "ff_organizer_v2":
+            system = self.renderer.template("ff_organizer_v2.md")
+            user = self.renderer.render(
+                self.renderer.template("ff_organizer_v2_user.md"),
+                formatted_problem=problem,
+                low_confidence_sources=values["low_confidence_sources"],
+                teacher_code=values["teacher_code"],
+                final_error_type=values["final_error_type"],
+                source_metadata_json=values["source_metadata_json"],
+            )
         elif role == "general_guidance_blueprint":
             system = self.renderer.render(
-                self.renderer.template("general_guidance_blueprint.md"),
+                self.renderer.template(
+                    "general_guidance_blueprint_no_length_v2.md"
+                    if self._uses_provenance_v2()
+                    else "general_guidance_blueprint.md"),
                 target_tokens=values["target_tokens"],
                 lower_bound=values["lower_bound"],
                 upper_bound=values["upper_bound"],
@@ -1691,7 +2085,10 @@ class PilotRunner:
             user = problem
         elif role == "general_guidance_blueprint_repair":
             system = self.renderer.render(
-                self.renderer.template("general_guidance_blueprint_repair.md"),
+                self.renderer.template(
+                    "general_guidance_blueprint_repair_no_length_v2.md"
+                    if self._uses_provenance_v2()
+                    else "general_guidance_blueprint_repair.md"),
                 target_tokens=values["target_tokens"],
                 lower_bound=values["lower_bound"],
                 upper_bound=values["upper_bound"],
@@ -1700,7 +2097,10 @@ class PilotRunner:
             user = problem
         elif role == "general_guidance":
             system = self.renderer.render(
-                self.renderer.template("general_guidance_material.md"),
+                self.renderer.template(
+                    "general_guidance_material_no_length_v2.md"
+                    if self._uses_provenance_v2()
+                    else "general_guidance_material.md"),
                 target_tokens=values["target_tokens"],
                 lower_bound=values["lower_bound"],
                 upper_bound=values["upper_bound"],
@@ -1713,8 +2113,16 @@ class PilotRunner:
                 blueprint=values["blueprint"],
             )
         elif role == "general_guidance_adjust":
+            prompt_name = f"general_guidance_{values['direction']}.md"
+            if self._uses_provenance_v2():
+                prompt_name = {
+                    "material_repair":
+                        "general_guidance_material_repair_no_length_v2.md",
+                    "truncation_recovery":
+                        "general_guidance_truncation_recovery_no_length_v2.md",
+                }.get(values["direction"], prompt_name)
             system = self.renderer.render(
-                self.renderer.template(f"general_guidance_{values['direction']}.md"),
+                self.renderer.template(prompt_name),
                 target_tokens=values["target_tokens"],
                 lower_bound=values["lower_bound"],
                 upper_bound=values["upper_bound"],
@@ -1785,8 +2193,25 @@ class PilotRunner:
         success_branch: bool = False, planning_content: str = "",
         planning_status: str = "",
     ) -> dict[str, str]:
-        if role == "teacher" or (condition == "success_only" and not success_branch):
+        if role == "teacher" or (condition in {"success_only", BASELINE_CONDITION}
+                                 and not success_branch):
             solver_input = problem
+        elif condition in {
+                DIRECT_CONDITION, CRITICAL_CONDITION, FLAT_CONDITION
+        } and not success_branch:
+            template = ("critical_ff_v2.md" if condition == CRITICAL_CONDITION
+                        else "direct_ff_v2.md")
+            instruction = self.renderer.template(template)
+            if condition in {DIRECT_CONDITION, FLAT_CONDITION}:
+                validate_direct_instruction(instruction)
+            request = StudentTreatmentRequest(
+                shared_solver_prompt=problem,
+                condition_specific_instruction=instruction,
+                shared_failure_payload=additional_material,
+                shared_output_requirements=self.renderer.template(
+                    "solver_final.md"),
+            )
+            solver_input = request.render_user_prompt()
         else:
             template = (
                 "student_user_with_critical_ff.md"
@@ -1817,6 +2242,9 @@ class PilotRunner:
             )
         else:
             raise ValueError(f"unsupported solver stage: {stage}")
+        if role == "student" and condition == BASELINE_CONDITION and not success_branch:
+            system = system.rstrip() + "\n\n" + self.renderer.template(
+                "baseline_v2.md")
         return {
             "role": f"{role}_{stage}", "problem_id": problem_id,
             "condition": condition, "system_prompt": system, "user_prompt": user,
@@ -2493,12 +2921,17 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
         for record, analysis in zip(records, eligibility)
         if analysis["compatibility_warnings"]
     ]
-    conditions = list(STUDENT_CONDITIONS)
-    if any(
-        CRITICAL_FF_CONDITION in record.get("students", {})
-        for record in records
-    ):
-        conditions.insert(2, CRITICAL_FF_CONDITION)
+    preferred_conditions = (
+        "success_only", "failure_frontier", CRITICAL_FF_CONDITION,
+        BASELINE_CONDITION, DIRECT_CONDITION, CRITICAL_CONDITION, FLAT_CONDITION,
+        "general_guidance",
+    )
+    present_conditions = {
+        condition for record in records
+        for condition in record.get("students", {})
+    }
+    conditions = [condition for condition in preferred_conditions
+                  if condition in present_conditions]
     summary: dict[str, Any] = {
         "run_id": run_id,
         "pilot_only": True,
@@ -2533,6 +2966,21 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
             "neither_ac": [],
             "verdict_transitions": {},
         },
+        "direct_vs_critical_failure_frontier_v2": {
+            "paired_episode_count": 0,
+            "both_ac": [],
+            "direct_only_ac": [],
+            "critical_only_ac": [],
+            "neither_ac": [],
+            "verdict_transitions": {},
+        },
+        "flat_failure_frontier_v2": {
+            "paired_with_direct_episode_count": 0,
+            "flat_ac": [],
+            "direct_ac_flat_not_ac": [],
+            "flat_ac_direct_not_ac": [],
+            "verdict_transitions_direct_to_flat": {},
+        },
         "truncated_call_count": 0,
         "token_matching": {},
     }
@@ -2546,8 +2994,11 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
             for r in teacher_failures)
     for record in teacher_failures:
         students = record.get("students", {})
-        baseline = students.get("success_only", {}).get("verdict")
-        ff = students.get("failure_frontier", {}).get("verdict")
+        using_v2 = DIRECT_CONDITION in students
+        baseline_key = BASELINE_CONDITION if using_v2 else "success_only"
+        ff_key = DIRECT_CONDITION if using_v2 else "failure_frontier"
+        baseline = students.get(baseline_key, {}).get("verdict")
+        ff = students.get(ff_key, {}).get("verdict")
         gg = students.get("general_guidance", {}).get("verdict")
         if baseline != "AC" and gg != "AC" and ff == "AC":
             summary["baseline_fail_gg_fail_ff_success"].append(record["problem_id"])
@@ -2579,6 +3030,45 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
                 comparison["critical_only_ac"].append(record["problem_id"])
             else:
                 comparison["neither_ac"].append(record["problem_id"])
+        v2_critical = students.get(CRITICAL_CONDITION, {}).get("verdict")
+        v2_flat = students.get(FLAT_CONDITION, {}).get("verdict")
+        provenance = record.get("provenance_failure_frontier", {})
+        if (
+            provenance.get("direct_critical_payload_byte_equal") is True
+            and isinstance(provenance.get("shared_payload_sha256"), str)
+            and ff in {"AC", "WA", "CE", "RE", "TLE", "MLE"}
+            and v2_critical in {"AC", "WA", "CE", "RE", "TLE", "MLE"}
+        ):
+            comparison = summary["direct_vs_critical_failure_frontier_v2"]
+            comparison["paired_episode_count"] += 1
+            transition = f"{ff}->{v2_critical}"
+            comparison["verdict_transitions"][transition] = (
+                comparison["verdict_transitions"].get(transition, 0) + 1)
+            if ff == "AC" and v2_critical == "AC":
+                comparison["both_ac"].append(record["problem_id"])
+            elif ff == "AC":
+                comparison["direct_only_ac"].append(record["problem_id"])
+            elif v2_critical == "AC":
+                comparison["critical_only_ac"].append(record["problem_id"])
+            else:
+                comparison["neither_ac"].append(record["problem_id"])
+        if (
+            provenance.get("flat_payload_uses_same_information") is True
+            and provenance.get("flat_uses_direct_instruction") is True
+            and ff in {"AC", "WA", "CE", "RE", "TLE", "MLE"}
+            and v2_flat in {"AC", "WA", "CE", "RE", "TLE", "MLE"}
+        ):
+            comparison = summary["flat_failure_frontier_v2"]
+            comparison["paired_with_direct_episode_count"] += 1
+            transition = f"{ff}->{v2_flat}"
+            transitions = comparison["verdict_transitions_direct_to_flat"]
+            transitions[transition] = transitions.get(transition, 0) + 1
+            if v2_flat == "AC":
+                comparison["flat_ac"].append(record["problem_id"])
+            if ff == "AC" and v2_flat != "AC":
+                comparison["direct_ac_flat_not_ac"].append(record["problem_id"])
+            if ff != "AC" and v2_flat == "AC":
+                comparison["flat_ac_direct_not_ac"].append(record["problem_id"])
     calls = [record.get("teacher", {}) for record in records]
     calls += [student for record in records for student in record.get("students", {}).values()]
     material_truncations = []

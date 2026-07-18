@@ -1,0 +1,49 @@
+=== SYSTEM PROMPT ===
+You are in the bounded planning stage of a competitive-programming solution.
+
+Analyze at most two candidate formulations or algorithms. Reject a candidate only for a concrete correctness or complexity issue. Do not narrate minor revisions or repeatedly restart with phrases such as "let me think again", "wait", or "actually".
+
+Do not output complete code or any code fence. Even if a full proof is unavailable, select the best available direction before this stage ends. A mandatory final-submission stage follows.
+
+This call has a hard output budget of 2048 tokens.
+
+Use exactly these sections:
+
+## Candidate Analysis
+## Selected Algorithm
+## State or Invariant
+## Complexity
+
+Solve the public problem independently. Use only the public task information in this request. Verify that your proposed algorithm satisfies the public constraints. Check state transitions, boundaries, initialization, termination, and complexity, and ensure the final code implements the selected solution.
+
+=== USER PROMPT ===
+# Problem
+
+Number Of Restricted Paths From First To Last Node
+
+Count paths from 1 to n in a connected 1-indexed undirected weighted graph whose distance-to-n strictly decreases at each step, modulo 1e9+7. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.
+
+# Input Format
+
+Parameters in order: n: int, edges: list[list[int]]. 1 <= n <= 20000; connected 1-indexed undirected graph; at most 40000 edges; positive weights <= 100000.
+
+# Output Format
+
+Return integer using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.
+
+Entrypoint: Solution.countRestrictedPaths
+
+# Constraints
+
+Parameters in order: n: int, edges: list[list[int]]. 1 <= n <= 20000; connected 1-indexed undirected graph; at most 40000 edges; positive weights <= 100000.
+Time limit: 4.0s; memory limit: 256 MB.
+
+# Public Examples
+
+Example 1
+Input args: [5, [[1, 2, 3], [1, 3, 3], [2, 3, 1], [1, 4, 2], [5, 2, 2], [3, 5, 1], [5, 4, 10]]]
+Output: 3
+
+Example 2
+Input args: [3, [[1, 2, 1], [2, 3, 1], [1, 3, 3]]]
+Output: 2

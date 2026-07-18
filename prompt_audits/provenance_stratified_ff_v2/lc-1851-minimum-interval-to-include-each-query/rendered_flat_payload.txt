@@ -1,0 +1,114 @@
+FAILURE MATERIALS
+
+Final submission error type:
+WRONG_ANSWER
+
+Teacher submitted code:
+Artifact: teacher/final/extracted_solution.py
+Code SHA-256: 532da2192551bb82720292c705e2bdda2e5188c6c7e0823226372dcd100f0d3f
+```python
+class Solution:
+    def minInterval(self, intervals: list[list[int]], queries: list[int]) -> list[int]:
+        intervals.sort(key=lambda x: x[1] - x[0] + 1)
+        sorted_queries = sorted([(q, i) for i, q in enumerate(queries)])
+        res = [-1] * len(queries)
+        heap = []
+        idx = 0
+        n = len(intervals)
+        for q, orig_idx in sorted_queries:
+            while idx < n and intervals[idx][0] <= q:
+                l, r = intervals[idx]
+                heapq.heappush(heap, (r, r - l + 1))
+                idx += 1
+            while heap and heap[0][0] < q:
+                heapq.heappop(heap)
+            if heap:
+                res[orig_idx] = heap[0][1]
+            else:
+                res[orig_idx] = -1
+        return res
+```
+
+Source material:
+Source type: TEACHER_PLANNING
+Original artifact: teacher/planning/content.md
+Original artifact SHA-256: a987ce892c4e68c716798f75774bbba96e7e8e52759cdd19a49bc39e8dd089aa
+Verbatim content:
+## Candidate Analysis
+
+**Candidate 1: Sort intervals by length, process queries sorted, use a min-heap of active intervals**  
+- Sort intervals by length ascending. Sort queries with original indices.  
+- For each query (in sorted order), add all intervals whose left endpoint ≤ query into a min-heap keyed by right endpoint.  
+- Pop from heap until top interval's right endpoint ≥ query; if heap empty, answer is -1, else answer is length of top interval.  
+- This works because we process queries in increasing order, so intervals once added remain candidates for later queries. The heap always gives the shortest interval that covers the current query among those added so far.  
+- Complexity O((N+Q) log N). Correct.
+
+**Candidate 2: Sweep line over all points, maintain a multiset of interval lengths**  
+- Collect all interval start and end+1 events. Sort events. Sweep from left to right.  
+- At a start event, add interval length to a multiset. At an end+1 event, remove that length.  
+- For each query, binary search its position in the event list and answer the minimum length in the multiset at that point.  
+- Problem: The multiset state is only defined at event points; between events it's constant, but queries may fall between events. This can be handled by processing queries sorted along with events. However, maintaining a multiset that supports removal of arbitrary lengths (not just min) requires a data structure like a balanced BST or two heaps with lazy deletion.  
+- Complexity O((N+Q) log N). Also correct, but more complex to implement than Candidate 1.
+
+**Rejection of Candidate 2**: While correct, Candidate 1 is simpler and more standard for this problem (LeetCode 1851). Candidate 2 requires careful handling of removal and event ordering. Candidate 1 is preferred.
+
+## Selected Algorithm
+
+Candidate 1: Sort intervals by length, sort queries with indices, sweep queries in ascending order while maintaining a min-heap of active intervals (keyed by right endpoint). For each query, add all intervals whose left ≤ query, then pop from heap until top interval's right ≥ query. Answer is length of top interval or -1.
+
+## State or Invariant
+
+- `intervals` sorted by length ascending.  
+- `queries` sorted ascending, each paired with its original index.  
+- A min-heap `heap` storing `(right, length)` for intervals that have been added (left ≤ current query).  
+- Invariant: Before processing query `q`, all intervals with left ≤ q are in the heap. After popping, the top of heap (if any) is the shortest interval covering `q` among all intervals with left ≤ q.
+
+## Complexity
+
+- Sorting intervals: O(N log N)  
+- Sorting queries: O(Q log Q)  
+- Each interval added once and removed at most once: O(N log N)  
+- Each query processed once: O(Q log N)  
+- Total: O((N+Q) log N)  
+- Memory: O(N + Q) for sorted arrays and heap.
+
+Source material:
+Source type: TEACHER_FINAL_NATURAL_LANGUAGE
+Original artifact: teacher/final/natural_language.md
+Original artifact SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Verbatim content:
+
+
+Source material:
+Source type: TEACHER_FAILURE_ANALYSIS
+Original artifact: teacher_failure_analysis/content.md
+Original artifact SHA-256: d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1
+Verbatim content:
+Representative offline fixture: I am uncertain which assumption or implementation detail is associated with the standardized failure. This is not a root-cause claim.
+
+Organizer record:
+Final submission error type: WRONG_ANSWER
+Teacher submitted-code artifact: teacher/final/extracted_solution.py
+Teacher submitted-code SHA-256: 532da2192551bb82720292c705e2bdda2e5188c6c7e0823226372dcd100f0d3f
+Teacher Planning artifact: teacher/planning/content.md
+Teacher failure-analysis artifact: teacher_failure_analysis/content.md
+
+Organizer item 1
+Claim: The submitted artifact begins with the quoted exact line.
+Evidence: class Solution:
+Evidence source: TEACHER_SUBMITTED_CODE
+Organizer source: FF_ORGANIZER
+Support status: PROVISIONALLY_SUPPORTED
+Reproducibility note: Compare the evidence with the first submitted-code line.
+
+Organizer item 2
+Source type: TEACHER_PLANNING
+Source artifact: teacher/planning/content.md
+Source SHA-256: a987ce892c4e68c716798f75774bbba96e7e8e52759cdd19a49bc39e8dd089aa
+Exact source excerpt: ## Candidate Analysis
+Confidence note: Teacher-generated natural language; unverified.
+
+Organizer item 3
+Source type: FF_ORGANIZER_HYPOTHESIS
+Organizer hypothesis: A visible assumption may require further checking.
+Evidence limitation: The standardized error type does not identify a cause.

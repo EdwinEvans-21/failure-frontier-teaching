@@ -37,6 +37,7 @@ class TeachingMaterialConfig:
     gg_short_expand_overshoot_factor: float
     gg_min_expand_scale: float
     gg_max_expand_scale: float
+    gg_acceptance_policy: str = "token_interval_v1"
 
 
 @dataclass(frozen=True)
@@ -79,6 +80,13 @@ class PilotConfig:
         "general_guidance",
     )
     source_path: str | None = None
+    failure_frontier_policy: str = "legacy_failure_frontier_v1"
+    teacher_failure_analysis_policy: str = "disabled_legacy"
+    direct_ff_policy: str = "legacy_naive_ff_v1"
+    critical_ff_policy: str = "critical_ff_v1"
+    flat_ff_policy: str = "disabled_legacy"
+    baseline_policy: str = "legacy_public_problem_only"
+    shared_failure_payload_builder: str = "legacy_unstructured_payload_v1"
 
     def public_snapshot(self) -> dict[str, Any]:
         data = _as_dict(self)
@@ -140,6 +148,16 @@ def load_config(path: str | Path) -> PilotConfig:
             "general_guidance",
         ))),
         source_path=str(config_path),
+        failure_frontier_policy=data.get(
+            "failure_frontier_policy", "legacy_failure_frontier_v1"),
+        teacher_failure_analysis_policy=data.get(
+            "teacher_failure_analysis_policy", "disabled_legacy"),
+        direct_ff_policy=data.get("direct_ff_policy", "legacy_naive_ff_v1"),
+        critical_ff_policy=data.get("critical_ff_policy", "critical_ff_v1"),
+        flat_ff_policy=data.get("flat_ff_policy", "disabled_legacy"),
+        baseline_policy=data.get("baseline_policy", "legacy_public_problem_only"),
+        shared_failure_payload_builder=data.get(
+            "shared_failure_payload_builder", "legacy_unstructured_payload_v1"),
     )
     _validate(config)
     return config
@@ -170,6 +188,10 @@ def _validate(config: PilotConfig) -> None:
         raise ValueError("token_match_tolerance must be in [0, 1)")
     if config.teaching_material.gg_generation_policy != "blueprint_render_v1":
         raise ValueError("gg_generation_policy must be blueprint_render_v1")
+    if config.teaching_material.gg_acceptance_policy not in {
+        "token_interval_v1", "semantic_complete_no_length_v2"
+    }:
+        raise ValueError("unsupported gg_acceptance_policy")
     if config.teaching_material.failure_frontier_max_output_tokens <= 0:
         raise ValueError("failure_frontier_max_output_tokens must be positive")
     if config.teaching_material.gg_blueprint_max_output_tokens <= 0:
@@ -194,18 +216,65 @@ def _validate(config: PilotConfig) -> None:
         "failure_frontier",
         "critical_failure_frontier",
         "general_guidance",
+        "baseline",
+        "direct_ff_v2",
+        "critical_ff_v2",
+        "flat_ff_v2",
     }
     if len(config.student_conditions) != len(set(config.student_conditions)):
         raise ValueError("student_conditions must be unique")
     if not set(config.student_conditions) <= allowed_student_conditions:
         raise ValueError("student_conditions contains an unsupported condition")
-    required_student_conditions = {
-        "success_only", "failure_frontier", "general_guidance"
-    }
+    from .provenance_ff import (
+        BASELINE_POLICY, CRITICAL_FF_POLICY, DIRECT_FF_POLICY, FLAT_FF_POLICY,
+        FAILURE_FRONTIER_POLICY, SHARED_PAYLOAD_BUILDER_VERSION,
+        TEACHER_FAILURE_ANALYSIS_POLICY,
+    )
+    v2_conditions = {"baseline", "direct_ff_v2", "critical_ff_v2", "flat_ff_v2",
+                     "general_guidance"}
+    using_v2 = bool(set(config.student_conditions) &
+                    {"baseline", "direct_ff_v2", "critical_ff_v2", "flat_ff_v2"})
+    required_student_conditions = (
+        v2_conditions if using_v2
+        else {"success_only", "failure_frontier", "general_guidance"}
+    )
     if not required_student_conditions <= set(config.student_conditions):
         raise ValueError(
-            "student_conditions must retain the baseline, naive FF, and GG conditions"
+            "student_conditions do not contain the complete selected treatment set"
         )
+    if using_v2:
+        policies = {
+            "failure_frontier_policy": (
+                config.failure_frontier_policy, FAILURE_FRONTIER_POLICY),
+            "teacher_failure_analysis_policy": (
+                config.teacher_failure_analysis_policy,
+                TEACHER_FAILURE_ANALYSIS_POLICY),
+            "direct_ff_policy": (config.direct_ff_policy, DIRECT_FF_POLICY),
+            "critical_ff_policy": (config.critical_ff_policy, CRITICAL_FF_POLICY),
+            "flat_ff_policy": (config.flat_ff_policy, FLAT_FF_POLICY),
+            "baseline_policy": (config.baseline_policy, BASELINE_POLICY),
+            "shared_failure_payload_builder": (
+                config.shared_failure_payload_builder,
+                SHARED_PAYLOAD_BUILDER_VERSION),
+        }
+        drift = [name for name, (actual, expected) in policies.items()
+                 if actual != expected]
+        if drift:
+            raise ValueError("v2 conditions require explicit v2 policies: " +
+                             ", ".join(drift))
+        if (config.teaching_material.gg_acceptance_policy !=
+                "semantic_complete_no_length_v2"):
+            raise ValueError(
+                "provenance v2 requires semantic_complete_no_length_v2 GG acceptance")
+    elif any(value.endswith("_v2") for value in (
+            config.failure_frontier_policy,
+            config.teacher_failure_analysis_policy,
+            config.direct_ff_policy, config.critical_ff_policy,
+            config.flat_ff_policy,
+            config.baseline_policy, config.shared_failure_payload_builder)):
+        raise ValueError("v2 policies cannot be paired with legacy conditions")
+    elif config.teaching_material.gg_acceptance_policy != "token_interval_v1":
+        raise ValueError("legacy conditions require token_interval_v1 GG acceptance")
     expected_problem_count = (
         31 if config.baseline_id == "failure-frontier-baseline-v3-expanded"
         else 5

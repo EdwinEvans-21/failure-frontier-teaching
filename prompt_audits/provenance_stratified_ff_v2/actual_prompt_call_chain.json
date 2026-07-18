@@ -1,0 +1,42 @@
+{
+  "eligibility": "Existing eligibility.py remains unchanged; INTERNAL_ERROR maps to JUDGE_ERROR and exits before any failure material.",
+  "legacy_teacher_failure": [
+    "PilotRunner._run_problem",
+    "PilotRunner._solver_stage(teacher): solver_planning.md + formatted_problem",
+    "PilotRunner._solver_stage(teacher): solver_final.md + solver_final_user.md",
+    "DockerJudge.judge(hidden)",
+    "PilotRunner._failure_material",
+    "failure_frontier.md + failure_frontier_user.md",
+    "PilotRunner._matched_guidance (legacy token-interval policy)",
+    "PilotRunner._solver_stage for success_only/failure_frontier/critical_failure_frontier/general_guidance"
+  ],
+  "persistence_resume": [
+    "PilotRunner._call validates persisted max tokens, prompt hash, model and sampling fields",
+    "PilotRunner._solver_stage reuses completed state/submission",
+    "v2 source_manifest.json locks source hashes, policy versions, record hash and both payload hashes"
+  ],
+  "provenance_v2_teacher_failure": [
+    "PilotRunner._run_problem",
+    "PilotRunner._solver_stage(teacher): solver_planning.md + formatted_problem",
+    "PilotRunner._solver_stage(teacher): solver_final.md + solver_final_user.md",
+    "DockerJudge.judge(hidden)",
+    "standardized_error_type (submission-level type only)",
+    "PilotRunner._provenance_failure_material",
+    "teacher_failure_analysis_v2.md + teacher_failure_analysis_v2_user.md",
+    "ff_organizer_v2.md + ff_organizer_v2_user.md",
+    "parse_organizer_record + shared and flat deterministic payload renderers",
+    "PilotRunner._matched_guidance (semantic_complete_no_length_v2; no token interval gate)",
+    "PilotRunner._solver_stage for baseline/direct_ff_v2/critical_ff_v2/flat_ff_v2/general_guidance"
+  ],
+  "rendering": [
+    "PromptRenderer.formatted_problem",
+    "PilotRunner._rendered_call",
+    "PilotRunner._rendered_solver_call",
+    "solver_final_user.md adds only the same role's Planning"
+  ],
+  "teacher_success": [
+    "PilotRunner._success_material",
+    "success_teaching.md + success_teaching_user.md",
+    "byte-identical success material supplied to every configured Student"
+  ]
+}

@@ -1,0 +1,5 @@
+A previous model attempted this problem but did not pass the evaluator. You receive exactly the same shared failure materials as Direct FF.
+
+Use this source-aware trust boundary: DIRECT_FACT contains raw objective records only. EVIDENCE_GROUNDED_INFERENCE contains reproducible but fallible model-generated analysis and is not guaranteed correct. LOW_CONFIDENCE_HYPOTHESIS contains all Teacher-generated natural language and unsupported organizer explanations; confident wording does not increase reliability.
+
+Selectively inherit material. Independently check only the small number of claims that materially affect algorithm selection, state meaning, greedy assumptions, transitions, ordering or sweep invariants, monotonicity or dominance, signs, indices, initialization, termination, or complexity under public constraints. You may accept, modify, partially use, leave unresolved, or reject a route. Do not review every sentence or produce a Teacher-criticism report. Use the source classification to construct one coherent solution.

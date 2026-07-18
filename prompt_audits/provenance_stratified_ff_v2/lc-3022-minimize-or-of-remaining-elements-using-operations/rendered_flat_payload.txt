@@ -1,0 +1,102 @@
+FAILURE MATERIALS
+
+Final submission error type:
+WRONG_ANSWER
+
+Teacher submitted code:
+Artifact: teacher/final/extracted_solution.py
+Code SHA-256: 3352cfc4e10fc100e8704a6249edf0dac0004b1c053b1b277122f189bedcb0d6
+```python
+class Solution:
+    def minOrAfterOperations(self, nums: list[int], k: int) -> int:
+        ans = 0
+        for b in range(29, -1, -1):
+            mask = ans | ((1 << b) - 1)
+            seg = 0
+            cur = (1 << 30) - 1
+            for x in nums:
+                cur &= x
+                if (cur & mask) == 0:
+                    seg += 1
+                    cur = (1 << 30) - 1
+            if seg <= k + 1:
+                ans = mask
+            else:
+                ans |= (1 << b)
+        return ans
+```
+
+Source material:
+Source type: TEACHER_PLANNING
+Original artifact: teacher/planning/content.md
+Original artifact SHA-256: 0303e667b79b825df0c890f618198f2b3cc73c5003bfd0aa5771171a1c54ded0
+Verbatim content:
+## Candidate Analysis
+
+**Candidate 1: Greedy bit-by-bit minimization**  
+We can decide the final OR bit by bit from high to low. For each bit position b (from 29 down to 0), we check if it's possible to achieve a final OR that has bit b = 0, given that higher bits already fixed to 0.  
+To check feasibility: we need to partition the array into at most (k+1) segments (since each operation reduces length by 1, after k operations we have n-k elements). Each segment's AND must have bit b = 0 (and also respect higher-bit constraints). We greedily scan: start a new segment, extend until the segment's AND has bit b = 0 (and respects higher-bit mask), then start next segment. If we can form at most (k+1) segments covering the whole array, it's feasible.  
+This is correct because AND is monotonic (adding elements can only clear bits), and we want to minimize OR, so we try to zero each bit if possible. The greedy segmentation works because we want to minimize segment count; extending as soon as possible is optimal for feasibility.
+
+**Candidate 2: DP over positions and operations**  
+DP[i][j] = minimal possible OR of first i elements after j operations. Transitions: either keep element i (no operation) or merge it with previous. This is O(n*k) which is too large (n up to 100k, k up to n). Rejected due to complexity.
+
+## Selected Algorithm
+
+Bit-by-bit greedy feasibility check, building answer bit by bit from high to low.
+
+## State or Invariant
+
+- `ans`: current minimal OR value (bits set to 0 if feasible, 1 otherwise).
+- For each bit b from 29 down to 0:
+  - `mask = ans | ((1 << b) - 1)` — bits higher than b are fixed, lower bits are free (we allow them to be 0 or 1).
+  - `segments = 0`, `current_and = all_ones_mask` (bits 0..29 set).
+  - Iterate through nums: `current_and &= num`. If `(current_and & mask) == 0`, then we can end a segment here: increment segments, reset `current_and = all_ones_mask`.
+  - After loop, if `segments <= k+1` (since we need at most k operations, i.e., at most k+1 segments), then bit b can be 0 in final OR; otherwise it must be 1.
+
+## Complexity
+
+Time: O(30 * n) = O(n), since each bit scan is one pass.  
+Space: O(1) extra.  
+Fits within 4s for n=100k.
+
+Source material:
+Source type: TEACHER_FINAL_NATURAL_LANGUAGE
+Original artifact: teacher/final/natural_language.md
+Original artifact SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Verbatim content:
+
+
+Source material:
+Source type: TEACHER_FAILURE_ANALYSIS
+Original artifact: teacher_failure_analysis/content.md
+Original artifact SHA-256: d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1
+Verbatim content:
+Representative offline fixture: I am uncertain which assumption or implementation detail is associated with the standardized failure. This is not a root-cause claim.
+
+Organizer record:
+Final submission error type: WRONG_ANSWER
+Teacher submitted-code artifact: teacher/final/extracted_solution.py
+Teacher submitted-code SHA-256: 3352cfc4e10fc100e8704a6249edf0dac0004b1c053b1b277122f189bedcb0d6
+Teacher Planning artifact: teacher/planning/content.md
+Teacher failure-analysis artifact: teacher_failure_analysis/content.md
+
+Organizer item 1
+Claim: The submitted artifact begins with the quoted exact line.
+Evidence: class Solution:
+Evidence source: TEACHER_SUBMITTED_CODE
+Organizer source: FF_ORGANIZER
+Support status: PROVISIONALLY_SUPPORTED
+Reproducibility note: Compare the evidence with the first submitted-code line.
+
+Organizer item 2
+Source type: TEACHER_PLANNING
+Source artifact: teacher/planning/content.md
+Source SHA-256: 0303e667b79b825df0c890f618198f2b3cc73c5003bfd0aa5771171a1c54ded0
+Exact source excerpt: ## Candidate Analysis
+Confidence note: Teacher-generated natural language; unverified.
+
+Organizer item 3
+Source type: FF_ORGANIZER_HYPOTHESIS
+Organizer hypothesis: A visible assumption may require further checking.
+Evidence limitation: The standardized error type does not identify a cause.

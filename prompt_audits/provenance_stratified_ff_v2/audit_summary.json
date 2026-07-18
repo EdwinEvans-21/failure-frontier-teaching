@@ -1,0 +1,14 @@
+{
+  "direct_critical_final_static_equal_all": true,
+  "direct_critical_payload_byte_equal_all": true,
+  "flat_has_no_confidence_tier_markers_all": true,
+  "flat_uses_direct_prompt_all": true,
+  "gg_acceptance_policy": "semantic_complete_no_length_v2",
+  "gg_token_match_required": false,
+  "historical_prompts_unchanged": true,
+  "judge_accessed": false,
+  "passed": true,
+  "real_api_accessed": false,
+  "representative_fixture_count": 7,
+  "source_root_read_only": "E:\\fft-runs\\fixed-material-sources\\expanded-exploratory-v1-fixed-seven"
+}

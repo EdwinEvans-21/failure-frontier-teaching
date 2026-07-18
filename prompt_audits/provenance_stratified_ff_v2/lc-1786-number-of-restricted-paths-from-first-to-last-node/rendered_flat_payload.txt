@@ -1,0 +1,119 @@
+FAILURE MATERIALS
+
+Final submission error type:
+WRONG_ANSWER
+
+Teacher submitted code:
+Artifact: teacher/final/extracted_solution.py
+Code SHA-256: d245b7920bec01b860c52dfa99e77f384d38b7d829eb3f5beda145dd5aad4637
+```python
+class Solution:
+    def countRestrictedPaths(self, n: int, edges: list[list[int]]) -> int:
+        MOD = 1000000007
+        adj = [[] for _ in range(n + 1)]
+        for u, v, w in edges:
+            adj[u].append((v, w))
+            adj[v].append((u, w))
+        import heapq
+        dist = [float('inf')] * (n + 1)
+        dist[n] = 0
+        pq = [(0, n)]
+        while pq:
+            d, u = heapq.heappop(pq)
+            if d != dist[u]:
+                continue
+            for v, w in adj[u]:
+                nd = d + w
+                if nd < dist[v]:
+                    dist[v] = nd
+                    heapq.heappush(pq, (nd, v))
+        order = list(range(1, n + 1))
+        order.sort(key=lambda x: dist[x], reverse=True)
+        dp = [0] * (n + 1)
+        dp[n] = 1
+        for u in order:
+            if dp[u] == 0:
+                continue
+            for v, _ in adj[u]:
+                if dist[u] > dist[v]:
+                    dp[u] = (dp[u] + dp[v]) % MOD
+        return dp[1]
+```
+
+Source material:
+Source type: TEACHER_PLANNING
+Original artifact: teacher/planning/content.md
+Original artifact SHA-256: 6ec2ae26265b4e52e479f6da4758542198f5368a9722a25d062043b9892216f8
+Verbatim content:
+## Candidate Analysis
+
+**Candidate 1: Dijkstra from node n + DP on DAG of decreasing distance**
+- Compute shortest distance from every node to n using Dijkstra (since weights positive, O((n+m) log n)).
+- A restricted path from 1 to n must have strictly decreasing distance-to-n at each step. This defines a DAG: edge u→v exists if dist[u] > dist[v].
+- Count number of paths from 1 to n in this DAG via DP (topological order by decreasing dist).  
+- Correctness: Strictly decreasing distance ensures no cycles; DP counts all paths.  
+- Complexity: Dijkstra O((n+m) log n) ~ 60000 log 20000; DP O(n+m). Well within limits.
+
+**Candidate 2: BFS-like DP on original graph with memoization**
+- Without precomputing distances, attempt to define DP[u] = number of restricted paths from u to n, recursively using neighbors where dist[u] > dist[v].  
+- But dist values are unknown; computing them on the fly would require solving shortest paths anyway.  
+- Rejected: Inefficient and redundant; Dijkstra is necessary for correctness.
+
+## Selected Algorithm
+
+Dijkstra from node n to compute dist[] (shortest distance to n), then DP on DAG sorted by decreasing dist.
+
+## State or Invariant
+
+- `dist[v]` = shortest distance from v to n (Dijkstra invariant: settled nodes have correct distance).
+- `dp[v]` = number of restricted paths from v to n.  
+- Process nodes in decreasing order of dist (strictly decreasing ensures topological order).  
+- Base: `dp[n] = 1`.  
+- Transition: For each edge (v, u) with dist[v] > dist[u], `dp[v] = (dp[v] + dp[u]) % MOD`.
+
+## Complexity
+
+- Time: O((n + m) log n) for Dijkstra + O(n + m) for DP = O((n+m) log n).  
+- Space: O(n + m) for adjacency list, dist array, dp array.  
+- With n ≤ 20000, m ≤ 40000, easily fits 256 MB and 4 seconds.
+
+Source material:
+Source type: TEACHER_FINAL_NATURAL_LANGUAGE
+Original artifact: teacher/final/natural_language.md
+Original artifact SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Verbatim content:
+
+
+Source material:
+Source type: TEACHER_FAILURE_ANALYSIS
+Original artifact: teacher_failure_analysis/content.md
+Original artifact SHA-256: d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1
+Verbatim content:
+Representative offline fixture: I am uncertain which assumption or implementation detail is associated with the standardized failure. This is not a root-cause claim.
+
+Organizer record:
+Final submission error type: WRONG_ANSWER
+Teacher submitted-code artifact: teacher/final/extracted_solution.py
+Teacher submitted-code SHA-256: d245b7920bec01b860c52dfa99e77f384d38b7d829eb3f5beda145dd5aad4637
+Teacher Planning artifact: teacher/planning/content.md
+Teacher failure-analysis artifact: teacher_failure_analysis/content.md
+
+Organizer item 1
+Claim: The submitted artifact begins with the quoted exact line.
+Evidence: class Solution:
+Evidence source: TEACHER_SUBMITTED_CODE
+Organizer source: FF_ORGANIZER
+Support status: PROVISIONALLY_SUPPORTED
+Reproducibility note: Compare the evidence with the first submitted-code line.
+
+Organizer item 2
+Source type: TEACHER_PLANNING
+Source artifact: teacher/planning/content.md
+Source SHA-256: 6ec2ae26265b4e52e479f6da4758542198f5368a9722a25d062043b9892216f8
+Exact source excerpt: ## Candidate Analysis
+Confidence note: Teacher-generated natural language; unverified.
+
+Organizer item 3
+Source type: FF_ORGANIZER_HYPOTHESIS
+Organizer hypothesis: A visible assumption may require further checking.
+Evidence limitation: The standardized error type does not identify a cause.

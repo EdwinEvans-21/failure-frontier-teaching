@@ -1,0 +1,130 @@
+=== SYSTEM PROMPT ===
+You are an FF organizer (evidence-grounding organizer), not a formal, independent, or static verifier.
+
+Organize a compact provenance-preserving Failure Frontier Record from the public problem, public constraints, exact submitted code, standardized final error type, and the three verbatim low-confidence Teacher sources. You may select exact Teacher excerpts, deduplicate them without rewriting them, add short evidence-grounded inferences independently grounded in the public problem, constraints, submitted code, or final error type, and add explicitly marked organizer hypotheses only when necessary.
+
+All Teacher-generated natural language is LOW_CONFIDENCE_HYPOTHESIS regardless of tone. An EVIDENCE_GROUNDED_INFERENCE remains fallible model-generated analysis, not a fact or formal proof. It must have a short visible evidence chain, use only allowed evidence sources, avoid unique causal claims from a coarse error type, and use PROVISIONALLY_SUPPORTED or PARTIALLY_SUPPORTED. Anything ambiguous must be omitted or placed in the low-confidence organizer-hypothesis section.
+
+Do not rewrite a Teacher claim as an unsourced conclusion. Selected Teacher content must be an exact source excerpt with its supplied source type, artifact, and SHA-256. Do not reproduce the full code, full Planning, full Final natural language, or full failure analysis; they are supplied separately to Students.
+
+Do not recommend an algorithm, fix, modification route, next step, future search direction, new candidate solution, code, or pseudocode. Do not claim to know the failure root cause. Do not mention or invent detailed evaluation information.
+
+Return exactly one JSON object, optionally inside one json fence, with only these arrays:
+{"evidence_grounded_inferences":[{"claim":"...","evidence":"...","evidence_sources":["PUBLIC_PROBLEM"],"support_status":"PROVISIONALLY_SUPPORTED","reproducibility_note":"..."}],"selected_low_confidence_excerpts":[{"source_type":"TEACHER_PLANNING","source_artifact":"...","source_sha256":"...","exact_source_excerpt":"...","confidence_note":"..."}],"organizer_hypotheses":[{"hypothesis":"...","evidence_limitation":"..."}]}
+
+Use at most 6 inferences, 8 selected excerpts, and 3 organizer hypotheses. Empty arrays are valid and preferable to quota filling.
+
+=== USER PROMPT ===
+# Public Problem and Constraints
+
+# Problem
+
+Minimize Or Of Remaining Elements Using Operations
+
+At most k times replace adjacent values by their bitwise AND; minimize the bitwise OR of the remaining array. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.
+
+# Input Format
+
+Parameters in order: nums: list[int], k: int. 1 <= len(nums) <=100000; 0<=nums[i]<2^30; 0<=k<len(nums); each operation reduces length by one.
+
+# Output Format
+
+Return integer using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.
+
+Entrypoint: Solution.minOrAfterOperations
+
+# Constraints
+
+Parameters in order: nums: list[int], k: int. 1 <= len(nums) <=100000; 0<=nums[i]<2^30; 0<=k<len(nums); each operation reduces length by one.
+Time limit: 4.0s; memory limit: 256 MB.
+
+# Public Examples
+
+Example 1
+Input args: [[3, 5, 3, 2, 7], 2]
+Output: 3
+
+Example 2
+Input args: [[7, 7, 7], 0]
+Output: 7
+
+
+# Verbatim Low-Confidence Sources
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_PLANNING">
+Artifact: teacher/planning/content.md
+SHA-256: 0303e667b79b825df0c890f618198f2b3cc73c5003bfd0aa5771171a1c54ded0
+Verbatim content:
+## Candidate Analysis
+
+**Candidate 1: Greedy bit-by-bit minimization**  
+We can decide the final OR bit by bit from high to low. For each bit position b (from 29 down to 0), we check if it's possible to achieve a final OR that has bit b = 0, given that higher bits already fixed to 0.  
+To check feasibility: we need to partition the array into at most (k+1) segments (since each operation reduces length by 1, after k operations we have n-k elements). Each segment's AND must have bit b = 0 (and also respect higher-bit constraints). We greedily scan: start a new segment, extend until the segment's AND has bit b = 0 (and respects higher-bit mask), then start next segment. If we can form at most (k+1) segments covering the whole array, it's feasible.  
+This is correct because AND is monotonic (adding elements can only clear bits), and we want to minimize OR, so we try to zero each bit if possible. The greedy segmentation works because we want to minimize segment count; extending as soon as possible is optimal for feasibility.
+
+**Candidate 2: DP over positions and operations**  
+DP[i][j] = minimal possible OR of first i elements after j operations. Transitions: either keep element i (no operation) or merge it with previous. This is O(n*k) which is too large (n up to 100k, k up to n). Rejected due to complexity.
+
+## Selected Algorithm
+
+Bit-by-bit greedy feasibility check, building answer bit by bit from high to low.
+
+## State or Invariant
+
+- `ans`: current minimal OR value (bits set to 0 if feasible, 1 otherwise).
+- For each bit b from 29 down to 0:
+  - `mask = ans | ((1 << b) - 1)` — bits higher than b are fixed, lower bits are free (we allow them to be 0 or 1).
+  - `segments = 0`, `current_and = all_ones_mask` (bits 0..29 set).
+  - Iterate through nums: `current_and &= num`. If `(current_and & mask) == 0`, then we can end a segment here: increment segments, reset `current_and = all_ones_mask`.
+  - After loop, if `segments <= k+1` (since we need at most k operations, i.e., at most k+1 segments), then bit b can be 0 in final OR; otherwise it must be 1.
+
+## Complexity
+
+Time: O(30 * n) = O(n), since each bit scan is one pass.  
+Space: O(1) extra.  
+Fits within 4s for n=100k.
+</LOW_CONFIDENCE_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_FINAL_NATURAL_LANGUAGE">
+Artifact: teacher/final/natural_language.md
+SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Verbatim content:
+
+</LOW_CONFIDENCE_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_FAILURE_ANALYSIS">
+Artifact: teacher_failure_analysis/content.md
+SHA-256: d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1
+Verbatim content:
+Representative offline fixture: I am uncertain which assumption or implementation detail is associated with the standardized failure. This is not a root-cause claim.
+</LOW_CONFIDENCE_SOURCE>
+
+# Exact Submitted Code
+
+```python
+class Solution:
+    def minOrAfterOperations(self, nums: list[int], k: int) -> int:
+        ans = 0
+        for b in range(29, -1, -1):
+            mask = ans | ((1 << b) - 1)
+            seg = 0
+            cur = (1 << 30) - 1
+            for x in nums:
+                cur &= x
+                if (cur & mask) == 0:
+                    seg += 1
+                    cur = (1 << 30) - 1
+            if seg <= k + 1:
+                ans = mask
+            else:
+                ans |= (1 << b)
+        return ans
+```
+
+# Standardized Final Submission Error Type
+
+WRONG_ANSWER
+
+# Registered Source Metadata
+
+{"TEACHER_FAILURE_ANALYSIS": {"source_artifact": "teacher_failure_analysis/content.md", "source_sha256": "d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1", "source_type": "TEACHER_FAILURE_ANALYSIS"}, "TEACHER_FINAL_NATURAL_LANGUAGE": {"source_artifact": "teacher/final/natural_language.md", "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "source_type": "TEACHER_FINAL_NATURAL_LANGUAGE"}, "TEACHER_PLANNING": {"source_artifact": "teacher/planning/content.md", "source_sha256": "0303e667b79b825df0c890f618198f2b3cc73c5003bfd0aa5771171a1c54ded0", "source_type": "TEACHER_PLANNING"}}

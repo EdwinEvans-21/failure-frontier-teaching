@@ -1,0 +1,101 @@
+FAILURE MATERIALS
+
+Final submission error type:
+WRONG_ANSWER
+
+Teacher submitted code:
+Artifact: teacher/final/extracted_solution.py
+Code SHA-256: a7fc2eadde56efb3b5a78dfa2373b8b752dcc61634fffb16bbf72c59590d937e
+```python
+class Solution:
+    def minimumTime(self, nums1: list[int], nums2: list[int], x: int) -> int:
+        n = len(nums1)
+        pairs = list(zip(nums1, nums2))
+        pairs.sort(key=lambda p: p[1])
+        total = sum(nums1)
+        dp = [0] + [float('-inf')] * n
+        for a, b in pairs:
+            for j in range(n, 0, -1):
+                if dp[j-1] != float('-inf'):
+                    cand = dp[j-1] + a + j * b
+                    if cand > dp[j]:
+                        dp[j] = cand
+        for t in range(n + 1):
+            if total - dp[t] <= x:
+                return t
+        return -1
+```
+
+Source material:
+Source type: TEACHER_PLANNING
+Original artifact: teacher/planning/content.md
+Original artifact SHA-256: 72a7d90e9506232c50c9d5d311fd1990a904478fe7b12080865a0e9feb5ea488
+Verbatim content:
+## Candidate Analysis
+
+**Candidate 1: Greedy by largest growth rate**  
+At each second, reset the element with the largest `nums2[i]` (growth rate). This seems intuitive because high-growth elements contribute more to future sum. However, this fails because the initial values also matter: a large initial value with small growth might be better to reset early than a small initial value with large growth. The optimal order depends on both `nums1[i]` and `nums2[i]`.
+
+**Candidate 2: DP over sorted pairs**  
+Sort indices by `nums2[i]` ascending. If we reset a set of indices, the optimal order is by increasing growth rate (reset slower-growing ones first, so they have less time to regrow). Then we can use DP: `dp[t][i]` = maximum total reduction achievable after `t` seconds using first `i` sorted items. Transition: either skip item `i` or reset it at some second `k` (1-indexed), reducing its contribution from `nums1[i] + k * nums2[i]` to 0 at that moment, but it regrows afterwards. The reduction contributed by resetting item `i` at time `k` is `nums1[i] + k * nums2[i]`. Since order is fixed by growth rate, we can treat `k` as the position in the reset sequence. This yields a knapsack-like DP where we choose a subset and assign each chosen item a distinct time slot (1..t). The DP computes max total reduction after `t` seconds. Then we check if `initial_sum - max_reduction <= x`. This is correct because the optimal reset order for a given set is by increasing `nums2[i]`.
+
+## Selected Algorithm
+
+DP over items sorted by `nums2[i]`. For each possible number of resets `t` from 0 to n, compute the maximum reduction achievable. Then return the smallest `t` such that `initial_sum - dp[t] <= x`. If none, return -1.
+
+## State or Invariant
+
+- Sort indices by `nums2[i]` ascending.
+- `dp[j]` = maximum total reduction achievable using exactly `j` resets among processed items.
+- Initialize `dp[0] = 0`, others = -inf.
+- For each item `(a, b)` in sorted order, update `dp` from high `j` down to 1:  
+  `dp[j] = max(dp[j], dp[j-1] + a + j * b)`  
+  (The `j`-th reset occurs at second `j`, so the reduction is `a + j*b`.)
+- After processing all items, for `t = 0..n`, if `initial_sum - dp[t] <= x`, return `t`.
+
+## Complexity
+
+- Sorting: O(n log n)
+- DP: O(n^2) with n ≤ 1000 → 1e6 operations, well within limits.
+- Space: O(n) for DP array.
+
+Source material:
+Source type: TEACHER_FINAL_NATURAL_LANGUAGE
+Original artifact: teacher/final/natural_language.md
+Original artifact SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Verbatim content:
+
+
+Source material:
+Source type: TEACHER_FAILURE_ANALYSIS
+Original artifact: teacher_failure_analysis/content.md
+Original artifact SHA-256: d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1
+Verbatim content:
+Representative offline fixture: I am uncertain which assumption or implementation detail is associated with the standardized failure. This is not a root-cause claim.
+
+Organizer record:
+Final submission error type: WRONG_ANSWER
+Teacher submitted-code artifact: teacher/final/extracted_solution.py
+Teacher submitted-code SHA-256: a7fc2eadde56efb3b5a78dfa2373b8b752dcc61634fffb16bbf72c59590d937e
+Teacher Planning artifact: teacher/planning/content.md
+Teacher failure-analysis artifact: teacher_failure_analysis/content.md
+
+Organizer item 1
+Claim: The submitted artifact begins with the quoted exact line.
+Evidence: class Solution:
+Evidence source: TEACHER_SUBMITTED_CODE
+Organizer source: FF_ORGANIZER
+Support status: PROVISIONALLY_SUPPORTED
+Reproducibility note: Compare the evidence with the first submitted-code line.
+
+Organizer item 2
+Source type: TEACHER_PLANNING
+Source artifact: teacher/planning/content.md
+Source SHA-256: 72a7d90e9506232c50c9d5d311fd1990a904478fe7b12080865a0e9feb5ea488
+Exact source excerpt: ## Candidate Analysis
+Confidence note: Teacher-generated natural language; unverified.
+
+Organizer item 3
+Source type: FF_ORGANIZER_HYPOTHESIS
+Organizer hypothesis: A visible assumption may require further checking.
+Evidence limitation: The standardized error type does not identify a cause.

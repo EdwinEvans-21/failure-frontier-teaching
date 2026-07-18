@@ -1,0 +1,156 @@
+<DIRECT_FACT_SOURCE type="FINAL_ERROR_TYPE">
+WRONG_ANSWER
+</DIRECT_FACT_SOURCE>
+
+<DIRECT_FACT_SOURCE type="TEACHER_SUBMITTED_CODE">
+Artifact: teacher/final/extracted_solution.py
+Code SHA-256: e3b3f7c770a5a3b864f972801ed11ae25e3d71fb7ab009b71e71e4ed95db2e0f
+
+The following is the exact submitted code:
+```python
+class Solution:
+    def leftmostBuildingQueries(self, heights: list[int], queries: list[list[int]]) -> list[int]:
+        n = len(heights)
+        nxt = [n] * n
+        stack = []
+        for i in range(n - 1, -1, -1):
+            while stack and heights[stack[-1]] <= heights[i]:
+                stack.pop()
+            if stack:
+                nxt[i] = stack[-1]
+            stack.append(i)
+        LOG = (n + 1).bit_length()
+        up = [[n] * (n + 1) for _ in range(LOG)]
+        depth = [0] * (n + 1)
+        for i in range(n - 1, -1, -1):
+            up[0][i] = nxt[i]
+        for k in range(1, LOG):
+            for i in range(n + 1):
+                up[k][i] = up[k - 1][up[k - 1][i]]
+        for i in range(n - 1, -1, -1):
+            depth[i] = depth[nxt[i]] + 1
+        res = []
+        for a, b in queries:
+            if a == b:
+                res.append(a)
+                continue
+            if a > b:
+                a, b = b, a
+            if heights[a] < heights[b] and nxt[a] == b:
+                res.append(b)
+                continue
+            if heights[b] < heights[a] and nxt[b] == a:
+                res.append(a)
+                continue
+            u, v = a, b
+            if depth[u] < depth[v]:
+                u, v = v, u
+            diff = depth[u] - depth[v]
+            k = 0
+            while diff:
+                if diff & 1:
+                    u = up[k][u]
+                diff >>= 1
+                k += 1
+            if u == v:
+                res.append(u)
+                continue
+            for k in range(LOG - 1, -1, -1):
+                if up[k][u] != up[k][v]:
+                    u = up[k][u]
+                    v = up[k][v]
+            lca = up[0][u]
+            if lca == n:
+                res.append(-1)
+            else:
+                res.append(lca)
+        return res
+```
+</DIRECT_FACT_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_PLANNING">
+Confidence notice: The following text is model-generated natural language. It is unverified and is not an objective fact.
+Original artifact: teacher/planning/content.md
+Original artifact SHA-256: 7018d2c7b62ac0cceac8156d4d2828e5197c0983a2dfe73aef0cad3d16da5dd7
+
+Verbatim content:
+## Candidate Analysis
+
+**Candidate 1: Binary lifting on next greater element (NGE) tree**  
+For each index, compute the next strictly taller building to the right (NGE). This forms a forest (or tree with a virtual root). For each query (i, j), we need the leftmost building reachable from both. This is equivalent to finding the lowest common ancestor (LCA) in the NGE tree, but only if we consider the "leftmost" constraint: the LCA might not be the leftmost common reachable building because both can stop earlier. However, since moves are only to the right and to strictly taller buildings, the set of reachable buildings from a given index is exactly the path from that index up the NGE tree (including itself). The leftmost common reachable building is the LCA in this tree, because any common ancestor is reachable by both, and the LCA is the deepest (closest to the leaves) common ancestor, which corresponds to the leftmost index among common ancestors (since tree edges go rightward, deeper nodes have larger indices). So LCA works. Preprocess NGE in O(n) using a monotonic stack, then binary lifting for LCA in O(log n) per query. Total O((n+q) log n). This is correct and efficient.
+
+**Candidate 2: Segment tree with range maximum queries and binary search**  
+For each query (i, j), we need the smallest index k >= max(i, j) such that heights[k] > heights[i] and heights[k] > heights[j] (or k equals i or j if the other is reachable). This can be solved by binary searching on k using a segment tree that answers "is there a building taller than both in [l, r]?" via range maximum. For each query, we can binary search the leftmost k in O(log^2 n). This is also correct but slower (O(q log^2 n)) and more complex to implement. Given constraints (5e4 queries, 5e4 buildings), O(q log^2 n) is borderline but likely acceptable in 4 seconds in Python. However, the LCA approach is simpler and faster.
+
+## Selected Algorithm
+
+Binary lifting on the next greater element (NGE) tree to answer LCA queries.
+
+## State or Invariant
+
+- `nxt[i]`: index of the next strictly taller building to the right of i, or n (sentinel) if none.
+- `up[k][i]`: 2^k-th ancestor of i in the NGE tree (with sentinel n as root).
+- `depth[i]`: distance from i to sentinel root.
+- For each query (a, b): if a == b, answer is a. Else, let u = a, v = b. If heights[u] < heights[v] and nxt[u] == v, answer is v (and symmetric). Otherwise, lift the deeper node to same depth, then lift both together until parents differ; answer is parent (or -1 if sentinel).
+
+## Complexity
+
+- Preprocessing: O(n log n) time, O(n log n) memory.
+- Each query: O(log n) time.
+- Total: O((n+q) log n) time, O(n log n) memory.
+</LOW_CONFIDENCE_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_FINAL_NATURAL_LANGUAGE">
+Confidence notice: The following text is model-generated natural language. It is unverified and is not an objective fact.
+Original artifact: teacher/final/natural_language.md
+Original artifact SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+Verbatim content:
+
+</LOW_CONFIDENCE_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_FAILURE_ANALYSIS">
+Confidence notice: The following text is model-generated natural language. It is unverified and is not an objective fact.
+Original artifact: teacher_failure_analysis/content.md
+Original artifact SHA-256: d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1
+
+Verbatim content:
+Representative offline fixture: I am uncertain which assumption or implementation detail is associated with the standardized failure. This is not a root-cause claim.
+</LOW_CONFIDENCE_SOURCE>
+
+<FAILURE_FRONTIER_RECORD>
+FAILURE FRONTIER RECORD
+
+## 1. DIRECT_FACT REFERENCES
+
+Final submission error type: WRONG_ANSWER
+Teacher submitted-code artifact: teacher/final/extracted_solution.py
+Teacher submitted-code SHA-256: e3b3f7c770a5a3b864f972801ed11ae25e3d71fb7ab009b71e71e4ed95db2e0f
+Teacher Planning artifact: teacher/planning/content.md
+Teacher failure-analysis artifact: teacher_failure_analysis/content.md
+Fact boundary notice: This section contains only references to raw objective records and no natural-language interpretation.
+
+## 2. EVIDENCE_GROUNDED_INFERENCE
+
+Inference E1
+Claim: The submitted artifact begins with the quoted exact line.
+Evidence: class Solution:
+Evidence source: TEACHER_SUBMITTED_CODE
+Organizer source: FF_ORGANIZER
+Support status: PROVISIONALLY_SUPPORTED
+Reproducibility note: Compare the evidence with the first submitted-code line.
+
+## 3. LOW_CONFIDENCE_HYPOTHESIS
+
+Hypothesis L1
+Source type: TEACHER_PLANNING
+Source artifact: teacher/planning/content.md
+Source SHA-256: 7018d2c7b62ac0cceac8156d4d2828e5197c0983a2dfe73aef0cad3d16da5dd7
+Exact source excerpt: ## Candidate Analysis
+Confidence note: Teacher-generated natural language; unverified.
+
+Hypothesis L2
+Source type: FF_ORGANIZER_HYPOTHESIS
+Organizer hypothesis: A visible assumption may require further checking.
+Evidence limitation: The standardized error type does not identify a cause.
+</FAILURE_FRONTIER_RECORD>

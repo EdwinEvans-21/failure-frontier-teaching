@@ -5,6 +5,7 @@ from typing import Any
 
 
 ELIGIBILITY_POLICY = "teacher_failure_selected_gg_v4"
+V2_ELIGIBILITY_POLICY = "teacher_failure_semantic_gg_no_length_v5"
 ELIGIBILITY_REASON_PRECEDENCE = (
     "infrastructure_error",
     "invalid_episode",
@@ -19,6 +20,10 @@ ELIGIBILITY_REASON_PRECEDENCE = (
 REQUIRED_STUDENTS = (
     "success_only",
     "failure_frontier",
+    "general_guidance",
+)
+REQUIRED_V2_STUDENTS = (
+    "baseline", "direct_ff_v2", "critical_ff_v2", "flat_ff_v2",
     "general_guidance",
 )
 COMPLETED_SOLVER_VERDICTS = {"AC", "WA", "CE", "RE", "TLE", "MLE"}
@@ -65,7 +70,14 @@ def _students_completed(record: dict[str, Any]) -> bool:
     students = record.get("students")
     if not isinstance(students, dict):
         return False
-    for condition in REQUIRED_STUDENTS:
+    required = (
+        REQUIRED_V2_STUDENTS
+        if record.get("provenance_failure_frontier", {}).get(
+            "failure_frontier_policy_version") ==
+            "provenance_stratified_ff_v2"
+        else REQUIRED_STUDENTS
+    )
+    for condition in required:
         student = students.get(condition)
         if not isinstance(student, dict):
             return False
@@ -114,6 +126,8 @@ def derive_comparison_eligibility(
     does not mutate ``record``.
     """
     branch = episode_branch(record)
+    v2 = record.get("provenance_failure_frontier", {}).get(
+        "failure_frontier_policy_version") == "provenance_stratified_ff_v2"
     reasons: list[str] = []
 
     if record.get("infrastructure_error"):
@@ -135,13 +149,18 @@ def derive_comparison_eligibility(
         selected_in_interval = (
             material.get("selected_within_token_interval") is True
         )
+        selected_semantically_valid = (
+            material.get("selected_format_valid") is True
+            and material.get("semantic_completeness_passed") is True
+        )
         complete_response = _gg_complete_response(material)
 
         if material.get("failure_frontier_output_limit_reached") is True:
             reasons.append("failure_frontier_output_limit_reached")
-        if not selected_and_safe or record.get("protocol_output_invalid") is True:
+        if (not selected_and_safe or record.get("protocol_output_invalid") is True
+                or (v2 and not selected_semantically_valid)):
             reasons.append("gg_candidate_missing_or_unsafe")
-        elif not selected_in_interval:
+        elif not v2 and not selected_in_interval:
             reasons.append("gg_token_outside_interval")
         if selected_and_safe and not complete_response:
             reasons.append("gg_candidate_truncated")
@@ -177,6 +196,7 @@ def derive_comparison_eligibility(
         exploratory_comparison_eligible=exploratory,
         eligibility_reason=ordered_reasons[0] if ordered_reasons else "eligible",
         eligibility_reasons=ordered_reasons or ("eligible",),
+        eligibility_policy=(V2_ELIGIBILITY_POLICY if v2 else ELIGIBILITY_POLICY),
     )
 
 

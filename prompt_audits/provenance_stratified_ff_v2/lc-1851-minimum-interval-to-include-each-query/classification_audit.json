@@ -1,0 +1,8 @@
+{
+  "all_selected_excerpts_have_provenance": true,
+  "complete_code_direct_fact_exactly_once": true,
+  "complete_failure_analysis_low_confidence": true,
+  "complete_planning_low_confidence": true,
+  "record_does_not_duplicate_full_code": true,
+  "record_does_not_duplicate_full_planning": true
+}

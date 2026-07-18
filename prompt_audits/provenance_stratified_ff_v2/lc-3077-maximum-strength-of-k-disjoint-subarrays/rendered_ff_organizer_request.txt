@@ -1,0 +1,127 @@
+=== SYSTEM PROMPT ===
+You are an FF organizer (evidence-grounding organizer), not a formal, independent, or static verifier.
+
+Organize a compact provenance-preserving Failure Frontier Record from the public problem, public constraints, exact submitted code, standardized final error type, and the three verbatim low-confidence Teacher sources. You may select exact Teacher excerpts, deduplicate them without rewriting them, add short evidence-grounded inferences independently grounded in the public problem, constraints, submitted code, or final error type, and add explicitly marked organizer hypotheses only when necessary.
+
+All Teacher-generated natural language is LOW_CONFIDENCE_HYPOTHESIS regardless of tone. An EVIDENCE_GROUNDED_INFERENCE remains fallible model-generated analysis, not a fact or formal proof. It must have a short visible evidence chain, use only allowed evidence sources, avoid unique causal claims from a coarse error type, and use PROVISIONALLY_SUPPORTED or PARTIALLY_SUPPORTED. Anything ambiguous must be omitted or placed in the low-confidence organizer-hypothesis section.
+
+Do not rewrite a Teacher claim as an unsourced conclusion. Selected Teacher content must be an exact source excerpt with its supplied source type, artifact, and SHA-256. Do not reproduce the full code, full Planning, full Final natural language, or full failure analysis; they are supplied separately to Students.
+
+Do not recommend an algorithm, fix, modification route, next step, future search direction, new candidate solution, code, or pseudocode. Do not claim to know the failure root cause. Do not mention or invent detailed evaluation information.
+
+Return exactly one JSON object, optionally inside one json fence, with only these arrays:
+{"evidence_grounded_inferences":[{"claim":"...","evidence":"...","evidence_sources":["PUBLIC_PROBLEM"],"support_status":"PROVISIONALLY_SUPPORTED","reproducibility_note":"..."}],"selected_low_confidence_excerpts":[{"source_type":"TEACHER_PLANNING","source_artifact":"...","source_sha256":"...","exact_source_excerpt":"...","confidence_note":"..."}],"organizer_hypotheses":[{"hypothesis":"...","evidence_limitation":"..."}]}
+
+Use at most 6 inferences, 8 selected excerpts, and 3 organizer hypotheses. Empty arrays are valid and preferable to quota filling.
+
+=== USER PROMPT ===
+# Public Problem and Constraints
+
+# Problem
+
+Maximum Strength Of K Disjoint Subarrays
+
+Choose exactly k nonempty disjoint subarrays in order and maximize their alternating weighted sum with coefficients k,-(k-1),...,1. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.
+
+# Input Format
+
+Parameters in order: nums: list[int], k: int. 1 <= n <= 10000; k is positive odd and k<=n; n*k<=1000000; values fit signed 32-bit.
+
+# Output Format
+
+Return long using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.
+
+Entrypoint: Solution.maximumStrength
+
+# Constraints
+
+Parameters in order: nums: list[int], k: int. 1 <= n <= 10000; k is positive odd and k<=n; n*k<=1000000; values fit signed 32-bit.
+Time limit: 4.0s; memory limit: 256 MB.
+
+# Public Examples
+
+Example 1
+Input args: [[1, 2, 3, -1, 2], 3]
+Output: 22
+
+Example 2
+Input args: [[-1, -2, -3], 1]
+Output: -1
+
+
+# Verbatim Low-Confidence Sources
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_PLANNING">
+Artifact: teacher/planning/content.md
+SHA-256: 0613d07f5b61034082f02d85d41aa2e82afc463554c6eac2b0affc7cb75d1d8c
+Verbatim content:
+## Candidate Analysis
+
+**Candidate 1: DP with state (i, j, taken)**
+Define dp[i][j][0/1] = max strength using first i elements, j subarrays formed, and whether the i-th element is part of the current (j-th) subarray (0 = not taken, 1 = taken). Transition: if not taken, dp[i][j][0] = max(dp[i-1][j][0], dp[i-1][j][1]); if taken, dp[i][j][1] = max(dp[i-1][j][1] + coeff(j)*nums[i-1], dp[i-1][j-1][0] + coeff(j)*nums[i-1], dp[i-1][j-1][1] + coeff(j)*nums[i-1]). Coeff for j-th subarray (1-indexed from left) = k - j + 1. Complexity O(n*k) = up to 1e6, feasible. Correctness: standard DP for disjoint subarrays with alternating weights.
+
+**Candidate 2: Greedy with Kadane-like selection**
+Select k subarrays by repeatedly extracting maximum-sum subarray, then negating its elements to allow overlap avoidance. However, alternating weights (k, -(k-1), ...) are not uniform, so greedy extraction does not respect the sign pattern and can produce suboptimal order. Rejected due to incorrectness for non-uniform weights.
+
+## Selected Algorithm
+DP with state (i, j, taken) as described in Candidate 1. Use 1-indexed subarray count, coefficient = k - j + 1 for the j-th subarray.
+
+## State or Invariant
+dp[j][t] for current i, where t=0 (not taken) or t=1 (taken). Initialize dp[0][0] = 0, dp[0][1] = -inf. For each element, update from previous row. After processing all elements, answer = max(dp[k][0], dp[k][1]).
+
+## Complexity
+Time: O(n*k) ≤ 1e6 operations. Space: O(k) using two rows (rolling array).
+</LOW_CONFIDENCE_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_FINAL_NATURAL_LANGUAGE">
+Artifact: teacher/final/natural_language.md
+SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Verbatim content:
+
+</LOW_CONFIDENCE_SOURCE>
+
+<LOW_CONFIDENCE_SOURCE type="TEACHER_FAILURE_ANALYSIS">
+Artifact: teacher_failure_analysis/content.md
+SHA-256: d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1
+Verbatim content:
+Representative offline fixture: I am uncertain which assumption or implementation detail is associated with the standardized failure. This is not a root-cause claim.
+</LOW_CONFIDENCE_SOURCE>
+
+# Exact Submitted Code
+
+```python
+class Solution:
+    def maximumStrength(self, nums: list[int], k: int) -> int:
+        n = len(nums)
+        INF = 10**18
+        dp0 = [-INF] * (k + 1)
+        dp1 = [-INF] * (k + 1)
+        dp0[0] = 0
+        for i in range(n):
+            ndp0 = [-INF] * (k + 1)
+            ndp1 = [-INF] * (k + 1)
+            for j in range(k + 1):
+                if dp0[j] != -INF:
+                    ndp0[j] = max(ndp0[j], dp0[j])
+                if dp1[j] != -INF:
+                    ndp0[j] = max(ndp0[j], dp1[j])
+                if j > 0:
+                    coeff = k - j + 1
+                    val = nums[i] * coeff
+                    if dp0[j - 1] != -INF:
+                        ndp1[j] = max(ndp1[j], dp0[j - 1] + val)
+                    if dp1[j - 1] != -INF:
+                        ndp1[j] = max(ndp1[j], dp1[j - 1] + val)
+                    if dp1[j] != -INF:
+                        ndp1[j] = max(ndp1[j], dp1[j] + val)
+            dp0, dp1 = ndp0, ndp1
+        return max(dp0[k], dp1[k])
+```
+
+# Standardized Final Submission Error Type
+
+WRONG_ANSWER
+
+# Registered Source Metadata
+
+{"TEACHER_FAILURE_ANALYSIS": {"source_artifact": "teacher_failure_analysis/content.md", "source_sha256": "d3c28fbadb36df4ae7dcb66c3013506be7202fda97dd91fca188bb5a456f8fb1", "source_type": "TEACHER_FAILURE_ANALYSIS"}, "TEACHER_FINAL_NATURAL_LANGUAGE": {"source_artifact": "teacher/final/natural_language.md", "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "source_type": "TEACHER_FINAL_NATURAL_LANGUAGE"}, "TEACHER_PLANNING": {"source_artifact": "teacher/planning/content.md", "source_sha256": "0613d07f5b61034082f02d85d41aa2e82afc463554c6eac2b0affc7cb75d1d8c", "source_type": "TEACHER_PLANNING"}}

@@ -1,0 +1,101 @@
+=== SYSTEM PROMPT ===
+You are the same Teacher reflecting on your own unsuccessful submission.
+
+The only evaluation information available is the standardized final submission error type in the request. You do not know any concrete failing case, expected or actual output, hidden test, test count, detailed compiler diagnostic, traceback, execution time, memory usage, or Judge diagnostic.
+
+Describe your attempted approach, implementation intent, assumptions, attempted methods, possible risks, possible failure explanations, and remaining uncertainty. Every explanation you produce is an unverified hypothesis. Do not present an explanation as an objective fact or claim a definitive root cause. Do not infer a concrete hidden failing case or infer a specific cause solely from the error type.
+
+Do not propose a next algorithm, fix, modification route, future search direction, or new candidate solution. Do not output code or pseudocode. Do not use the labels DIRECT_FACT, EVIDENCE_GROUNDED_INFERENCE, or LOW_CONFIDENCE_HYPOTHESIS; classification is performed later by the FF organizer and deterministic material builder.
+
+=== USER PROMPT ===
+# Public Problem
+
+# Problem
+
+Maximum Strength Of K Disjoint Subarrays
+
+Choose exactly k nonempty disjoint subarrays in order and maximize their alternating weighted sum with coefficients k,-(k-1),...,1. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.
+
+# Input Format
+
+Parameters in order: nums: list[int], k: int. 1 <= n <= 10000; k is positive odd and k<=n; n*k<=1000000; values fit signed 32-bit.
+
+# Output Format
+
+Return long using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.
+
+Entrypoint: Solution.maximumStrength
+
+# Constraints
+
+Parameters in order: nums: list[int], k: int. 1 <= n <= 10000; k is positive odd and k<=n; n*k<=1000000; values fit signed 32-bit.
+Time limit: 4.0s; memory limit: 256 MB.
+
+# Public Examples
+
+Example 1
+Input args: [[1, 2, 3, -1, 2], 3]
+Output: 22
+
+Example 2
+Input args: [[-1, -2, -3], 1]
+Output: -1
+
+
+# Your Planning
+
+## Candidate Analysis
+
+**Candidate 1: DP with state (i, j, taken)**
+Define dp[i][j][0/1] = max strength using first i elements, j subarrays formed, and whether the i-th element is part of the current (j-th) subarray (0 = not taken, 1 = taken). Transition: if not taken, dp[i][j][0] = max(dp[i-1][j][0], dp[i-1][j][1]); if taken, dp[i][j][1] = max(dp[i-1][j][1] + coeff(j)*nums[i-1], dp[i-1][j-1][0] + coeff(j)*nums[i-1], dp[i-1][j-1][1] + coeff(j)*nums[i-1]). Coeff for j-th subarray (1-indexed from left) = k - j + 1. Complexity O(n*k) = up to 1e6, feasible. Correctness: standard DP for disjoint subarrays with alternating weights.
+
+**Candidate 2: Greedy with Kadane-like selection**
+Select k subarrays by repeatedly extracting maximum-sum subarray, then negating its elements to allow overlap avoidance. However, alternating weights (k, -(k-1), ...) are not uniform, so greedy extraction does not respect the sign pattern and can produce suboptimal order. Rejected due to incorrectness for non-uniform weights.
+
+## Selected Algorithm
+DP with state (i, j, taken) as described in Candidate 1. Use 1-indexed subarray count, coefficient = k - j + 1 for the j-th subarray.
+
+## State or Invariant
+dp[j][t] for current i, where t=0 (not taken) or t=1 (taken). Initialize dp[0][0] = 0, dp[0][1] = -inf. For each element, update from previous row. After processing all elements, answer = max(dp[k][0], dp[k][1]).
+
+## Complexity
+Time: O(n*k) ≤ 1e6 operations. Space: O(k) using two rows (rolling array).
+
+# Your Final Natural-Language Response
+
+
+
+# Your Exact Submitted Code
+
+```python
+class Solution:
+    def maximumStrength(self, nums: list[int], k: int) -> int:
+        n = len(nums)
+        INF = 10**18
+        dp0 = [-INF] * (k + 1)
+        dp1 = [-INF] * (k + 1)
+        dp0[0] = 0
+        for i in range(n):
+            ndp0 = [-INF] * (k + 1)
+            ndp1 = [-INF] * (k + 1)
+            for j in range(k + 1):
+                if dp0[j] != -INF:
+                    ndp0[j] = max(ndp0[j], dp0[j])
+                if dp1[j] != -INF:
+                    ndp0[j] = max(ndp0[j], dp1[j])
+                if j > 0:
+                    coeff = k - j + 1
+                    val = nums[i] * coeff
+                    if dp0[j - 1] != -INF:
+                        ndp1[j] = max(ndp1[j], dp0[j - 1] + val)
+                    if dp1[j - 1] != -INF:
+                        ndp1[j] = max(ndp1[j], dp1[j - 1] + val)
+                    if dp1[j] != -INF:
+                        ndp1[j] = max(ndp1[j], dp1[j] + val)
+            dp0, dp1 = ndp0, ndp1
+        return max(dp0[k], dp1[k])
+```
+
+# Standardized Final Submission Error Type
+
+WRONG_ANSWER
