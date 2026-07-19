@@ -26,6 +26,10 @@ REQUIRED_V2_STUDENTS = (
     "baseline", "direct_ff_v2", "critical_ff_v2", "flat_ff_v2",
     "general_guidance",
 )
+REQUIRED_REVIEW_V3_STUDENTS = (
+    "baseline", "direct_ff_v2", "rigorous_review_ff_v3", "flat_ff_v2",
+    "general_guidance",
+)
 COMPLETED_SOLVER_VERDICTS = {"AC", "WA", "CE", "RE", "TLE", "MLE"}
 
 
@@ -70,13 +74,16 @@ def _students_completed(record: dict[str, Any]) -> bool:
     students = record.get("students")
     if not isinstance(students, dict):
         return False
-    required = (
-        REQUIRED_V2_STUDENTS
-        if record.get("provenance_failure_frontier", {}).get(
-            "failure_frontier_policy_version") ==
-            "provenance_stratified_ff_v2"
-        else REQUIRED_STUDENTS
-    )
+    provenance = record.get("provenance_failure_frontier", {})
+    if provenance.get("failure_frontier_policy_version") == \
+            "provenance_stratified_ff_v2":
+        required = (
+            REQUIRED_REVIEW_V3_STUDENTS
+            if "rigorous_review_ff_v3" in students
+            else REQUIRED_V2_STUDENTS
+        )
+    else:
+        required = REQUIRED_STUDENTS
     for condition in required:
         student = students.get(condition)
         if not isinstance(student, dict):

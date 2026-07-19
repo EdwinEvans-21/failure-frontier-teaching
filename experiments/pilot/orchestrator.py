@@ -39,6 +39,7 @@ from .prompts import PromptRenderer
 from .provenance_ff import (
     BASELINE_CONDITION, CRITICAL_CONDITION, DIRECT_CONDITION, FLAT_CONDITION,
     FAILURE_FRONTIER_POLICY, FLAT_PAYLOAD_RENDERER_VERSION,
+    POLICY_REGISTRY, RIGOROUS_REVIEW_CONDITION,
     SHARED_PAYLOAD_BUILDER_VERSION,
     SourceArtifact, StudentTreatmentRequest, parse_organizer_record_with_audit,
     render_flat_failure_payload, render_shared_failure_payload, sha256_text,
@@ -61,8 +62,8 @@ VERDICT_MAP = {
 STUDENT_CONDITIONS = ("success_only", "failure_frontier", "general_guidance")
 CRITICAL_FF_CONDITION = "critical_failure_frontier"
 V2_STUDENT_CONDITIONS = (
-    BASELINE_CONDITION, DIRECT_CONDITION, CRITICAL_CONDITION, FLAT_CONDITION,
-    "general_guidance"
+    BASELINE_CONDITION, DIRECT_CONDITION, RIGOROUS_REVIEW_CONDITION,
+    FLAT_CONDITION, "general_guidance"
 )
 GG_REQUIRED_SECTIONS = (
     "## Constraint Analysis",
@@ -161,6 +162,20 @@ class PilotRunner:
 
     def _uses_provenance_v2(self) -> bool:
         return self.config.failure_frontier_policy == FAILURE_FRONTIER_POLICY
+
+    def _review_condition(self) -> str:
+        return (
+            RIGOROUS_REVIEW_CONDITION
+            if RIGOROUS_REVIEW_CONDITION in self.config.student_conditions
+            else CRITICAL_CONDITION
+        )
+
+    def _review_policy(self) -> str:
+        return (
+            self.config.rigorous_review_ff_policy
+            if self._review_condition() == RIGOROUS_REVIEW_CONDITION
+            else self.config.critical_ff_policy
+        )
 
     def verify_baseline(self) -> None:
         verifier_name = {
@@ -366,7 +381,9 @@ class PilotRunner:
                 sentinel_flat["user_prompt"].replace(
                     "FLAT_MATERIAL_SENTINEL", "<MATERIAL>") and
                 record.get("provenance_failure_frontier", {}).get(
-                    "direct_critical_payload_byte_equal") is True and
+                    "direct_review_payload_byte_equal",
+                    record.get("provenance_failure_frontier", {}).get(
+                        "direct_critical_payload_byte_equal")) is True and
                 record.get("provenance_failure_frontier", {}).get(
                     "flat_uses_direct_instruction") is True
             )
@@ -443,7 +460,7 @@ class PilotRunner:
                     planning_content="<planning>", planning_status="<status>"
                 )["system_prompt"] ==
                 self._rendered_solver_call(
-                    "final", "student", "<problem>", CRITICAL_CONDITION,
+                    "final", "student", "<problem>", self._review_condition(),
                     "<public-problem>", additional_material="<shared-payload>",
                     planning_content="<planning>", planning_status="<status>"
                 )["system_prompt"]
@@ -481,7 +498,6 @@ class PilotRunner:
                 "student_treatment_policies": {
                     "baseline": self.config.baseline_policy,
                     "direct": self.config.direct_ff_policy,
-                    "critical": self.config.critical_ff_policy,
                     "flat": self.config.flat_ff_policy,
                 },
                 "shared_payload_builder": self.config.shared_failure_payload_builder,
@@ -490,13 +506,20 @@ class PilotRunner:
                 "gg_token_match_required": (
                     self.config.teaching_material.gg_acceptance_policy ==
                     "token_interval_v1"),
-                "direct_critical_payload_byte_equal": direct_payload_equal,
-                "direct_critical_final_static_equal": final_static_equal,
                 "direct_flat_prompt_template_equal": direct_flat_prompt_equal,
                 "only_intended_treatment_difference": (
-                    "Direct/Critical instruction framing or Flat payload presentation"
+                    "Direct/Rigorous Review instruction framing or Flat payload presentation"
                     if self._uses_provenance_v2() else None),
                 }
+        if self._review_condition() == RIGOROUS_REVIEW_CONDITION:
+            plan["student_treatment_policies"]["rigorous_review"] = (
+                self._review_policy())
+            plan["direct_review_payload_byte_equal"] = direct_payload_equal
+            plan["direct_review_final_static_equal"] = final_static_equal
+        else:
+            plan["student_treatment_policies"]["critical"] = self._review_policy()
+            plan["direct_critical_payload_byte_equal"] = direct_payload_equal
+            plan["direct_critical_final_static_equal"] = final_static_equal
         write_json(self.run_dir / "dry_run_plan.json", plan)
         return plan
 
@@ -717,7 +740,7 @@ class PilotRunner:
                     student_materials = {
                         BASELINE_CONDITION: "",
                         DIRECT_CONDITION: shared_payload,
-                        CRITICAL_CONDITION: shared_payload,
+                        self._review_condition(): shared_payload,
                         FLAT_CONDITION: flat_payload,
                         "general_guidance": gg["response"].content,
                     }
@@ -734,7 +757,6 @@ class PilotRunner:
                             self.config.teaching_material.gg_acceptance_policy),
                         "shared_payload_sha256": sha256_text(shared_payload),
                         "flat_payload_sha256": sha256_text(flat_payload),
-                        "direct_critical_payload_byte_equal": True,
                         "flat_payload_uses_same_information": True,
                         "flat_uses_direct_instruction": True,
                         "record_sha256": v2_bundle["record_sha256"],
@@ -752,6 +774,15 @@ class PilotRunner:
                             v2_bundle["rejected_excerpt_audit_artifact"]),
                         "source_sha256": v2_bundle["source_sha256"],
                     }
+                    provenance = record["provenance_failure_frontier"]
+                    if self._review_condition() == RIGOROUS_REVIEW_CONDITION:
+                        provenance.update({
+                            "direct_review_payload_byte_equal": True,
+                            "review_condition": self._review_condition(),
+                            "review_policy": self._review_policy(),
+                        })
+                    else:
+                        provenance["direct_critical_payload_byte_equal"] = True
                 else:
                     student_materials = {
                         "success_only": "",
@@ -2263,10 +2294,14 @@ class PilotRunner:
                                  and not success_branch):
             solver_input = problem
         elif condition in {
-                DIRECT_CONDITION, CRITICAL_CONDITION, FLAT_CONDITION
+                DIRECT_CONDITION, CRITICAL_CONDITION,
+                RIGOROUS_REVIEW_CONDITION, FLAT_CONDITION
         } and not success_branch:
-            template = ("critical_ff_v2.md" if condition == CRITICAL_CONDITION
-                        else "direct_ff_v2.md")
+            template = (
+                POLICY_REGISTRY[self._review_policy()]["instruction"]
+                if condition in {CRITICAL_CONDITION, RIGOROUS_REVIEW_CONDITION}
+                else "direct_ff_v2.md"
+            )
             instruction = self.renderer.template(template)
             if condition in {DIRECT_CONDITION, FLAT_CONDITION}:
                 validate_direct_instruction(instruction)
@@ -2993,7 +3028,8 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
     ]
     preferred_conditions = (
         "success_only", "failure_frontier", CRITICAL_FF_CONDITION,
-        BASELINE_CONDITION, DIRECT_CONDITION, CRITICAL_CONDITION, FLAT_CONDITION,
+        BASELINE_CONDITION, DIRECT_CONDITION, CRITICAL_CONDITION,
+        RIGOROUS_REVIEW_CONDITION, FLAT_CONDITION,
         "general_guidance",
     )
     present_conditions = {
@@ -3041,6 +3077,14 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
             "both_ac": [],
             "direct_only_ac": [],
             "critical_only_ac": [],
+            "neither_ac": [],
+            "verdict_transitions": {},
+        },
+        "direct_vs_rigorous_review_ff_v3": {
+            "paired_episode_count": 0,
+            "both_ac": [],
+            "direct_only_ac": [],
+            "rigorous_review_only_ac": [],
             "neither_ac": [],
             "verdict_transitions": {},
         },
@@ -3100,26 +3144,42 @@ def build_summary(run_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
                 comparison["critical_only_ac"].append(record["problem_id"])
             else:
                 comparison["neither_ac"].append(record["problem_id"])
-        v2_critical = students.get(CRITICAL_CONDITION, {}).get("verdict")
+        review_condition = (
+            RIGOROUS_REVIEW_CONDITION
+            if RIGOROUS_REVIEW_CONDITION in students else CRITICAL_CONDITION
+        )
+        review_verdict = students.get(review_condition, {}).get("verdict")
         v2_flat = students.get(FLAT_CONDITION, {}).get("verdict")
         provenance = record.get("provenance_failure_frontier", {})
         if (
-            provenance.get("direct_critical_payload_byte_equal") is True
+            provenance.get(
+                "direct_review_payload_byte_equal",
+                provenance.get("direct_critical_payload_byte_equal")) is True
             and isinstance(provenance.get("shared_payload_sha256"), str)
             and ff in {"AC", "WA", "CE", "RE", "TLE", "MLE"}
-            and v2_critical in {"AC", "WA", "CE", "RE", "TLE", "MLE"}
+            and review_verdict in {"AC", "WA", "CE", "RE", "TLE", "MLE"}
         ):
-            comparison = summary["direct_vs_critical_failure_frontier_v2"]
+            comparison_key = (
+                "direct_vs_rigorous_review_ff_v3"
+                if review_condition == RIGOROUS_REVIEW_CONDITION
+                else "direct_vs_critical_failure_frontier_v2"
+            )
+            comparison = summary[comparison_key]
             comparison["paired_episode_count"] += 1
-            transition = f"{ff}->{v2_critical}"
+            transition = f"{ff}->{review_verdict}"
             comparison["verdict_transitions"][transition] = (
                 comparison["verdict_transitions"].get(transition, 0) + 1)
-            if ff == "AC" and v2_critical == "AC":
+            if ff == "AC" and review_verdict == "AC":
                 comparison["both_ac"].append(record["problem_id"])
             elif ff == "AC":
                 comparison["direct_only_ac"].append(record["problem_id"])
-            elif v2_critical == "AC":
-                comparison["critical_only_ac"].append(record["problem_id"])
+            elif review_verdict == "AC":
+                only_key = (
+                    "rigorous_review_only_ac"
+                    if review_condition == RIGOROUS_REVIEW_CONDITION
+                    else "critical_only_ac"
+                )
+                comparison[only_key].append(record["problem_id"])
             else:
                 comparison["neither_ac"].append(record["problem_id"])
         if (
@@ -3235,6 +3295,20 @@ def summary_markdown(summary: dict[str, Any]) -> str:
             f"- Naive FF only AC: {len(critical['naive_only_ac'])}",
             f"- Critical FF only AC: {len(critical['critical_only_ac'])}",
             f"- Neither AC: {len(critical['neither_ac'])}",
+        ])
+    rigorous_review = summary.get("direct_vs_rigorous_review_ff_v3", {})
+    if rigorous_review.get("paired_episode_count"):
+        lines.extend([
+            "",
+            "## Direct FF versus Rigorous Review FF v3",
+            "",
+            "- Paired eligible episodes: "
+            f"{rigorous_review['paired_episode_count']}",
+            f"- Both AC: {len(rigorous_review['both_ac'])}",
+            f"- Direct FF only AC: {len(rigorous_review['direct_only_ac'])}",
+            "- Rigorous Review FF v3 only AC: "
+            f"{len(rigorous_review['rigorous_review_only_ac'])}",
+            f"- Neither AC: {len(rigorous_review['neither_ac'])}",
         ])
     token_matching = summary["token_matching"]
     lines.extend([

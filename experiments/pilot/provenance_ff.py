@@ -11,6 +11,7 @@ FAILURE_FRONTIER_POLICY = "provenance_stratified_ff_v2"
 TEACHER_FAILURE_ANALYSIS_POLICY = "provenance_preserved_failure_analysis_v2"
 DIRECT_FF_POLICY = "direct_ff_v2"
 CRITICAL_FF_POLICY = "critical_ff_v2"
+RIGOROUS_REVIEW_FF_POLICY = "rigorous_review_ff_v3"
 FLAT_FF_POLICY = "flat_ff_v2"
 BASELINE_POLICY = "baseline_v2"
 SHARED_PAYLOAD_BUILDER_VERSION = "provenance_payload_builder_v2"
@@ -24,6 +25,8 @@ POLICY_REGISTRY = {
     "direct_ff_v2": {"instruction": "direct_ff_v2.md", "legacy_alias": None},
     "critical_ff_v2": {
         "instruction": "critical_ff_v2.md", "legacy_alias": None},
+    "rigorous_review_ff_v3": {
+        "instruction": "rigorous_review_ff_v3.md", "legacy_alias": None},
     "flat_ff_v2": {
         "instruction": "direct_ff_v2.md", "legacy_alias": None,
         "payload_renderer": FLAT_PAYLOAD_RENDERER_VERSION,
@@ -40,6 +43,7 @@ POLICY_REGISTRY = {
 
 DIRECT_CONDITION = "direct_ff_v2"
 CRITICAL_CONDITION = "critical_ff_v2"
+RIGOROUS_REVIEW_CONDITION = "rigorous_review_ff_v3"
 FLAT_CONDITION = "flat_ff_v2"
 BASELINE_CONDITION = "baseline"
 

@@ -13,6 +13,7 @@ from experiments.pilot.orchestrator import PilotRunner
 from experiments.pilot.model_client import MockModelClient, ModelInfrastructureError
 from experiments.pilot.provenance_ff import (
     BASELINE_CONDITION, CRITICAL_CONDITION, DIRECT_CONDITION, FLAT_CONDITION,
+    RIGOROUS_REVIEW_CONDITION, RIGOROUS_REVIEW_FF_POLICY,
     DirectFact, EvidenceGroundedInference, FailureFrontierRecord,
     OrganizerHypothesis, SelectedLowConfidenceExcerpt, SourceArtifact,
     classify_information, parse_organizer_record,
@@ -342,6 +343,38 @@ class PromptIsolationTests(unittest.TestCase):
             "Check state transitions, boundaries, initialization, and complexity. "
             "Ensure the final code implements your proposed solution.")
 
+    def test_rigorous_review_v3_requires_evidence_calibrated_claim_review(self) -> None:
+        review = (ROOT / "experiments/prompts/rigorous_review_ff_v3.md").read_text()
+        self.assertIn(
+            "This verdict establishes only that the submitted program failed.",
+            review)
+        for disposition in ("RETAIN", "MODIFY", "REJECT", "UNRESOLVED"):
+            self.assertIn(f"* {disposition}:", review)
+        for evidence in (
+            "a concrete counterexample consistent with the public problem",
+            "a contradiction with the submitted code or another direct fact",
+            "a derivation from the public constraints",
+            "a clear proof that the relevant invariant",
+        ):
+            self.assertIn(evidence, review)
+        self.assertIn("A newly generated criticism is also a fallible hypothesis",
+                      review)
+        self.assertIn("If a claim cannot be disproved", review)
+
+    def test_expanded_config_selects_rigorous_review_v3(self) -> None:
+        config = load_config(EXPANDED_CONFIG)
+        self.assertEqual(
+            config.rigorous_review_ff_policy, RIGOROUS_REVIEW_FF_POLICY)
+        self.assertIn(RIGOROUS_REVIEW_CONDITION, config.student_conditions)
+        self.assertNotIn(CRITICAL_CONDITION, config.student_conditions)
+        runner = PilotRunner(config, MockModelClient(config.model))
+        rendered = runner._rendered_solver_call(
+            "planning", "student", "fixture", RIGOROUS_REVIEW_CONDITION,
+            self.problem, additional_material=self.payload)
+        v3 = (ROOT / "experiments/prompts/rigorous_review_ff_v3.md").read_text().strip()
+        self.assertIn(v3, rendered["user_prompt"])
+        self.assertEqual(rendered["user_prompt"].count(self.payload), 1)
+
     def test_teacher_analysis_and_organizer_boundaries(self) -> None:
         teacher = (ROOT / "experiments/prompts/teacher_failure_analysis_v2.md").read_text()
         organizer = (ROOT / "experiments/prompts/ff_organizer_v2.md").read_text()
@@ -395,7 +428,7 @@ class PromptIsolationTests(unittest.TestCase):
         config = load_config(EXPANDED_CONFIG)
         self.assertEqual(len(config.problems), 31)
         self.assertEqual(config.student_conditions, (
-            BASELINE_CONDITION, DIRECT_CONDITION, CRITICAL_CONDITION,
+            BASELINE_CONDITION, DIRECT_CONDITION, RIGOROUS_REVIEW_CONDITION,
             FLAT_CONDITION, "general_guidance"))
         self.assertEqual(config.mode, "smoke-test")
         self.assertEqual(config.baseline_id,

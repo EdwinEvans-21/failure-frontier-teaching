@@ -6,7 +6,7 @@
   "failure_frontier_policy": "provenance_stratified_ff_v2",
   "teacher_failure_analysis_policy": "provenance_preserved_failure_analysis_v2",
   "direct_ff_policy": "direct_ff_v2",
-  "critical_ff_policy": "critical_ff_v2",
+  "rigorous_review_ff_policy": "rigorous_review_ff_v3",
   "flat_ff_policy": "flat_ff_v2",
   "baseline_policy": "baseline_v2",
   "shared_failure_payload_builder": "provenance_payload_builder_v2",
@@ -63,5 +63,5 @@
     {"problem":"examples/lc-3045-count-prefix-and-suffix-pairs-ii/problem.json","public_tests":"examples/lc-3045-count-prefix-and-suffix-pairs-ii/public_tests.json","hidden_tests":"examples/lc-3045-count-prefix-and-suffix-pairs-ii/hidden_tests.json"},
     {"problem":"examples/lc-0761-special-binary-string/problem.json","public_tests":"examples/lc-0761-special-binary-string/public_tests.json","hidden_tests":"examples/lc-0761-special-binary-string/hidden_tests.json"}
   ],
-  "student_conditions": ["baseline","direct_ff_v2","critical_ff_v2","flat_ff_v2","general_guidance"]
+  "student_conditions": ["baseline","direct_ff_v2","rigorous_review_ff_v3","flat_ff_v2","general_guidance"]
 }
