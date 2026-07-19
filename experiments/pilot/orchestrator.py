@@ -2505,8 +2505,12 @@ def validate_guidance_content(content: str) -> dict[str, Any]:
     covered: set[str] = set()
     for heading, body in sections:
         for category, aliases in GG_SECTION_ALIASES.items():
-            if (heading in aliases and _substantive(body) and
-                    _signal_count(category, body) >= 1):
+            # A recognized heading already localizes the author's intent.  Do
+            # not require its body to repeat generic category words such as
+            # "algorithm" or "correctness": concrete terminology (for
+            # example, "binary lifting" or a case-based justification) can be
+            # substantive without matching that brittle vocabulary list.
+            if heading in aliases and _substantive(body):
                 covered.add(category)
 
     # Heading-free and unconventional prose is accepted only when a localized

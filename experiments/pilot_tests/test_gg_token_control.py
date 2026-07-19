@@ -1175,6 +1175,29 @@ class GeneralGuidanceTokenControlTests(unittest.TestCase):
         self.assertTrue(recovery["semantic_completeness_passed"])
         self.assertEqual(recovery["missing_categories"], [])
 
+    def test_semantic_validation_does_not_require_category_keywords_under_headings(self) -> None:
+        concrete_guidance = (
+            "## Constraint Analysis\n"
+            "At fifty thousand items, scanning every suffix for every query "
+            "would be infeasible. Equal heights cannot be reached.\n\n"
+            "## Algorithmic Directions\n"
+            "Build next-greater links with a monotonic stack, then connect "
+            "powers of those links in a lifting table.\n\n"
+            "## Correctness and Edge Cases\n"
+            "A person at the same index has already met the other person. "
+            "Strictly decreasing and equal-height inputs may have no meeting point.\n\n"
+            "## Implementation Checks\n"
+            "Use the array length as a sentinel and make every sentinel jump "
+            "back to itself. Preserve the original query order."
+        )
+
+        validation = validate_guidance_content(concrete_guidance)
+
+        self.assertTrue(validation["preferred_structure"])
+        self.assertTrue(validation["required_sections_passed"])
+        self.assertTrue(validation["semantic_completeness_passed"])
+        self.assertEqual(validation["missing_categories"], [])
+
     def test_semantic_validation_rejects_missing_categories_code_and_truncation(self) -> None:
         missing = validate_guidance_content(
             "## Constraints\nInput constraints require O(n) time complexity and "
