@@ -102,10 +102,17 @@ def verify_expanded_generator(root: Path) -> dict[str, Any]:
             fixture = str(item["problem_id"])
             for name in FIXTURE_FILES:
                 checked += 1
-                if ((root / "examples" / fixture / name).read_bytes() !=
-                        (output / fixture / name).read_bytes()):
+                expected = (root / "examples" / fixture / name).read_bytes()
+                actual = (output / fixture / name).read_bytes()
+                # Git may materialize text files with CRLF on Windows while
+                # the deterministic generator emits LF bytes.  Expanded
+                # fixtures are all UTF-8 text; normalize only line endings so
+                # substantive byte drift remains fail-closed.
+                expected = expected.replace(b"\r\n", b"\n")
+                actual = actual.replace(b"\r\n", b"\n")
+                if expected != actual:
                     return {"result": "byte_mismatch", "file_count": checked}
-    return {"result": "byte_identical", "file_count": checked}
+    return {"result": "normalized_text_identical", "file_count": checked}
 
 
 def discover_frozen_paths(root: Path) -> list[str]:
@@ -123,7 +130,7 @@ def build_manifest(root: Path, *, source_commit: str) -> dict[str, Any]:
         generator_verification=old_verification,
     )
     proof = verify_expanded_generator(root)
-    if proof["result"] != "byte_identical":
+    if proof["result"] != "normalized_text_identical":
         raise RuntimeError("expanded generator did not reproduce frozen files")
     existing = {item["path"]: item for item in manifest["frozen_files"]}
     for path in expanded_paths(root):
@@ -142,7 +149,7 @@ def build_manifest(root: Path, *, source_commit: str) -> dict[str, Any]:
         "path": "tools/generate_expanded_benchmarks.py",
         "deterministic": True,
         "random_seed": 20260718,
-        "check": "temporary_directory_byte_identical_all_fixture_files",
+        "check": "temporary_directory_line_ending_normalized_identical_all_fixture_files",
         "temporary_regeneration": proof,
     })
     manifest["frozen_files"] = [existing[path] for path in sorted(existing)]

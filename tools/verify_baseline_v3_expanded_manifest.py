@@ -58,8 +58,8 @@ def verify(root: Path, manifest_path: Path) -> list[str]:
             if before.get(field) != current_problem.get(field):
                 errors.append(f"problem configuration drift: {fixture}.{field}")
     proof = verify_expanded_generator(root)
-    if proof.get("result") != "byte_identical":
-        errors.append("expanded formal generator is not byte-identical")
+    if proof.get("result") != "normalized_text_identical":
+        errors.append("expanded formal generator is not line-ending-normalized identical")
     return errors
 
 

@@ -95,7 +95,7 @@ class ExpandedBenchmarkTests(unittest.TestCase):
                 with self.subTest(problem=record["problem_id"], mutant=filename):
                     self.assertTrue(killed)
 
-    def test_generator_is_byte_identical_in_temporary_directory(self) -> None:
+    def test_generator_is_line_ending_normalized_identical_in_temporary_directory(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             output = Path(temporary) / "examples"
             completed = subprocess.run(
@@ -106,10 +106,11 @@ class ExpandedBenchmarkTests(unittest.TestCase):
             for record in records():
                 expected = ROOT / "examples" / str(record["problem_id"])
                 actual = output / str(record["problem_id"])
-                self.assertEqual(
-                    {p.name: p.read_bytes() for p in expected.iterdir() if p.is_file()},
-                    {p.name: p.read_bytes() for p in actual.iterdir() if p.is_file()},
-                    record["problem_id"])
+                expected_files = {p.name: p.read_bytes().replace(b"\r\n", b"\n")
+                                  for p in expected.iterdir() if p.is_file()}
+                actual_files = {p.name: p.read_bytes().replace(b"\r\n", b"\n")
+                                for p in actual.iterdir() if p.is_file()}
+                self.assertEqual(expected_files, actual_files, record["problem_id"])
 
 
 if __name__ == "__main__":

@@ -1,0 +1,10 @@
+{
+  "run_id": "minimal-lineage-smoke-2roots-2gen-20260719T144211Z",
+  "condition_policy": "code_verdict_flat_ff_chain_v1",
+  "historical_flat_renderer": "flat_provenance_payload_renderer_v2",
+  "operationally_valid": true,
+  "treatment_compliant": false,
+  "eligible_for_formal_effect_analysis": false,
+  "artifact_mutated": false,
+  "reason": "The historical complete Flat treatment duplicates parent code when appended to the lineage Code + Verdict wrapper and retains confidence-tier vocabulary."
+}

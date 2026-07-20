@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "experiment_policy": "minimal_failure_lineage_v1",
+  "base_pilot_config": "experiments/configs/provenance_stratified_ff_v2_expanded.yaml",
+  "source_run_dir": "experiments/iterative/fixtures/source_run",
+  "root_episode_ids": ["replace-with-frozen-teacher-failure-episode-id"],
+  "output_root": "experiments/iterative/runs",
+  "max_generations": 5,
+  "lineage_repeats": 10,
+  "stop_on_ac": true,
+  "condition_order_policy": "balanced_rotation_v1",
+  "conditions": [
+    "independent_restart_v1",
+    "code_verdict_chain_v1",
+    "code_verdict_flat_ff_chain_v1"
+  ],
+  "mode": "dry-run"
+}

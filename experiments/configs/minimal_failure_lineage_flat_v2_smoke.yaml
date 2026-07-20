@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "experiment_policy": "minimal_failure_lineage_v1",
+  "base_pilot_config": "experiments/configs/provenance_stratified_ff_v2_expanded.yaml",
+  "source_run_dir": "E:/fft-runs/provenance-v2-formal-31/provenance-v2-formal-31-20260719T003015Z",
+  "root_episode_ids": [
+    "lc-3022-minimize-or-of-remaining-elements-using-operations"
+  ],
+  "output_root": "E:/fft-runs/minimal-failure-lineage-flat-v2-smoke",
+  "max_generations": 2,
+  "lineage_repeats": 1,
+  "stop_on_ac": true,
+  "condition_order_policy": "balanced_rotation_v1",
+  "conditions": [
+    "code_verdict_flat_ff_chain_v2"
+  ],
+  "mode": "dry-run"
+}

@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "experiment_policy": "minimal_failure_lineage_v1",
+  "base_pilot_config": "experiments/configs/provenance_stratified_ff_v2_expanded.yaml",
+  "source_run_dir": "E:/fft-runs/rigorous-review-v3-formal-31x10/rigorous-review-v3-formal-31x10-20260719T064020Z",
+  "root_episode_ids": [
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r00-lc-0995-minimum-number-of-k-consecutive-bit-flips",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r00-lc-1786-number-of-restricted-paths-from-first-to-last-node",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r00-lc-1851-minimum-interval-to-include-each-query",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r00-lc-1896-minimum-cost-to-change-the-final-value-of-expression",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r01-lc-2071-maximum-number-of-tasks-you-can-assign",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r03-lc-2421-number-of-good-paths",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r04-lc-2478-number-of-beautiful-partitions",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r01-lc-2809-minimum-time-to-make-array-sum-at-most-x",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r00-lc-2926-maximum-balanced-subsequence-sum",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r01-lc-2940-find-building-where-alice-and-bob-can-meet",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r00-lc-2945-find-maximum-non-decreasing-array-length",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r00-lc-3022-minimize-or-of-remaining-elements-using-operations",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r00-lc-3045-count-prefix-and-suffix-pairs-ii",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r02-lc-3072-distribute-elements-into-two-arrays-ii",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r00-lc-3077-maximum-strength-of-k-disjoint-subarrays",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r01-lc-3102-minimize-manhattan-distances",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r00-lc-3117-minimum-sum-of-values-by-dividing-array",
+    "rigorous-review-v3-formal-31x10-20260719T064020Z-r01-lc-3123-find-edges-in-shortest-paths"
+  ],
+  "output_root": "E:/fft-runs/minimal-failure-lineage-comparison-v2-18roots-3gen-3repeats",
+  "max_generations": 3,
+  "lineage_repeats": 3,
+  "stop_on_ac": true,
+  "condition_order_policy": "balanced_rotation_v1",
+  "conditions": [
+    "independent_restart_v1",
+    "code_verdict_chain_v1",
+    "code_verdict_flat_ff_chain_v2"
+  ],
+  "mode": "dry-run"
+}

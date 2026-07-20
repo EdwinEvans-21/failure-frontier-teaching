@@ -1,0 +1,10 @@
+{
+  "schema_version": "3.0",
+  "benchmark_policy": "benchmark_v3_oracle_hardened",
+  "judge_policy": "judge_v3_oracle_hardened",
+  "replay_policy": "observed_submission_replay_v1",
+  "audit_policy": "oracle_audit_v1",
+  "hardened_problem_numbers": [1611, 1786, 1851, 1896, 2071, 2203, 2478, 2809, 2940, 2945, 3022, 3045, 3077, 3102, 3117, 3123],
+  "expected_visible_in_container": false,
+  "model_calls_allowed": false
+}
