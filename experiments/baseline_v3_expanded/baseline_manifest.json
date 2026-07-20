@@ -1,15 +1,15 @@
 {
   "schema_version": "3.1-expanded",
   "baseline_id": "failure-frontier-baseline-v3-expanded",
-  "created_at": "2026-07-18T04:23:56.622346+00:00",
+  "created_at": "2026-07-20T06:43:59.876521+00:00",
   "environment": {
     "python_version": "3.12.8",
     "docker_client_version": "29.6.1",
     "docker_server_version": "29.6.1",
-    "ffjudge_image_id": "sha256:34673ca39ba64f718a079314ec2e5f6c89bd68ca388f5da75663e858e4cdddcd",
+    "ffjudge_image_id": null,
     "base_image": "python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de",
     "base_image_repo_digest": "sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de",
-    "source_commit": "ae3819e5fcc8f0c27b2f08a3c5366e441ba76b7f",
+    "source_commit": "357df35ddb5753f1b044ef0c8216474f5f58548b",
     "authority": "source_commit identifies the commit containing benchmark code and data; the authoritative baseline tag points to the later manifest-only commit.",
     "working_tree_dirty_at_generation": false,
     "dirty_frozen_paths_at_generation": [],
@@ -832,9 +832,9 @@
       "path": "tools/generate_expanded_benchmarks.py",
       "deterministic": true,
       "random_seed": 20260718,
-      "check": "temporary_directory_byte_identical_all_fixture_files",
+      "check": "temporary_directory_line_ending_normalized_identical_all_fixture_files",
       "temporary_regeneration": {
-        "result": "byte_identical",
+        "result": "normalized_text_identical",
         "file_count": 310
       }
     }
@@ -2901,7 +2901,7 @@
     {
       "path": "tests/test_expanded_benchmarks.py",
       "category": "judge_semantics",
-      "sha256": "06854a2749f75fb363387d6936b4364981e0a473456844c30d6b0497468538dc",
+      "sha256": "80c8e059e052dc31402ec1473aa9bc7093efd2f6838879b34763811c9fb75105",
       "hash_mode": "utf8_normalized_lf_v1"
     },
     {
