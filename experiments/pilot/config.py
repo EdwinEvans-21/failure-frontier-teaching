@@ -292,10 +292,11 @@ def _validate(config: PilotConfig) -> None:
         raise ValueError("v2 policies cannot be paired with legacy conditions")
     elif config.teaching_material.gg_acceptance_policy != "token_interval_v1":
         raise ValueError("legacy conditions require token_interval_v1 GG acceptance")
-    expected_problem_count = (
-        31 if config.baseline_id == "failure-frontier-baseline-v3-expanded"
-        else 5
-    )
+    expected_problem_count = {
+        "failure-frontier-baseline-v3-expanded": 31,
+        "failure-frontier-baseline-v4-100-lc-snapshot": 100,
+        "failure-frontier-baseline-v4-100-lc-independent-audit-v2": 100,
+    }.get(config.baseline_id, 5)
     if len(config.problems) != expected_problem_count:
         raise ValueError(
             f"configured baseline requires exactly {expected_problem_count} problems"

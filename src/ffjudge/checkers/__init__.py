@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Callable
 
 from .exact_monotone_paths import CheckerResult, check_exact_monotone_paths
+from .mst_edge_classification import check_mst_edge_classification
 
 
 Checker = Callable[
@@ -11,6 +12,7 @@ Checker = Callable[
 
 CHECKERS: dict[str, Checker] = {
     "exact_monotone_paths": check_exact_monotone_paths,
+    "mst_edge_classification": check_mst_edge_classification,
 }
 
 

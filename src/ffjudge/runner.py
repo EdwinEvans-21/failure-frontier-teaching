@@ -68,6 +68,7 @@ class ProcessOutput:
 class WorkerResult:
     status: str
     runtime_ms: int
+    memory_peak_bytes: int | None = None
     actual: Any = None
     error_type: str = ""
 
@@ -232,6 +233,7 @@ class DockerJudge:
 
         total = len(tests)
         runtime_ms = 0
+        memory_peak_bytes: int | None = None
         for index, case in enumerate(tests):
             if not isinstance(case, dict):
                 raise ValueError(f"test case {index} must be an object")
@@ -271,6 +273,10 @@ class DockerJudge:
                 )
 
             runtime_ms += worker.runtime_ms
+            if worker.memory_peak_bytes is not None:
+                memory_peak_bytes = max(
+                    memory_peak_bytes or 0, worker.memory_peak_bytes
+                )
             status_verdict = {
                 "syntax_error": Verdict.SYNTAX_ERROR,
                 "time_limit_exceeded": Verdict.TIME_LIMIT_EXCEEDED,
@@ -343,6 +349,7 @@ class DockerJudge:
             passed=total,
             total=total,
             runtime_ms=runtime_ms,
+            memory_peak_bytes=memory_peak_bytes,
             message="All tests passed.",
             case_index=None,
         )
@@ -449,9 +456,13 @@ class DockerJudge:
                 error_type = payload.get("error_type", "")
                 if error_type not in SAFE_ERROR_TYPES:
                     error_type = "UserException"
+                memory_peak_bytes = payload.get("memory_peak_bytes")
+                if not isinstance(memory_peak_bytes, int) or memory_peak_bytes < 0:
+                    memory_peak_bytes = None
                 return WorkerResult(
                     status=status,
                     runtime_ms=max(0, runtime_ms),
+                    memory_peak_bytes=memory_peak_bytes,
                     actual=payload.get("actual"),
                     error_type=error_type,
                 )

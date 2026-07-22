@@ -5,6 +5,12 @@ from pathlib import Path
 import argparse
 import json
 import subprocess
+import sys
+
+ROOT = Path(__file__).parents[1]
+SOURCE_ROOT = ROOT / "src"
+if str(SOURCE_ROOT) not in sys.path:
+    sys.path.insert(0, str(SOURCE_ROOT))
 
 from experiments.iterative.fresh_runner import (
     FreshTeacherLineageRunner, load_fresh_teacher_config,
@@ -30,7 +36,7 @@ def main() -> int:
         config = replace(config, mode=args.mode)
     if args.output_root:
         config = replace(config, output_root=str(Path(args.output_root).resolve()))
-    root = Path(__file__).parents[1]
+    root = ROOT
     if config.mode == "dry-run":
         policy = ("judge_v3_oracle_hardened_mixed31_v1"
                   if args.judge_policy == "oracle-hardened-v3"

@@ -8,6 +8,7 @@ import hashlib
 import json
 from difflib import SequenceMatcher
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 
 from experiments.pilot.model_client import ModelInfrastructureError
 from experiments.pilot.provenance_ff import FLAT_PAYLOAD_RENDERER_VERSION
@@ -140,12 +141,16 @@ class IterativeRunner:
         preflight = self.preflight(run_id)
         roots = preflight["roots"]
         assert self.run_dir is not None
-        summaries = []
-        for root_index, root in enumerate(roots):
-            for repeat in range(self.config.lineage_repeats):
-                for condition in condition_rotation(
-                        root_index, repeat, self.config.conditions):
-                    summaries.append(self._run_lineage(root, root_index, repeat, condition))
+        tasks = [
+            (root, root_index, repeat, condition)
+            for root_index, root in enumerate(roots)
+            for repeat in range(self.config.lineage_repeats)
+            for condition in condition_rotation(root_index, repeat, self.config.conditions)
+        ]
+        with ThreadPoolExecutor(max_workers=self.config.parallel_workers,
+                                thread_name_prefix="fft-lineage") as executor:
+            summaries = list(executor.map(
+                lambda task: self._run_lineage(*task), tasks))
         parsed_manifests = parse_lineage_manifests(self.run_dir)
         aggregate = aggregate_run(
             summaries, self.config.max_generations, self.config.conditions,

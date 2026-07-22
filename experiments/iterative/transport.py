@@ -6,6 +6,7 @@ from typing import Any
 import json
 import time
 import urllib.request
+import threading
 
 
 class SanitizedTransportTracker:
@@ -13,22 +14,25 @@ class SanitizedTransportTracker:
 
     def __init__(self, artifact: str | Path) -> None:
         self.artifact = Path(artifact)
-        self.context: dict[str, Any] = {}
+        self._local = threading.local()
+        self._lock = threading.Lock()
         self.attempts = 0
 
     def bind(self, request: dict[str, Any]) -> None:
-        self.context = {
+        self._local.context = {
             "role": request.get("role"),
             "problem_id": request.get("problem_id"),
             "condition": request.get("condition"),
         }
 
     def __call__(self, request, *, timeout):
-        self.attempts += 1
+        with self._lock:
+            self.attempts += 1
+            attempt = self.attempts
         started = time.monotonic()
         record = {
-            "attempt": self.attempts,
-            **self.context,
+            "attempt": attempt,
+            **getattr(self._local, "context", {}),
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "method": request.get_method(),
             "url": request.full_url,
@@ -50,8 +54,9 @@ class SanitizedTransportTracker:
         finally:
             record["elapsed_ms"] = int((time.monotonic() - started) * 1000)
             self.artifact.parent.mkdir(parents=True, exist_ok=True)
-            with self.artifact.open("a", encoding="utf-8", newline="\n") as handle:
-                handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
+            with self._lock:
+                with self.artifact.open("a", encoding="utf-8", newline="\n") as handle:
+                    handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
 
 
 class TrackedModelClient:

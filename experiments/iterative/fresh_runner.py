@@ -4,6 +4,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import subprocess
@@ -31,6 +32,7 @@ class FreshTeacherConfig:
     teacher_repeats: int
     max_generations: int
     conditions: tuple[str, ...]
+    parallel_workers: int
     mode: str
     source_path: str
 
@@ -49,6 +51,7 @@ def load_fresh_teacher_config(path: str | Path) -> FreshTeacherConfig:
         teacher_repeats=int(data["teacher_repeats"]),
         max_generations=int(data["max_generations"]),
         conditions=tuple(data["conditions"]),
+        parallel_workers=int(data.get("parallel_workers", 1)),
         mode=data.get("mode", "dry-run"),
         source_path=str(source),
     )
@@ -60,6 +63,8 @@ def load_fresh_teacher_config(path: str | Path) -> FreshTeacherConfig:
         raise ValueError("fresh full experiment requires the frozen v2 comparison")
     if config.mode not in {"dry-run", "live"}:
         raise ValueError("mode must be dry-run or live")
+    if config.parallel_workers < 1:
+        raise ValueError("parallel_workers must be positive")
     return config
 
 
@@ -88,6 +93,8 @@ class FreshTeacherLineageRunner:
             "teacher_samples": len(self.base.problems) * self.config.teacher_repeats,
             "max_generations": self.config.max_generations,
             "conditions": list(self.config.conditions),
+            "parallel_workers": self.config.parallel_workers,
+            "parallel_scheduler": "thread_pool_ordered_map_v1",
             "judge_policy": self.judge_policy,
             "teacher_ac_policy": "skip_all_student_conditions",
             "teacher_failure_policy": "one_lineage_per_condition_stop_on_ac",
@@ -107,19 +114,24 @@ class FreshTeacherLineageRunner:
         source = self.run_dir / "fresh_teacher_source"
         root_ids: list[str] = []
         teacher_rows: list[dict[str, Any]] = []
-        adapter = LineagePilotAdapter(
-            self.base, self.model, judge=self.judge,
-            project_root=self.project_root,
-        )
+        tasks = []
         for repeat in range(self.config.teacher_repeats):
             for item in self.base.problems:
                 spec = ProblemSpec.load(self.project_root / item.problem)
-                episode_id = f"{run_id}-t{repeat:02d}-{spec.problem_id}"
-                row = self._sample_teacher(
-                    adapter, source, episode_id, repeat, item, spec)
+                tasks.append((repeat, item, spec, f"{run_id}-t{repeat:02d}-{spec.problem_id}"))
+
+        def sample(task: tuple[int, Any, ProblemSpec, str]) -> dict[str, Any]:
+            repeat, item, spec, episode_id = task
+            adapter = LineagePilotAdapter(self.base, self.model, judge=self.judge,
+                                         project_root=self.project_root)
+            return self._sample_teacher(adapter, source, episode_id, repeat, item, spec)
+
+        with ThreadPoolExecutor(max_workers=self.config.parallel_workers,
+                                thread_name_prefix="fft-teacher") as executor:
+            for row in executor.map(sample, tasks):
                 teacher_rows.append(row)
                 if row["lineage_root_eligible"]:
-                    root_ids.append(episode_id)
+                    root_ids.append(row["source_episode_id"])
                 write_json(self.run_dir / "teacher_results.json", teacher_rows)
         failure_roots = [x for x in teacher_rows if x["teacher_verdict"] != "AC"]
         write_json(self.run_dir / "teacher_summary.json", {
@@ -158,6 +170,7 @@ class FreshTeacherLineageRunner:
             condition_order_policy="balanced_rotation_v1",
             conditions=self.config.conditions, mode="live",
             source_path=self.config.source_path,
+            parallel_workers=self.config.parallel_workers,
         )
         aggregate = IterativeRunner(
             iterative, project_root=self.project_root, model=self.model,
@@ -185,11 +198,17 @@ class FreshTeacherLineageRunner:
             "created_at": _now(), "git_commit": commit,
             "config_sha256": self.config.sha256,
             "base_config_sha256": file_hash(self.base_path),
+            "baseline_id": self.base.baseline_id,
+            "baseline_manifest": self.base.baseline_manifest,
+            "baseline_manifest_sha256": file_hash(
+                self.project_root / self.base.baseline_manifest),
             "problem_count": len(self.base.problems),
             "teacher_repeats": self.config.teacher_repeats,
             "teacher_samples": len(self.base.problems) * self.config.teacher_repeats,
             "max_generations": self.config.max_generations,
             "conditions": list(self.config.conditions),
+            "parallel_workers": self.config.parallel_workers,
+            "parallel_scheduler": "thread_pool_ordered_map_v1",
             "sandbox_image_id": self.image_id,
             "judge_policy": self.judge_policy,
         }

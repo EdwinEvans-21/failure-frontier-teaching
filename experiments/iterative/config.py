@@ -45,6 +45,7 @@ class IterativeConfig:
     conditions: tuple[str, ...]
     mode: str
     source_path: str
+    parallel_workers: int = 1
     teacher_ac_episode_ids: tuple[str, ...] = ()
     source_problem_count: int | None = None
 
@@ -79,6 +80,7 @@ def load_iterative_config(path: str | Path) -> IterativeConfig:
         conditions=tuple(data["conditions"]),
         mode=data.get("mode", "dry-run"),
         source_path=str(source),
+        parallel_workers=int(data.get("parallel_workers", 1)),
         teacher_ac_episode_ids=tuple(data.get("teacher_ac_episode_ids", ())),
         source_problem_count=(
             int(data["source_problem_count"])
@@ -95,6 +97,8 @@ def load_iterative_config(path: str | Path) -> IterativeConfig:
         raise ValueError("mode must be dry-run, mock, or live")
     if config.max_generations < 1 or config.lineage_repeats < 1:
         raise ValueError("generation and repeat counts must be positive")
+    if config.parallel_workers < 1:
+        raise ValueError("parallel_workers must be positive")
     if not config.stop_on_ac:
         raise ValueError("minimal_failure_lineage_v1 requires stop_on_ac")
     if not config.root_episode_ids or len(set(config.root_episode_ids)) != len(config.root_episode_ids):

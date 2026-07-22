@@ -32,7 +32,22 @@ _SAFE_ERROR_TYPES = {
 }
 
 
+def _memory_peak_bytes() -> int | None:
+    for candidate in (
+        "/sys/fs/cgroup/memory.peak",
+        "/sys/fs/cgroup/memory/memory.max_usage_in_bytes",
+    ):
+        try:
+            value = int(Path(candidate).read_text(encoding="ascii").strip())
+            if value >= 0:
+                return value
+        except (OSError, ValueError):
+            continue
+    return None
+
+
 def emit(**payload: Any) -> None:
+    payload.setdefault("memory_peak_bytes", _memory_peak_bytes())
     encoded = json.dumps(payload, ensure_ascii=False,
                          separators=(",", ":")).encode("utf-8")
     _OS_WRITE(1, b"\n" + RESULT_PREFIX + encoded + b"\n")

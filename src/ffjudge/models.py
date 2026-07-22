@@ -94,6 +94,7 @@ class JudgeResult:
     passed: int
     total: int
     runtime_ms: int
+    memory_peak_bytes: int | None = None
     message: str = ""
     case_index: int | None = None
     checker_failure_category: str | None = None
