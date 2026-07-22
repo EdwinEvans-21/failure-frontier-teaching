@@ -1,0 +1,141 @@
+[1/100] validating lc-0995-minimum-number-of-k-consecutive-bit-flips
+[2/100] validating lc-1143-longest-common-subsequence
+[3/100] validating lc-1155-number-of-dice-rolls-with-target-sum
+[3/100] FAILED lc-1155-number-of-dice-rolls-with-target-sum: AssertionError
+[4/100] validating lc-1187-make-array-strictly-increasing
+[4/100] FAILED lc-1187-make-array-strictly-increasing: AssertionError
+[5/100] validating lc-1220-count-vowels-permutation
+[5/100] FAILED lc-1220-count-vowels-permutation: AssertionError
+[6/100] validating lc-1235-maximum-profit-in-job-scheduling
+[7/100] validating lc-1240-tiling-a-rectangle-with-the-fewest-squares
+[7/100] FAILED lc-1240-tiling-a-rectangle-with-the-fewest-squares: AssertionError
+[8/100] validating lc-1269-number-of-ways-to-stay-in-the-same-place-after-some-steps
+[9/100] validating lc-1278-palindrome-partitioning-iii
+[10/100] validating lc-1284-minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix
+[10/100] FAILED lc-1284-minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix: AssertionError
+[11/100] validating lc-1293-shortest-path-in-a-grid-with-obstacles-elimination
+[11/100] FAILED lc-1293-shortest-path-in-a-grid-with-obstacles-elimination: AssertionError
+[12/100] validating lc-1301-number-of-paths-with-max-score
+[13/100] validating lc-1312-minimum-insertion-steps-to-make-a-string-palindrome
+[14/100] validating lc-1335-minimum-difficulty-of-a-job-schedule
+[15/100] validating lc-1349-maximum-students-taking-exam
+[16/100] validating lc-1354-construct-target-array-with-multiple-sums
+[16/100] FAILED lc-1354-construct-target-array-with-multiple-sums: AssertionError
+[17/100] validating lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid
+[17/100] FAILED lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid: AssertionError
+[18/100] validating lc-1388-pizza-with-3n-slices
+[19/100] validating lc-1402-reducing-dishes
+[20/100] validating lc-1416-restore-the-array
+[20/100] FAILED lc-1416-restore-the-array: AssertionError
+[21/100] validating lc-1420-build-array-where-you-can-find-the-maximum-exactly-k-comparisons
+[22/100] validating lc-1434-number-of-ways-to-wear-different-hats-to-each-other
+[23/100] validating lc-1439-find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows
+[24/100] validating lc-1444-number-of-ways-of-cutting-a-pizza
+[24/100] FAILED lc-1444-number-of-ways-of-cutting-a-pizza: AssertionError
+[25/100] validating lc-1458-max-dot-product-of-two-subsequences
+[26/100] validating lc-1463-cherry-pickup-ii
+[27/100] validating lc-1473-paint-house-iii
+[28/100] validating lc-1489-find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree
+[29/100] validating lc-1494-parallel-courses-ii
+[29/100] FAILED lc-1494-parallel-courses-ii: AssertionError
+[30/100] validating lc-1510-stone-game-iv
+[31/100] validating lc-1526-minimum-number-of-increments-on-subarrays-to-form-a-target-array
+[32/100] validating lc-1531-string-compression-ii
+[32/100] FAILED lc-1531-string-compression-ii: AssertionError
+[33/100] validating lc-1547-minimum-cost-to-cut-a-stick
+[33/100] FAILED lc-1547-minimum-cost-to-cut-a-stick: AssertionError
+[34/100] validating lc-1553-minimum-number-of-days-to-eat-n-oranges
+[34/100] FAILED lc-1553-minimum-number-of-days-to-eat-n-oranges: AssertionError
+[35/100] validating lc-1563-stone-game-v
+[35/100] FAILED lc-1563-stone-game-v: AssertionError
+[36/100] validating lc-1575-count-all-possible-routes
+[36/100] FAILED lc-1575-count-all-possible-routes: AssertionError
+[37/100] validating lc-1579-remove-max-number-of-edges-to-keep-graph-fully-traversable
+[38/100] validating lc-1591-strange-printer-ii
+[38/100] FAILED lc-1591-strange-printer-ii: AssertionError
+[39/100] validating lc-1601-maximum-number-of-achievable-transfer-requests
+[39/100] FAILED lc-1601-maximum-number-of-achievable-transfer-requests: AssertionError
+[40/100] validating lc-1611-minimum-one-bit-operations-to-make-integers-zero
+[41/100] validating lc-1632-rank-transform-of-a-matrix
+[41/100] FAILED lc-1632-rank-transform-of-a-matrix: AssertionError
+[42/100] validating lc-1639-number-of-ways-to-form-a-target-string-given-a-dictionary
+[43/100] validating lc-1659-maximize-grid-happiness
+[44/100] validating lc-1671-minimum-number-of-removals-to-make-mountain-array
+[45/100] validating lc-1675-minimize-deviation-in-array
+[46/100] validating lc-1681-minimum-incompatibility
+[46/100] FAILED lc-1681-minimum-incompatibility: AssertionError
+[47/100] validating lc-1691-maximum-height-by-stacking-cuboids
+[48/100] validating lc-1697-checking-existence-of-edge-length-limited-paths
+[49/100] validating lc-1707-maximum-xor-with-an-element-from-array
+[50/100] validating lc-1723-find-minimum-time-to-finish-all-jobs
+[50/100] FAILED lc-1723-find-minimum-time-to-finish-all-jobs: AssertionError
+[51/100] validating lc-1735-count-ways-to-make-array-with-product
+[51/100] FAILED lc-1735-count-ways-to-make-array-with-product: AssertionError
+[52/100] validating lc-1751-maximum-number-of-events-that-can-be-attended-ii
+[52/100] FAILED lc-1751-maximum-number-of-events-that-can-be-attended-ii: AssertionError
+[53/100] validating lc-1771-maximize-palindrome-length-from-subsequences
+[54/100] validating lc-1782-count-pairs-of-nodes
+[55/100] validating lc-1786-number-of-restricted-paths-from-first-to-last-node
+[55/100] FAILED lc-1786-number-of-restricted-paths-from-first-to-last-node: AssertionError
+[56/100] validating lc-1799-maximize-score-after-n-operations
+[56/100] FAILED lc-1799-maximize-score-after-n-operations: AssertionError
+[57/100] validating lc-1815-maximum-number-of-groups-getting-fresh-donuts
+[58/100] validating lc-1830-minimum-number-of-operations-to-make-string-sorted
+[59/100] validating lc-1851-minimum-interval-to-include-each-query
+[60/100] validating lc-1857-largest-color-value-in-a-directed-graph
+[60/100] FAILED lc-1857-largest-color-value-in-a-directed-graph: AssertionError
+[61/100] validating lc-1866-number-of-ways-to-rearrange-sticks-with-k-sticks-visible
+[62/100] validating lc-1872-stone-game-viii
+[63/100] validating lc-1889-minimum-space-wasted-from-packaging
+[64/100] validating lc-1896-minimum-cost-to-change-the-final-value-of-expression
+[65/100] validating lc-1916-count-ways-to-build-rooms-in-an-ant-colony
+[65/100] FAILED lc-1916-count-ways-to-build-rooms-in-an-ant-colony: AssertionError
+[66/100] validating lc-1931-painting-a-grid-with-three-different-colors
+[66/100] FAILED lc-1931-painting-a-grid-with-three-different-colors: AssertionError
+[67/100] validating lc-1959-minimum-total-space-wasted-with-k-resizing-operations
+[67/100] FAILED lc-1959-minimum-total-space-wasted-with-k-resizing-operations: AssertionError
+[68/100] validating lc-1970-last-day-where-you-can-still-cross
+[69/100] validating lc-1977-number-of-ways-to-separate-numbers
+[69/100] FAILED lc-1977-number-of-ways-to-separate-numbers: AssertionError
+[70/100] validating lc-1987-number-of-unique-good-subsequences
+[71/100] validating lc-1994-the-number-of-good-subsets
+[72/100] validating lc-2009-minimum-number-of-operations-to-make-array-continuous
+[73/100] validating lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference
+[74/100] validating lc-2045-second-minimum-time-to-reach-destination
+[75/100] validating lc-2060-check-if-an-original-string-exists-given-two-encoded-strings
+[75/100] FAILED lc-2060-check-if-an-original-string-exists-given-two-encoded-strings: AssertionError
+[76/100] validating lc-2071-maximum-number-of-tasks-you-can-assign
+[76/100] FAILED lc-2071-maximum-number-of-tasks-you-can-assign: AssertionError
+[77/100] validating lc-2092-find-all-people-with-secret
+[77/100] FAILED lc-2092-find-all-people-with-secret: AssertionError
+[78/100] validating lc-2106-maximum-fruits-harvested-after-at-most-k-steps
+[79/100] validating lc-2127-maximum-employees-to-be-invited-to-a-meeting
+[79/100] FAILED lc-2127-maximum-employees-to-be-invited-to-a-meeting: AssertionError
+[80/100] validating lc-2147-number-of-ways-to-divide-a-long-corridor
+[80/100] FAILED lc-2147-number-of-ways-to-divide-a-long-corridor: AssertionError
+[81/100] validating lc-2163-minimum-difference-in-sums-after-removal-of-elements
+[82/100] validating lc-2188-minimum-time-to-finish-the-race
+[82/100] FAILED lc-2188-minimum-time-to-finish-the-race: AssertionError
+[83/100] validating lc-2203-minimum-weighted-subgraph-with-the-required-paths
+[84/100] validating lc-2366-minimum-replacements-to-sort-the-array
+[84/100] FAILED lc-2366-minimum-replacements-to-sort-the-array: AssertionError
+[85/100] validating lc-2421-number-of-good-paths
+[86/100] validating lc-2478-number-of-beautiful-partitions
+[86/100] FAILED lc-2478-number-of-beautiful-partitions: AssertionError
+[87/100] validating lc-2719-count-of-integers
+[88/100] validating lc-2809-minimum-time-to-make-array-sum-at-most-x
+[88/100] FAILED lc-2809-minimum-time-to-make-array-sum-at-most-x: AssertionError
+[89/100] validating lc-2926-maximum-balanced-subsequence-sum
+[90/100] validating lc-2940-find-building-where-alice-and-bob-can-meet
+[90/100] FAILED lc-2940-find-building-where-alice-and-bob-can-meet: AssertionError
+[91/100] validating lc-2945-find-maximum-non-decreasing-array-length
+[92/100] validating lc-3022-minimize-or-of-remaining-elements-using-operations
+[93/100] validating lc-3045-count-prefix-and-suffix-pairs-ii
+[94/100] validating lc-3072-distribute-elements-into-two-arrays-ii
+[95/100] validating lc-3077-maximum-strength-of-k-disjoint-subarrays
+[96/100] validating lc-3102-minimize-manhattan-distances
+[97/100] validating lc-3108-minimum-cost-walk-in-weighted-graph
+[98/100] validating lc-3116-kth-smallest-amount-with-single-denomination-combination
+[99/100] validating lc-3117-minimum-sum-of-values-by-dividing-array
+[100/100] validating lc-3123-find-edges-in-shortest-paths
+{"validated": 60, "output": "E:\\VsCodeProjects\\machine_learning\\research\\failure-frontier-teaching-lineage-dev\\experiments\\problem_bank_v4_100\\lc100_rc1_natural_docker_validation.json", "report": "E:\\VsCodeProjects\\machine_learning\\research\\failure-frontier-teaching-lineage-dev\\experiments\\problem_bank_v4_100\\lc100_rc1_natural_docker_validation.md"}

@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "target_problem_count": 1,
+  "excluded_problem_ids": [
+    "exact_monotone_paths",
+    "lc-0761-special-binary-string",
+    "lc-1489-find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree"
+  ],
+  "problems": [
+    {
+      "problem_id": "lc-1143-longest-common-subsequence",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 2008,
+      "reference_runtimes_ms": [
+        71,
+        77,
+        83,
+        77,
+        85,
+        82,
+        74,
+        71,
+        91
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 82,
+        "p95_ms": 91,
+        "max_ms": 91
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "canary_small_verdicts": {
+        "public": "ACCEPTED",
+        "hidden": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_case_id": null,
+      "memory_peak_mb": null
+    }
+  ],
+  "memory_peak_mb": null,
+  "memory_peak_status": "unavailable_from_current_dockerjudge"
+}

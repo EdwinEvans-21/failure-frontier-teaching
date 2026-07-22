@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.2",
+  "target_problem_count": 1,
+  "completed_problem_count": 1,
+  "attempted_problem_count": 1,
+  "completed": true,
+  "ready_for_freeze": false,
+  "calibration_mode": "reference_only",
+  "excluded_problem_ids": [
+    "exact_monotone_paths",
+    "lc-0761-special-binary-string"
+  ],
+  "problems": [
+    {
+      "problem_id": "lc-0995-minimum-number-of-k-consecutive-bit-flips",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 3,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 300007,
+      "reference_runtimes_ms": [
+        44,
+        48,
+        37,
+        43,
+        40,
+        35,
+        36,
+        41,
+        36
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 37,
+        "p95_ms": 43,
+        "max_ms": 43
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        13799424,
+        13688832,
+        14262272,
+        13660160,
+        14196736,
+        13398016,
+        13930496,
+        13680640,
+        13369344
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.047,
+        "max_mb": 13.602
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.602,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_validation": "skipped_reference_only"
+    }
+  ],
+  "validation_failures": [],
+  "error_log": "experiments\\problem_bank_v4_100\\lc0995_reference_threshold_probe.errors.jsonl",
+  "memory_peak_mb": null,
+  "memory_peak_status": "unavailable_from_current_dockerjudge"
+}

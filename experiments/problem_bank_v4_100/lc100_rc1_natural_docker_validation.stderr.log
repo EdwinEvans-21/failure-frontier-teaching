@@ -1,0 +1,32 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 324B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/3] FROM docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de
+#4 resolve docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de 0.0s done
+#4 DONE 0.0s
+
+#5 [2/3] RUN useradd --create-home --uid 10001 judge
+#5 CACHED
+
+#6 [3/3] WORKDIR /workspace
+#6 CACHED
+
+#7 exporting to image
+#7 exporting layers done
+#7 exporting manifest sha256:4ac7e5809be8d3df00251247dc694eaf0c5091621fa284789f65735e480cf9e7 done
+#7 exporting config sha256:a059f88537a95db0592c03dd65edd6209802b7c87f0ae53f238a4df7ac27a66e done
+#7 exporting attestation manifest sha256:d47ae56b833284e84a6108bc7887af7b82b5e707a77c5e2f6f79335a18239b47 0.0s done
+#7 exporting manifest list sha256:6faf27e0a18fddb24f548aed2bfe4a91a6cb225c038f0f7204590e314310ad4d 0.0s done
+#7 naming to docker.io/library/ffjudge-python:latest done
+#7 unpacking to docker.io/library/ffjudge-python:latest 0.0s done
+#7 DONE 0.1s

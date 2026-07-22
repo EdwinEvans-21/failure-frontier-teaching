@@ -1,0 +1,185 @@
+{
+  "schema_version": "1.2",
+  "target_problem_count": 100,
+  "completed_problem_count": 3,
+  "attempted_problem_count": 9,
+  "completed": false,
+  "ready_for_freeze": false,
+  "excluded_problem_ids": [
+    "exact_monotone_paths",
+    "lc-0761-special-binary-string"
+  ],
+  "problems": [
+    {
+      "problem_id": "lc-0995-minimum-number-of-k-consecutive-bit-flips",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 3,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 300007,
+      "reference_runtimes_ms": [
+        36,
+        37,
+        39,
+        38,
+        38,
+        38,
+        53,
+        43,
+        45
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 39,
+        "p95_ms": 53,
+        "max_ms": 53
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED",
+        "hidden": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_case_id": null,
+      "memory_peak_mb": null
+    },
+    {
+      "problem_id": "lc-1143-longest-common-subsequence",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 2008,
+      "reference_runtimes_ms": [
+        74,
+        71,
+        80,
+        87,
+        94,
+        73,
+        95,
+        73,
+        75
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 80,
+        "p95_ms": 95,
+        "max_ms": 95
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED",
+        "hidden": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_case_id": null,
+      "memory_peak_mb": null
+    },
+    {
+      "problem_id": "lc-1155-number-of-dice-rolls-with-target-sum",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 81,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_n30_k30_target1000",
+      "max_stress_case_args_digest": 14,
+      "reference_runtimes_ms": [
+        13,
+        11,
+        13,
+        17,
+        15,
+        13,
+        19,
+        14,
+        16
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 15,
+        "p95_ms": 19,
+        "max_ms": 19
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_case_id": "max_n30_k30_target1000",
+      "memory_peak_mb": null
+    }
+  ],
+  "validation_failures": [
+    {
+      "problem_id": "lc-1187-make-array-strictly-increasing",
+      "error_type": "AssertionError",
+      "message": "canary did not stably TLE on max stress for lc-1187-make-array-strictly-increasing: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T06:40:48.765553+00:00"
+    },
+    {
+      "problem_id": "lc-1220-count-vowels-permutation",
+      "error_type": "AssertionError",
+      "message": "canary did not stably TLE on max stress for lc-1220-count-vowels-permutation: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T06:41:53.483477+00:00"
+    },
+    {
+      "problem_id": "lc-1235-maximum-profit-in-job-scheduling",
+      "error_type": "AssertionError",
+      "message": "canary did not stably TLE on max stress for lc-1235-maximum-profit-in-job-scheduling: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T06:42:59.444925+00:00"
+    },
+    {
+      "problem_id": "lc-1240-tiling-a-rectangle-with-the-fewest-squares",
+      "error_type": "AssertionError",
+      "message": "canary did not stably TLE on max stress for lc-1240-tiling-a-rectangle-with-the-fewest-squares: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T06:44:02.872436+00:00"
+    },
+    {
+      "problem_id": "lc-1269-number-of-ways-to-stay-in-the-same-place-after-some-steps",
+      "error_type": "AssertionError",
+      "message": "canary did not stably TLE on max stress for lc-1269-number-of-ways-to-stay-in-the-same-place-after-some-steps: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T06:45:07.598974+00:00"
+    },
+    {
+      "problem_id": "lc-1278-palindrome-partitioning-iii",
+      "error_type": "AssertionError",
+      "message": "canary did not stably TLE on max stress for lc-1278-palindrome-partitioning-iii: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T06:46:14.632952+00:00"
+    },
+    {
+      "problem_id": "lc-1284-minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix",
+      "error_type": "AssertionError",
+      "message": "canary did not stably TLE on max stress for lc-1284-minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T06:47:19.169192+00:00"
+    }
+  ],
+  "memory_peak_mb": null,
+  "memory_peak_status": "unavailable_from_current_dockerjudge"
+}

@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.2",
+  "target_problem_count": 1,
+  "completed_problem_count": 1,
+  "attempted_problem_count": 1,
+  "completed": true,
+  "ready_for_freeze": true,
+  "calibration_mode": "full",
+  "excluded_problem_ids": [
+    "exact_monotone_paths",
+    "lc-0761-special-binary-string"
+  ],
+  "problems": [
+    {
+      "problem_id": "lc-1354-construct-target-array-with-multiple-sums",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 6,
+      "max_stress_case_id": "max_repeated_subtraction",
+      "max_stress_case_args_digest": 17,
+      "reference_runtimes_ms": [
+        7
+      ],
+      "reference_runtime_summary": {
+        "runs": 1,
+        "median_ms": 7,
+        "p95_ms": 7,
+        "max_ms": 7
+      },
+      "reference_warmup_count": 0,
+      "reference_measurement_count": 1,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13389824
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 1,
+        "median_mb": 12.77,
+        "max_mb": 12.77
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 12.77,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_repeated_subtraction"
+    }
+  ],
+  "validation_failures": [],
+  "error_log": "experiments\\problem_bank_v4_100\\repair_lc1354.errors.jsonl",
+  "memory_peak_mb": null,
+  "memory_peak_status": "unavailable_from_current_dockerjudge"
+}

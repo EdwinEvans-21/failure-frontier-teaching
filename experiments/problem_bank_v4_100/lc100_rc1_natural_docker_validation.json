@@ -1,0 +1,4520 @@
+{
+  "schema_version": "1.2",
+  "target_problem_count": 100,
+  "completed_problem_count": 60,
+  "attempted_problem_count": 100,
+  "completed": true,
+  "ready_for_freeze": false,
+  "calibration_mode": "full",
+  "excluded_problem_ids": [
+    "exact_monotone_paths",
+    "lc-0761-special-binary-string"
+  ],
+  "problems": [
+    {
+      "problem_id": "lc-0995-minimum-number-of-k-consecutive-bit-flips",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_alternating_k_half",
+      "max_stress_case_args_digest": 300009,
+      "reference_runtimes_ms": [
+        45,
+        40,
+        44,
+        40,
+        42,
+        43,
+        39,
+        43,
+        43
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 43,
+        "p95_ms": 44,
+        "max_ms": 44
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        14462976,
+        14155776,
+        14512128,
+        14327808,
+        14716928,
+        15069184,
+        14258176,
+        14987264,
+        14438400
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.84,
+        "max_mb": 14.371
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 14.371,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "MEMORY_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_alternating_k_half"
+    },
+    {
+      "problem_id": "lc-1143-longest-common-subsequence",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 6,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 2008,
+      "reference_runtimes_ms": [
+        77,
+        81,
+        82,
+        81,
+        79,
+        79,
+        75,
+        76,
+        90
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 79,
+        "p95_ms": 90,
+        "max_ms": 90
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13881344,
+        14053376,
+        13377536,
+        13635584,
+        13705216,
+        13918208,
+        13959168,
+        13692928,
+        13930496
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.07,
+        "max_mb": 13.312
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.312,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": null
+    },
+    {
+      "problem_id": "lc-1235-maximum-profit-in-job-scheduling",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_overlapping",
+      "max_stress_case_args_digest": 1044476,
+      "reference_runtimes_ms": [
+        48,
+        45,
+        47,
+        43,
+        42,
+        47,
+        50,
+        37,
+        45
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 45,
+        "p95_ms": 50,
+        "max_ms": 50
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        20619264,
+        20664320,
+        20733952,
+        20426752,
+        20717568,
+        20410368,
+        20107264,
+        20434944,
+        20959232
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 19.488,
+        "max_mb": 19.988
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 19.988,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_overlapping"
+    },
+    {
+      "problem_id": "lc-1269-number-of-ways-to-stay-in-the-same-place-after-some-steps",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_steps_large_arr",
+      "max_stress_case_args_digest": 14,
+      "reference_runtimes_ms": [
+        38,
+        41,
+        58,
+        36,
+        49,
+        42,
+        39,
+        40,
+        42
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 42,
+        "p95_ms": 58,
+        "max_ms": 58
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        14163968,
+        13877248,
+        13643776,
+        14151680,
+        13914112,
+        13086720,
+        13602816,
+        13701120,
+        13639680
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.012,
+        "max_mb": 13.496
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.496,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_steps_large_arr"
+    },
+    {
+      "problem_id": "lc-1278-palindrome-partitioning-iii",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_random_k50",
+      "max_stress_case_args_digest": 108,
+      "reference_runtimes_ms": [
+        20,
+        22,
+        27,
+        21,
+        20,
+        18,
+        20,
+        25,
+        19
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 20,
+        "p95_ms": 27,
+        "max_ms": 27
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        14204928,
+        13537280,
+        13946880,
+        14307328,
+        13950976,
+        13328384,
+        13955072,
+        13647872,
+        13357056
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.301,
+        "max_mb": 13.645
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.645,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_random_k50"
+    },
+    {
+      "problem_id": "lc-1301-number-of-paths-with-max-score",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_board",
+      "max_stress_case_args_digest": 10402,
+      "reference_runtimes_ms": [
+        41,
+        45,
+        28,
+        24,
+        26,
+        26,
+        23,
+        28,
+        27
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 26,
+        "p95_ms": 28,
+        "max_ms": 28
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13926400,
+        14458880,
+        13946880,
+        14585856,
+        13926400,
+        13971456,
+        13803520,
+        14311424,
+        13725696
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.301,
+        "max_mb": 13.91
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.91,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_board"
+    },
+    {
+      "problem_id": "lc-1312-minimum-insertion-steps-to-make-a-string-palindrome",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_random",
+      "max_stress_case_args_digest": 504,
+      "reference_runtimes_ms": [
+        41,
+        44,
+        61,
+        36,
+        37,
+        32,
+        34,
+        39,
+        44
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 37,
+        "p95_ms": 61,
+        "max_ms": 61
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13864960,
+        14127104,
+        13447168,
+        13713408,
+        13070336,
+        13946880,
+        13123584,
+        13955072,
+        13119488
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 12.824,
+        "max_mb": 13.309
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.309,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_random"
+    },
+    {
+      "problem_id": "lc-1335-minimum-difficulty-of-a-job-schedule",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_n_d",
+      "max_stress_case_args_digest": 1473,
+      "reference_runtimes_ms": [
+        130,
+        117,
+        147,
+        125,
+        126,
+        142,
+        123,
+        146,
+        147
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 142,
+        "p95_ms": 147,
+        "max_ms": 147
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13910016,
+        13430784,
+        13176832,
+        13594624,
+        13369344,
+        13737984,
+        13938688,
+        13795328,
+        13365248
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 12.965,
+        "max_mb": 13.293
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.293,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_n_d"
+    },
+    {
+      "problem_id": "lc-1349-maximum-students-taking-exam",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_open",
+      "max_stress_case_args_digest": 338,
+      "reference_runtimes_ms": [
+        12,
+        19,
+        21,
+        22,
+        15,
+        10,
+        13,
+        14,
+        10
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 14,
+        "p95_ms": 22,
+        "max_ms": 22
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13660160,
+        13729792,
+        13373440,
+        13340672,
+        13996032,
+        13615104,
+        13619200,
+        14209024,
+        13971456
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 12.988,
+        "max_mb": 13.551
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.551,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_open"
+    },
+    {
+      "problem_id": "lc-1388-pizza-with-3n-slices",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_len",
+      "max_stress_case_args_digest": 2447,
+      "reference_runtimes_ms": [
+        66,
+        74,
+        64,
+        44,
+        54,
+        41,
+        52,
+        44,
+        51
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 51,
+        "p95_ms": 64,
+        "max_ms": 64
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        15417344,
+        15306752,
+        15007744,
+        14684160,
+        14962688,
+        15650816,
+        15306752,
+        15261696,
+        15544320
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 14.555,
+        "max_mb": 14.926
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 14.926,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_len"
+    },
+    {
+      "problem_id": "lc-1402-reducing-dishes",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_mixed",
+      "max_stress_case_args_digest": 2703,
+      "reference_runtimes_ms": [
+        24,
+        8,
+        9,
+        8,
+        8,
+        7,
+        8,
+        9,
+        8
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 8,
+        "p95_ms": 9,
+        "max_ms": 9
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13746176,
+        14086144,
+        13414400,
+        13328384,
+        13914112,
+        13611008,
+        14278656,
+        13680640,
+        14454784
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.047,
+        "max_mb": 13.785
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.785,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_mixed"
+    },
+    {
+      "problem_id": "lc-1420-build-array-where-you-can-find-the-maximum-exactly-k-comparisons",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_dims",
+      "max_stress_case_args_digest": 13,
+      "reference_runtimes_ms": [
+        24,
+        28,
+        23,
+        27,
+        23,
+        27,
+        29,
+        28,
+        27
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 27,
+        "p95_ms": 29,
+        "max_ms": 29
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        14151680,
+        13586432,
+        13897728,
+        14172160,
+        13635584,
+        13602816,
+        13664256,
+        13602816,
+        13107200
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.004,
+        "max_mb": 13.516
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.516,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_dims"
+    },
+    {
+      "problem_id": "lc-1434-number-of-ways-to-wear-different-hats-to-each-other",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_dense_hats",
+      "max_stress_case_args_digest": 1532,
+      "reference_runtimes_ms": [
+        66,
+        58,
+        51,
+        67,
+        50,
+        76,
+        84,
+        84,
+        67
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 67,
+        "p95_ms": 84,
+        "max_ms": 84
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13434880,
+        13647872,
+        13320192,
+        13934592,
+        13619200,
+        13467648,
+        13963264,
+        13889536,
+        13533184
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 12.988,
+        "max_mb": 13.316
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.316,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_dense_hats"
+    },
+    {
+      "problem_id": "lc-1439-find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_matrix_k200",
+      "max_stress_case_args_digest": 6432,
+      "reference_runtimes_ms": [
+        22,
+        25,
+        29,
+        23,
+        23,
+        23,
+        27,
+        22,
+        21
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 23,
+        "p95_ms": 29,
+        "max_ms": 29
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13496320,
+        13434880,
+        13602816,
+        13737984,
+        13762560,
+        13447168,
+        13660160,
+        13402112,
+        13447168
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 12.973,
+        "max_mb": 13.125
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.125,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "MEMORY_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_matrix_k200"
+    },
+    {
+      "problem_id": "lc-1458-max-dot-product-of-two-subsequences",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_both",
+      "max_stress_case_args_digest": 5402,
+      "reference_runtimes_ms": [
+        130,
+        145,
+        140,
+        148,
+        198,
+        198,
+        228,
+        116,
+        124
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 148,
+        "p95_ms": 228,
+        "max_ms": 228
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.25,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        14692352,
+        15294464,
+        14970880,
+        14729216,
+        14864384,
+        14782464,
+        14561280,
+        14749696,
+        14651392
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 14.066,
+        "max_mb": 14.277
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 14.277,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "MEMORY_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_both"
+    },
+    {
+      "problem_id": "lc-1463-cherry-pickup-ii",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_grid",
+      "max_stress_case_args_digest": 19305,
+      "reference_runtimes_ms": [
+        747,
+        673,
+        993,
+        701,
+        678,
+        687,
+        639,
+        681,
+        693
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 687,
+        "p95_ms": 993,
+        "max_ms": 993
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 5.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13443072,
+        14200832,
+        13664256,
+        13676544,
+        13340672,
+        13950976,
+        13901824,
+        13664256,
+        13725696
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.043,
+        "max_mb": 13.305
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.305,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "MEMORY_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_grid"
+    },
+    {
+      "problem_id": "lc-1473-paint-house-iii",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_unpainted",
+      "max_stress_case_args_digest": 10752,
+      "reference_runtimes_ms": [
+        740,
+        738,
+        708,
+        729,
+        695,
+        721,
+        691,
+        742,
+        717
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 717,
+        "p95_ms": 742,
+        "max_ms": 742
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 3.75,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13352960,
+        13598720,
+        13635584,
+        14323712,
+        13955072,
+        14192640,
+        13627392,
+        13852672,
+        13709312
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.211,
+        "max_mb": 13.66
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.66,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_unpainted"
+    },
+    {
+      "problem_id": "lc-1489-find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 5,
+      "hidden_case_count": 60,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_edges",
+      "max_stress_case_args_digest": 2694,
+      "reference_runtimes_ms": [
+        89,
+        55,
+        51,
+        59,
+        47,
+        44,
+        50,
+        46,
+        46
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 47,
+        "p95_ms": 59,
+        "max_ms": 59
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13934592,
+        13770752,
+        13373440,
+        13406208,
+        14143488,
+        13803520,
+        13729792,
+        13590528,
+        13701120
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.066,
+        "max_mb": 13.488
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 512
+      },
+      "memory_peak_mb": 13.488,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_edges"
+    },
+    {
+      "problem_id": "lc-1510-stone-game-iv",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_n",
+      "max_stress_case_args_digest": 8,
+      "reference_runtimes_ms": [
+        341,
+        302,
+        330,
+        358,
+        347,
+        357,
+        357,
+        346,
+        360
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 357,
+        "p95_ms": 360,
+        "max_ms": 360
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 2.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13504512,
+        13271040,
+        13692928,
+        13815808,
+        14217216,
+        13705216,
+        13897728,
+        13930496,
+        13639680
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.176,
+        "max_mb": 13.559
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.559,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_n"
+    },
+    {
+      "problem_id": "lc-1526-minimum-number-of-increments-on-subarrays-to-form-a-target-array",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_increasing",
+      "max_stress_case_args_digest": 688897,
+      "reference_runtimes_ms": [
+        37,
+        24,
+        32,
+        33,
+        24,
+        29,
+        32,
+        26,
+        30
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 30,
+        "p95_ms": 33,
+        "max_ms": 33
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        17293312,
+        17158144,
+        16818176,
+        16883712,
+        17166336,
+        16900096,
+        17461248,
+        16453632,
+        17047552
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 16.117,
+        "max_mb": 16.652
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 16.652,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_increasing"
+    },
+    {
+      "problem_id": "lc-1579-remove-max-number-of-edges-to-keep-graph-fully-traversable",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_three_types",
+      "max_stress_case_args_digest": 1877804,
+      "reference_runtimes_ms": [
+        91,
+        93,
+        114,
+        121,
+        109,
+        80,
+        81,
+        78,
+        80
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 81,
+        "p95_ms": 121,
+        "max_ms": 121
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        36671488,
+        36712448,
+        36810752,
+        36716544,
+        36573184,
+        37113856,
+        37289984,
+        36966400,
+        36450304
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 35.105,
+        "max_mb": 35.562
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 35.562,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_three_types"
+    },
+    {
+      "problem_id": "lc-1611-minimum-one-bit-operations-to-make-integers-zero",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 3,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 12,
+      "reference_runtimes_ms": [
+        21,
+        19,
+        22,
+        34,
+        33,
+        46,
+        26,
+        25,
+        21
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 26,
+        "p95_ms": 46,
+        "max_ms": 46
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        14241792,
+        13713408,
+        13971456,
+        13996032,
+        13709312,
+        13623296,
+        13885440,
+        13795328,
+        13979648
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.242,
+        "max_mb": 13.348
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.348,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": null
+    },
+    {
+      "problem_id": "lc-1639-number-of-ways-to-form-a-target-string-given-a-dictionary",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_words_target",
+      "max_stress_case_args_digest": 1005006,
+      "reference_runtimes_ms": [
+        193,
+        245,
+        205,
+        244,
+        201,
+        205,
+        183,
+        182,
+        212
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 205,
+        "p95_ms": 244,
+        "max_ms": 244
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.25,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        14508032,
+        14286848,
+        13496320,
+        14172160,
+        14172160,
+        14458880,
+        14786560,
+        14458880,
+        14749696
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.789,
+        "max_mb": 14.102
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 14.102,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_words_target"
+    },
+    {
+      "problem_id": "lc-1659-maximize-grid-happiness",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 13,
+      "reference_runtimes_ms": [
+        189,
+        196,
+        131,
+        126,
+        157,
+        132,
+        157,
+        133,
+        158
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 133,
+        "p95_ms": 158,
+        "max_ms": 158
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13709312,
+        13516800,
+        13676544,
+        13332480,
+        13586432,
+        13905920,
+        13705216,
+        14077952,
+        13746176
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.07,
+        "max_mb": 13.426
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.426,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": null
+    },
+    {
+      "problem_id": "lc-1671-minimum-number-of-removals-to-make-mountain-array",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_noisy",
+      "max_stress_case_args_digest": 8860,
+      "reference_runtimes_ms": [
+        17,
+        11,
+        12,
+        10,
+        11,
+        11,
+        9,
+        8,
+        7
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 10,
+        "p95_ms": 12,
+        "max_ms": 12
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        14331904,
+        14290944,
+        14000128,
+        13643776,
+        13340672,
+        13946880,
+        13684736,
+        13676544,
+        13692928
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.051,
+        "max_mb": 13.352
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.352,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_noisy"
+    },
+    {
+      "problem_id": "lc-1675-minimize-deviation-in-array",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_heap",
+      "max_stress_case_args_digest": 375002,
+      "reference_runtimes_ms": [
+        201,
+        172,
+        172,
+        165,
+        167,
+        174,
+        183,
+        176,
+        206
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 174,
+        "p95_ms": 206,
+        "max_ms": 206
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.25,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        14540800,
+        15048704,
+        14979072,
+        15273984,
+        15331328,
+        15015936,
+        14770176,
+        15319040,
+        14475264
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 14.32,
+        "max_mb": 14.621
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 14.621,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_heap"
+    },
+    {
+      "problem_id": "lc-1691-maximum-height-by-stacking-cuboids",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_cuboids",
+      "max_stress_case_args_digest": 1378,
+      "reference_runtimes_ms": [
+        12,
+        12,
+        11,
+        15,
+        14,
+        12,
+        14,
+        14,
+        13
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 14,
+        "p95_ms": 15,
+        "max_ms": 15
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13643776,
+        13709312,
+        13950976,
+        13516800,
+        13774848,
+        13742080,
+        13639680,
+        13615104,
+        13656064
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.023,
+        "max_mb": 13.305
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.305,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_cuboids"
+    },
+    {
+      "problem_id": "lc-1697-checking-existence-of-edge-length-limited-paths",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_varied_queries",
+      "max_stress_case_args_digest": 4930435,
+      "reference_runtimes_ms": [
+        97,
+        110,
+        100,
+        111,
+        117,
+        102,
+        104,
+        109,
+        105
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 105,
+        "p95_ms": 117,
+        "max_ms": 117
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        62214144,
+        62316544,
+        62545920,
+        62431232,
+        62509056,
+        62795776,
+        62390272,
+        62103552,
+        62558208
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 59.613,
+        "max_mb": 59.887
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 192,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 59.887,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_varied_queries"
+    },
+    {
+      "problem_id": "lc-1707-maximum-xor-with-an-element-from-array",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_trie_queries",
+      "max_stress_case_args_digest": 3463737,
+      "reference_runtimes_ms": [
+        914,
+        893,
+        943,
+        982,
+        1401,
+        920,
+        908,
+        847,
+        877
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 920,
+        "p95_ms": 1401,
+        "max_ms": 1401
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 7.25,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        102522880,
+        102858752,
+        102547456,
+        102756352,
+        103018496,
+        102834176,
+        102862848,
+        102764544,
+        102907904
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 98.07,
+        "max_mb": 98.246
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 304,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 98.246,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_trie_queries"
+    },
+    {
+      "problem_id": "lc-1771-maximize-palindrome-length-from-subsequences",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_words",
+      "max_stress_case_args_digest": 2008,
+      "reference_runtimes_ms": [
+        638,
+        681,
+        624,
+        737,
+        1093,
+        959,
+        745,
+        698,
+        704
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 737,
+        "p95_ms": 1093,
+        "max_ms": 1093
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 5.5,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        48345088,
+        48623616,
+        48324608,
+        48590848,
+        48275456,
+        48128000,
+        47710208,
+        47984640,
+        47845376
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 45.898,
+        "max_mb": 46.34
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 144,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 46.34,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_words"
+    },
+    {
+      "problem_id": "lc-1782-count-pairs-of-nodes",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_graph_queries",
+      "max_stress_case_args_digest": 1489078,
+      "reference_runtimes_ms": [
+        84,
+        96,
+        103,
+        104,
+        113,
+        102,
+        94,
+        134,
+        104
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 104,
+        "p95_ms": 134,
+        "max_ms": 134
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        30588928,
+        30818304,
+        30461952,
+        30494720,
+        31100928,
+        30875648,
+        30482432,
+        30519296,
+        30351360
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 29.082,
+        "max_mb": 29.66
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 29.66,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_graph_queries"
+    },
+    {
+      "problem_id": "lc-1815-maximum-number-of-groups-getting-fresh-donuts",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_groups",
+      "max_stress_case_args_digest": 148,
+      "reference_runtimes_ms": [
+        389,
+        400,
+        394,
+        401,
+        419,
+        382,
+        565,
+        650,
+        471
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 419,
+        "p95_ms": 650,
+        "max_ms": 650
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 3.25,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        36016128,
+        36507648,
+        36012032,
+        36749312,
+        36392960,
+        35946496,
+        36048896,
+        36003840,
+        36753408
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 34.379,
+        "max_mb": 35.051
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 35.051,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_groups"
+    },
+    {
+      "problem_id": "lc-1830-minimum-number-of-operations-to-make-string-sorted",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_string",
+      "max_stress_case_args_digest": 3004,
+      "reference_runtimes_ms": [
+        23,
+        22,
+        22,
+        24,
+        26,
+        22,
+        24,
+        28,
+        23
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 24,
+        "p95_ms": 28,
+        "max_ms": 28
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13533184,
+        13365248,
+        13570048,
+        13287424,
+        13619200,
+        13918208,
+        13615104,
+        13729792,
+        13893632
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 12.988,
+        "max_mb": 13.273
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.273,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_string"
+    },
+    {
+      "problem_id": "lc-1851-minimum-interval-to-include-each-query",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_nested_intervals",
+      "max_stress_case_args_digest": 2377789,
+      "reference_runtimes_ms": [
+        162,
+        157,
+        148,
+        215,
+        175,
+        244,
+        201,
+        146,
+        129
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 175,
+        "p95_ms": 244,
+        "max_ms": 244
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.25,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        48328704,
+        48308224,
+        48603136,
+        48615424,
+        49238016,
+        48631808,
+        48943104,
+        48676864,
+        48558080
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 46.379,
+        "max_mb": 46.957
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 144,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 46.957,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_nested_intervals"
+    },
+    {
+      "problem_id": "lc-1866-number-of-ways-to-rearrange-sticks-with-k-sticks-visible",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_k",
+      "max_stress_case_args_digest": 12,
+      "reference_runtimes_ms": [
+        119,
+        132,
+        73,
+        120,
+        75,
+        69,
+        96,
+        83,
+        73
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 75,
+        "p95_ms": 120,
+        "max_ms": 120
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13447168,
+        13606912,
+        13942784,
+        13066240,
+        13373440,
+        13754368,
+        13660160,
+        13144064,
+        13434880
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 12.812,
+        "max_mb": 13.297
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.297,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_k"
+    },
+    {
+      "problem_id": "lc-1872-stone-game-viii",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_array",
+      "max_stress_case_args_digest": 638927,
+      "reference_runtimes_ms": [
+        33,
+        31,
+        35,
+        39,
+        29,
+        31,
+        32,
+        39,
+        33
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 33,
+        "p95_ms": 39,
+        "max_ms": 39
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        19832832,
+        20029440,
+        19779584,
+        19927040,
+        20541440,
+        20123648,
+        19910656,
+        19750912,
+        19976192
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 19.004,
+        "max_mb": 19.59
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 19.59,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "MEMORY_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_array"
+    },
+    {
+      "problem_id": "lc-1889-minimum-space-wasted-from-packaging",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_total_boxes",
+      "max_stress_case_args_digest": 1377999,
+      "reference_runtimes_ms": [
+        17,
+        17,
+        23,
+        20,
+        21,
+        30,
+        24,
+        23,
+        30
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 23,
+        "p95_ms": 30,
+        "max_ms": 30
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        24477696,
+        24186880,
+        24743936,
+        24530944,
+        24977408,
+        24477696,
+        25006080,
+        24662016,
+        25153536
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 23.598,
+        "max_mb": 23.988
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 23.988,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_total_boxes"
+    },
+    {
+      "problem_id": "lc-1896-minimum-cost-to-change-the-final-value-of-expression",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 100003,
+      "reference_runtimes_ms": [
+        163,
+        157,
+        189,
+        172,
+        161,
+        170,
+        168,
+        241,
+        226
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 172,
+        "p95_ms": 241,
+        "max_ms": 241
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.25,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        13668352,
+        13398016,
+        13934592,
+        13443072,
+        13451264,
+        13717504,
+        13144064,
+        13860864,
+        13856768
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.082,
+        "max_mb": 13.289
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.289,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "MEMORY_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": null
+    },
+    {
+      "problem_id": "lc-1970-last-day-where-you-can-still-cross",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 4,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 207612,
+      "reference_runtimes_ms": [
+        45,
+        74,
+        79,
+        55,
+        67,
+        51,
+        59,
+        52,
+        48
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 55,
+        "p95_ms": 79,
+        "max_ms": 79
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        15499264,
+        16031744,
+        15941632,
+        15314944,
+        15753216,
+        15536128,
+        14962688,
+        16179200,
+        15515648
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 14.816,
+        "max_mb": 15.43
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 15.43,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": null
+    },
+    {
+      "problem_id": "lc-1987-number-of-unique-good-subsequences",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_binary",
+      "max_stress_case_args_digest": 100004,
+      "reference_runtimes_ms": [
+        16,
+        17,
+        25,
+        23,
+        16,
+        25,
+        20,
+        17,
+        16
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 20,
+        "p95_ms": 25,
+        "max_ms": 25
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        13373440,
+        13688832,
+        13766656,
+        13500416,
+        13627392,
+        13742080,
+        13959168,
+        13651968,
+        13918208
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.105,
+        "max_mb": 13.312
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.312,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_binary"
+    },
+    {
+      "problem_id": "lc-1994-the-number-of-good-subsets",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_values",
+      "max_stress_case_args_digest": 369996,
+      "reference_runtimes_ms": [
+        15,
+        27,
+        19,
+        20,
+        24,
+        14,
+        16,
+        13,
+        14
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 16,
+        "p95_ms": 24,
+        "max_ms": 24
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        14262272,
+        14229504,
+        14217216,
+        13910016,
+        14217216,
+        14598144,
+        14245888,
+        14503936,
+        13746176
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.559,
+        "max_mb": 13.922
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.922,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_values"
+    },
+    {
+      "problem_id": "lc-2009-minimum-number-of-operations-to-make-array-continuous",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_spread",
+      "max_stress_case_args_digest": 1088888,
+      "reference_runtimes_ms": [
+        65,
+        82,
+        98,
+        92,
+        74,
+        87,
+        58,
+        59,
+        68
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 74,
+        "p95_ms": 98,
+        "max_ms": 98
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        23113728,
+        22724608,
+        22806528,
+        23302144,
+        22904832,
+        22462464,
+        22642688,
+        22671360,
+        22892544
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 21.75,
+        "max_mb": 22.223
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 22.223,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_spread"
+    },
+    {
+      "problem_id": "lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 303,
+      "reference_runtimes_ms": [
+        149,
+        138,
+        243,
+        159,
+        162,
+        146,
+        147,
+        162,
+        142
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 159,
+        "p95_ms": 243,
+        "max_ms": 243
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.25,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        14721024,
+        14753792,
+        15245312,
+        15003648,
+        15286272,
+        15392768,
+        14987264,
+        15294464,
+        15278080
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 14.57,
+        "max_mb": 14.68
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 14.68,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": null
+    },
+    {
+      "problem_id": "lc-2045-second-minimum-time-to-reach-destination",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_graph",
+      "max_stress_case_args_digest": 275674,
+      "reference_runtimes_ms": [
+        30,
+        28,
+        22,
+        24,
+        27,
+        23,
+        25,
+        25,
+        50
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 25,
+        "p95_ms": 50,
+        "max_ms": 50
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        17965056,
+        17924096,
+        17981440,
+        18165760,
+        18690048,
+        17924096,
+        18026496,
+        18497536,
+        17805312
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 17.191,
+        "max_mb": 17.824
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 17.824,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "MEMORY_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_graph"
+    },
+    {
+      "problem_id": "lc-2106-maximum-fruits-harvested-after-at-most-k-steps",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_fruits",
+      "max_stress_case_args_digest": 1533403,
+      "reference_runtimes_ms": [
+        103,
+        101,
+        94,
+        135,
+        144,
+        109,
+        83,
+        120,
+        91
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 109,
+        "p95_ms": 144,
+        "max_ms": 144
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        33828864,
+        33234944,
+        33943552,
+        33636352,
+        33484800,
+        33058816,
+        33574912,
+        33275904,
+        33570816
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 32.016,
+        "max_mb": 32.371
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 32.371,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_fruits"
+    },
+    {
+      "problem_id": "lc-2163-minimum-difference-in-sums-after-removal-of-elements",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 80,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_heaps",
+      "max_stress_case_args_digest": 2066687,
+      "reference_runtimes_ms": [
+        245,
+        402,
+        284,
+        1033,
+        279,
+        278,
+        265,
+        220,
+        248
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 278,
+        "p95_ms": 1033,
+        "max_ms": 1033
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 5.25,
+        "current_configured_seconds": 6.0
+      },
+      "reference_memory_peaks_bytes": [
+        38686720,
+        37703680,
+        37961728,
+        38182912,
+        38457344,
+        38453248,
+        38682624,
+        38236160,
+        38236160
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 36.465,
+        "max_mb": 36.891
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 36.891,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_heaps"
+    },
+    {
+      "problem_id": "lc-2203-minimum-weighted-subgraph-with-the-required-paths",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_chain",
+      "max_stress_case_args_digest": 1877808,
+      "reference_runtimes_ms": [
+        201,
+        233,
+        218,
+        454,
+        397,
+        364,
+        346,
+        311,
+        228
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 346,
+        "p95_ms": 454,
+        "max_ms": 454
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 2.5,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        73998336,
+        74588160,
+        74543104,
+        74469376,
+        73924608,
+        74473472,
+        74584064,
+        74457088,
+        74215424
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 71.02,
+        "max_mb": 71.129
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 224,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 71.129,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "MEMORY_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_chain"
+    },
+    {
+      "problem_id": "lc-2421-number-of-good-paths",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 574672,
+      "reference_runtimes_ms": [
+        61,
+        61,
+        61,
+        62,
+        75,
+        87,
+        102,
+        83,
+        154
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 83,
+        "p95_ms": 154,
+        "max_ms": 154
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        22401024,
+        22351872,
+        22061056,
+        22818816,
+        22597632,
+        22380544,
+        22044672,
+        22581248,
+        22437888
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 21.398,
+        "max_mb": 21.762
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 21.762,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": null
+    },
+    {
+      "problem_id": "lc-2719-count-of-integers",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 4,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 62,
+      "reference_runtimes_ms": [
+        29,
+        29,
+        28,
+        25,
+        43,
+        36,
+        33,
+        47,
+        75
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 36,
+        "p95_ms": 75,
+        "max_ms": 75
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        13369344,
+        13611008,
+        13606912,
+        13611008,
+        13979648,
+        13701120,
+        13414400,
+        13410304,
+        14057472
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 12.98,
+        "max_mb": 13.406
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.406,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": null
+    },
+    {
+      "problem_id": "lc-2926-maximum-balanced-subsequence-sum",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_mixed",
+      "max_stress_case_args_digest": 1200003,
+      "reference_runtimes_ms": [
+        672,
+        1250,
+        774,
+        557,
+        506,
+        1014,
+        649,
+        1475,
+        694
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 694,
+        "p95_ms": 1475,
+        "max_ms": 1475
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 7.5,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        24850432,
+        25366528,
+        25362432,
+        25083904,
+        25473024,
+        25088000,
+        25731072,
+        25903104,
+        25088000
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 24.188,
+        "max_mb": 24.703
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 24.703,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_mixed"
+    },
+    {
+      "problem_id": "lc-2945-find-maximum-non-decreasing-array-length",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 688897,
+      "reference_runtimes_ms": [
+        70,
+        73,
+        69,
+        61,
+        81,
+        67,
+        58,
+        68,
+        62
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 67,
+        "p95_ms": 81,
+        "max_ms": 81
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        28360704,
+        28581888,
+        28577792,
+        28909568,
+        28647424,
+        28983296,
+        28897280,
+        28651520,
+        28917760
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 27.559,
+        "max_mb": 27.641
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 27.641,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": null
+    },
+    {
+      "problem_id": "lc-3022-minimize-or-of-remaining-elements-using-operations",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_all_ones",
+      "max_stress_case_args_digest": 1200009,
+      "reference_runtimes_ms": [
+        240,
+        217,
+        235,
+        222,
+        234,
+        224,
+        267,
+        259,
+        244
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 235,
+        "p95_ms": 267,
+        "max_ms": 267
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.5,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        17580032,
+        17068032,
+        16973824,
+        16953344,
+        16752640,
+        17117184,
+        17133568,
+        17321984,
+        17047552
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 16.258,
+        "max_mb": 16.52
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 16.52,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_all_ones"
+    },
+    {
+      "problem_id": "lc-3045-count-prefix-and-suffix-pairs-ii",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_word_count",
+      "max_stress_case_args_digest": 900002,
+      "reference_runtimes_ms": [
+        150,
+        153,
+        171,
+        168,
+        157,
+        157,
+        178,
+        166,
+        143
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 166,
+        "p95_ms": 178,
+        "max_ms": 178
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        18673664,
+        18165760,
+        18694144,
+        17870848,
+        18710528,
+        18731008,
+        18169856,
+        18214912,
+        18456576
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 17.602,
+        "max_mb": 17.863
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 17.863,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_word_count"
+    },
+    {
+      "problem_id": "lc-3072-distribute-elements-into-two-arrays-ii",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 1088488,
+      "reference_runtimes_ms": [
+        351,
+        352,
+        367,
+        328,
+        337,
+        327,
+        326,
+        344,
+        363
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 337,
+        "p95_ms": 367,
+        "max_ms": 367
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 2.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        23154688,
+        22900736,
+        23203840,
+        23228416,
+        23146496,
+        23486464,
+        23703552,
+        23498752,
+        23019520
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 22.152,
+        "max_mb": 22.605
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 22.605,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": null
+    },
+    {
+      "problem_id": "lc-3077-maximum-strength-of-k-disjoint-subarrays",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": "max_product",
+      "max_stress_case_args_digest": 64034,
+      "reference_runtimes_ms": [
+        379,
+        388,
+        396,
+        382,
+        398,
+        394,
+        394,
+        417,
+        418
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 396,
+        "p95_ms": 418,
+        "max_ms": 418
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 2.25,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        13656064,
+        13926400,
+        13877248,
+        13897728,
+        14061568,
+        13967360,
+        13627392,
+        13950976,
+        13766656
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.254,
+        "max_mb": 13.41
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.41,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_product"
+    },
+    {
+      "problem_id": "lc-3102-minimize-manhattan-distances",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_extremes",
+      "max_stress_case_args_digest": 2500002,
+      "reference_runtimes_ms": [
+        148,
+        154,
+        151,
+        154,
+        157,
+        157,
+        163,
+        174,
+        161
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 157,
+        "p95_ms": 174,
+        "max_ms": 174
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        52576256,
+        53395456,
+        53649408,
+        52625408,
+        53161984,
+        53301248,
+        52944896,
+        53395456,
+        52817920
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 50.699,
+        "max_mb": 51.164
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 160,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 51.164,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_extremes"
+    },
+    {
+      "problem_id": "lc-3108-minimum-cost-walk-in-weighted-graph",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_chain_queries",
+      "max_stress_case_args_digest": 3844460,
+      "reference_runtimes_ms": [
+        100,
+        106,
+        110,
+        99,
+        94,
+        98,
+        107,
+        101,
+        114
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 101,
+        "p95_ms": 114,
+        "max_ms": 114
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        53637120,
+        53891072,
+        53944320,
+        53645312,
+        53108736,
+        53731328,
+        53391360,
+        53714944,
+        53620736
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 51.16,
+        "max_mb": 51.445
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 160,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 51.445,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_chain_queries"
+    },
+    {
+      "problem_id": "lc-3116-kth-smallest-amount-with-single-denomination-combination",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": "many_redundant_lcms",
+      "max_stress_case_args_digest": 68,
+      "reference_runtimes_ms": [
+        21,
+        20,
+        20,
+        22,
+        20,
+        17,
+        22,
+        19,
+        22
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 20,
+        "p95_ms": 22,
+        "max_ms": 22
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        13987840,
+        13287424,
+        13426688,
+        13615104,
+        13082624,
+        13434880,
+        13598720,
+        13312000,
+        13762560
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 12.812,
+        "max_mb": 13.125
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.125,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "many_redundant_lcms"
+    },
+    {
+      "problem_id": "lc-3117-minimum-sum-of-values-by-dividing-array",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 5,
+      "max_stress_case_id": null,
+      "max_stress_case_args_digest": 70074,
+      "reference_runtimes_ms": [
+        161,
+        155,
+        159,
+        168,
+        163,
+        178,
+        155,
+        181,
+        160
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 163,
+        "p95_ms": 181,
+        "max_ms": 181
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        13643776,
+        13348864,
+        13946880,
+        13651968,
+        13963264,
+        13107200,
+        13361152,
+        13709312,
+        13869056
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 13.074,
+        "max_mb": 13.316
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 13.316,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "TIME_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": null
+    },
+    {
+      "problem_id": "lc-3123-find-edges-in-shortest-paths",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 2,
+      "hidden_case_count": 12,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_edges",
+      "max_stress_case_args_digest": 1116684,
+      "reference_runtimes_ms": [
+        74,
+        97,
+        87,
+        85,
+        84,
+        87,
+        81,
+        91,
+        91
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 87,
+        "p95_ms": 91,
+        "max_ms": 91
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "provisional_time_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_0.25s(max(1.0s, 5*p95, 4*max))",
+        "suggested_seconds": 1.0,
+        "current_configured_seconds": 4.0
+      },
+      "reference_memory_peaks_bytes": [
+        37904384,
+        37666816,
+        37855232,
+        37326848,
+        38273024,
+        37908480,
+        37974016,
+        37576704,
+        37638144
+      ],
+      "reference_memory_peak_summary": {
+        "runs": 7,
+        "median_mb": 36.102,
+        "max_mb": 36.5
+      },
+      "provisional_memory_limit": {
+        "status": "reference_only_not_enforced",
+        "formula": "ceil_to_16MiB(max(128MiB, 3*observed_peak))",
+        "suggested_mb": 128,
+        "current_configured_mb": 256
+      },
+      "memory_peak_mb": 36.5,
+      "memory_peak_status": "cgroup_peak_from_container_harness",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED",
+        "MEMORY_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_resource_failure": "MEMORY_LIMIT_EXCEEDED",
+      "canary_max_stress_case_id": "max_edges"
+    }
+  ],
+  "validation_failures": [
+    {
+      "problem_id": "lc-1155-number-of-dice-rolls-with-target-sum",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1155-number-of-dice-rolls-with-target-sum: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:00:57.292927+00:00"
+    },
+    {
+      "problem_id": "lc-1187-make-array-strictly-increasing",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1187-make-array-strictly-increasing: RUNTIME_ERROR, RUNTIME_ERROR, RUNTIME_ERROR",
+      "recorded_at": "2026-07-21T10:02:07.220397+00:00"
+    },
+    {
+      "problem_id": "lc-1220-count-vowels-permutation",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1220-count-vowels-permutation: RUNTIME_ERROR, RUNTIME_ERROR, RUNTIME_ERROR",
+      "recorded_at": "2026-07-21T10:03:17.114538+00:00"
+    },
+    {
+      "problem_id": "lc-1240-tiling-a-rectangle-with-the-fewest-squares",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1240-tiling-a-rectangle-with-the-fewest-squares: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:05:59.070934+00:00"
+    },
+    {
+      "problem_id": "lc-1284-minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1284-minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:09:55.269757+00:00"
+    },
+    {
+      "problem_id": "lc-1293-shortest-path-in-a-grid-with-obstacles-elimination",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1293-shortest-path-in-a-grid-with-obstacles-elimination: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:11:14.253673+00:00"
+    },
+    {
+      "problem_id": "lc-1354-construct-target-array-with-multiple-sums",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1354-construct-target-array-with-multiple-sums: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:18:06.908251+00:00"
+    },
+    {
+      "problem_id": "lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:18:27.546654+00:00"
+    },
+    {
+      "problem_id": "lc-1416-restore-the-array",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1416-restore-the-array: RUNTIME_ERROR, RUNTIME_ERROR, RUNTIME_ERROR",
+      "recorded_at": "2026-07-21T10:22:36.354814+00:00"
+    },
+    {
+      "problem_id": "lc-1444-number-of-ways-of-cutting-a-pizza",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1444-number-of-ways-of-cutting-a-pizza: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:27:58.588736+00:00"
+    },
+    {
+      "problem_id": "lc-1494-parallel-courses-ii",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1494-parallel-courses-ii: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:34:56.495776+00:00"
+    },
+    {
+      "problem_id": "lc-1531-string-compression-ii",
+      "error_type": "AssertionError",
+      "message": "reference failed on lc-1531-string-compression-ii",
+      "recorded_at": "2026-07-21T10:39:15.059995+00:00"
+    },
+    {
+      "problem_id": "lc-1547-minimum-cost-to-cut-a-stick",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1547-minimum-cost-to-cut-a-stick: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:40:19.436041+00:00"
+    },
+    {
+      "problem_id": "lc-1553-minimum-number-of-days-to-eat-n-oranges",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1553-minimum-number-of-days-to-eat-n-oranges: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:41:44.002214+00:00"
+    },
+    {
+      "problem_id": "lc-1563-stone-game-v",
+      "error_type": "AssertionError",
+      "message": "reference failed on lc-1563-stone-game-v",
+      "recorded_at": "2026-07-21T10:43:04.704235+00:00"
+    },
+    {
+      "problem_id": "lc-1575-count-all-possible-routes",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1575-count-all-possible-routes: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:44:25.180707+00:00"
+    },
+    {
+      "problem_id": "lc-1591-strange-printer-ii",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1591-strange-printer-ii: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:47:23.046380+00:00"
+    },
+    {
+      "problem_id": "lc-1601-maximum-number-of-achievable-transfer-requests",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1601-maximum-number-of-achievable-transfer-requests: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:48:34.936100+00:00"
+    },
+    {
+      "problem_id": "lc-1632-rank-transform-of-a-matrix",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1632-rank-transform-of-a-matrix: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:50:19.258516+00:00"
+    },
+    {
+      "problem_id": "lc-1681-minimum-incompatibility",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1681-minimum-incompatibility: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T10:57:31.294626+00:00"
+    },
+    {
+      "problem_id": "lc-1723-find-minimum-time-to-finish-all-jobs",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1723-find-minimum-time-to-finish-all-jobs: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T11:02:45.156945+00:00"
+    },
+    {
+      "problem_id": "lc-1735-count-ways-to-make-array-with-product",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1735-count-ways-to-make-array-with-product: RUNTIME_ERROR, RUNTIME_ERROR, RUNTIME_ERROR",
+      "recorded_at": "2026-07-21T11:04:34.421539+00:00"
+    },
+    {
+      "problem_id": "lc-1751-maximum-number-of-events-that-can-be-attended-ii",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1751-maximum-number-of-events-that-can-be-attended-ii: RUNTIME_ERROR, RUNTIME_ERROR, RUNTIME_ERROR",
+      "recorded_at": "2026-07-21T11:05:54.381554+00:00"
+    },
+    {
+      "problem_id": "lc-1786-number-of-restricted-paths-from-first-to-last-node",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1786-number-of-restricted-paths-from-first-to-last-node: RUNTIME_ERROR, RUNTIME_ERROR, RUNTIME_ERROR",
+      "recorded_at": "2026-07-21T11:09:34.917956+00:00"
+    },
+    {
+      "problem_id": "lc-1799-maximize-score-after-n-operations",
+      "error_type": "AssertionError",
+      "message": "canary failed on small inputs for lc-1799-maximize-score-after-n-operations",
+      "recorded_at": "2026-07-21T11:10:46.181930+00:00"
+    },
+    {
+      "problem_id": "lc-1857-largest-color-value-in-a-directed-graph",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1857-largest-color-value-in-a-directed-graph: RUNTIME_ERROR, RUNTIME_ERROR, RUNTIME_ERROR",
+      "recorded_at": "2026-07-21T11:15:57.768470+00:00"
+    },
+    {
+      "problem_id": "lc-1916-count-ways-to-build-rooms-in-an-ant-colony",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1916-count-ways-to-build-rooms-in-an-ant-colony: RUNTIME_ERROR, RUNTIME_ERROR, RUNTIME_ERROR",
+      "recorded_at": "2026-07-21T11:21:57.174113+00:00"
+    },
+    {
+      "problem_id": "lc-1931-painting-a-grid-with-three-different-colors",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1931-painting-a-grid-with-three-different-colors: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T11:23:17.776302+00:00"
+    },
+    {
+      "problem_id": "lc-1959-minimum-total-space-wasted-with-k-resizing-operations",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-1959-minimum-total-space-wasted-with-k-resizing-operations: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T11:24:38.294934+00:00"
+    },
+    {
+      "problem_id": "lc-1977-number-of-ways-to-separate-numbers",
+      "error_type": "AssertionError",
+      "message": "reference failed on lc-1977-number-of-ways-to-separate-numbers",
+      "recorded_at": "2026-07-21T11:26:12.437221+00:00"
+    },
+    {
+      "problem_id": "lc-2060-check-if-an-original-string-exists-given-two-encoded-strings",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-2060-check-if-an-original-string-exists-given-two-encoded-strings: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T11:34:01.737727+00:00"
+    },
+    {
+      "problem_id": "lc-2071-maximum-number-of-tasks-you-can-assign",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-2071-maximum-number-of-tasks-you-can-assign: RUNTIME_ERROR, RUNTIME_ERROR, RUNTIME_ERROR",
+      "recorded_at": "2026-07-21T11:34:28.054047+00:00"
+    },
+    {
+      "problem_id": "lc-2092-find-all-people-with-secret",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-2092-find-all-people-with-secret: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T11:35:53.743317+00:00"
+    },
+    {
+      "problem_id": "lc-2127-maximum-employees-to-be-invited-to-a-meeting",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-2127-maximum-employees-to-be-invited-to-a-meeting: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T11:38:49.826201+00:00"
+    },
+    {
+      "problem_id": "lc-2147-number-of-ways-to-divide-a-long-corridor",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-2147-number-of-ways-to-divide-a-long-corridor: RUNTIME_ERROR, RUNTIME_ERROR, RUNTIME_ERROR",
+      "recorded_at": "2026-07-21T11:40:10.834215+00:00"
+    },
+    {
+      "problem_id": "lc-2188-minimum-time-to-finish-the-race",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-2188-minimum-time-to-finish-the-race: RUNTIME_ERROR, RUNTIME_ERROR, RUNTIME_ERROR",
+      "recorded_at": "2026-07-21T11:42:29.100533+00:00"
+    },
+    {
+      "problem_id": "lc-2366-minimum-replacements-to-sort-the-array",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-2366-minimum-replacements-to-sort-the-array: RUNTIME_ERROR, RUNTIME_ERROR, RUNTIME_ERROR",
+      "recorded_at": "2026-07-21T11:43:34.980559+00:00"
+    },
+    {
+      "problem_id": "lc-2478-number-of-beautiful-partitions",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-2478-number-of-beautiful-partitions: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T11:44:43.100752+00:00"
+    },
+    {
+      "problem_id": "lc-2809-minimum-time-to-make-array-sum-at-most-x",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-2809-minimum-time-to-make-array-sum-at-most-x: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T11:45:57.094087+00:00"
+    },
+    {
+      "problem_id": "lc-2940-find-building-where-alice-and-bob-can-meet",
+      "error_type": "AssertionError",
+      "message": "canary did not stably reach one resource limit on max stress for lc-2940-find-building-where-alice-and-bob-can-meet: ACCEPTED, ACCEPTED, ACCEPTED",
+      "recorded_at": "2026-07-21T11:47:10.974705+00:00"
+    }
+  ],
+  "error_log": "E:\\VsCodeProjects\\machine_learning\\research\\failure-frontier-teaching-lineage-dev\\experiments\\problem_bank_v4_100\\lc100_rc1_natural_docker_validation.errors.jsonl",
+  "memory_peak_mb": null,
+  "memory_peak_status": "unavailable_from_current_dockerjudge"
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "fixed_problem_id": "lc-1547-minimum-cost-to-cut-a-stick",
+    "status": "ALREADY_PRESENT",
+    "replacement_problem_id": "lc-2334-subarray-with-elements-greater-than-varying-threshold"
+  },
+  {
+    "fixed_problem_id": "lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference",
+    "status": "ALREADY_PRESENT",
+    "replacement_problem_id": "lc-2338-count-the-number-of-ideal-arrays"
+  },
+  {
+    "fixed_problem_id": "lc-2188-minimum-time-to-finish-the-race",
+    "status": "ALREADY_PRESENT",
+    "replacement_problem_id": "lc-2360-longest-cycle-in-a-graph"
+  }
+]

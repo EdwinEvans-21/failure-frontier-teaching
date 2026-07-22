@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.2",
+  "target_problem_count": 1,
+  "completed_problem_count": 0,
+  "attempted_problem_count": 1,
+  "completed": true,
+  "ready_for_freeze": false,
+  "calibration_mode": "full",
+  "excluded_problem_ids": [
+    "exact_monotone_paths",
+    "lc-0761-special-binary-string"
+  ],
+  "problems": [],
+  "validation_failures": [
+    {
+      "problem_id": "lc-0995-minimum-number-of-k-consecutive-bit-flips",
+      "error_type": "AssertionError",
+      "message": "canary did not stably TLE on max stress for lc-0995-minimum-number-of-k-consecutive-bit-flips: MEMORY_LIMIT_EXCEEDED, MEMORY_LIMIT_EXCEEDED, MEMORY_LIMIT_EXCEEDED",
+      "recorded_at": "2026-07-21T08:17:13.296322+00:00"
+    }
+  ],
+  "error_log": "experiments\\problem_bank_v4_100\\lc0995_natural_canary_smoke.errors.jsonl",
+  "memory_peak_mb": null,
+  "memory_peak_status": "unavailable_from_current_dockerjudge"
+}

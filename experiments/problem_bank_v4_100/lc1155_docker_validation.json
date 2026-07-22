@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.1",
+  "target_problem_count": 1,
+  "completed_problem_count": 1,
+  "completed": true,
+  "excluded_problem_ids": [
+    "exact_monotone_paths",
+    "lc-0761-special-binary-string"
+  ],
+  "problems": [
+    {
+      "problem_id": "lc-1155-number-of-dice-rolls-with-target-sum",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 6,
+      "hidden_case_count": 81,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_n30_k30_target1000",
+      "max_stress_case_args_digest": 14,
+      "reference_runtimes_ms": [
+        11,
+        12,
+        11,
+        17,
+        14,
+        13,
+        11,
+        12,
+        14
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 13,
+        "p95_ms": 17,
+        "max_ms": 17
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_case_id": "max_n30_k30_target1000",
+      "memory_peak_mb": null
+    }
+  ],
+  "memory_peak_mb": null,
+  "memory_peak_status": "unavailable_from_current_dockerjudge"
+}

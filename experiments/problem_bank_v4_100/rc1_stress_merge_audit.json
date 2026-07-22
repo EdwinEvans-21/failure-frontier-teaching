@@ -1,0 +1,512 @@
+{
+  "schema_version": "1.1",
+  "source_zip": "C:/Users/Edaglem/Downloads/lc100_with_max_stress_rc1.zip",
+  "problems": 100,
+  "rc_addon_cases": 156,
+  "final_stress_cases": 459,
+  "annotated_case_ids": 0,
+  "all_rc_candidates_present_by_canonical_input": true,
+  "all_rc_reference_repairs_sha256_verified": true,
+  "per_problem": [
+    {
+      "problem_id": "lc-0995-minimum-number-of-k-consecutive-bit-flips",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1143-longest-common-subsequence",
+      "final_stress_count": 6,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1155-number-of-dice-rolls-with-target-sum",
+      "final_stress_count": 6,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1187-make-array-strictly-increasing",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1220-count-vowels-permutation",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1235-maximum-profit-in-job-scheduling",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1240-tiling-a-rectangle-with-the-fewest-squares",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1269-number-of-ways-to-stay-in-the-same-place-after-some-steps",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1278-palindrome-partitioning-iii",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1284-minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1293-shortest-path-in-a-grid-with-obstacles-elimination",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1301-number-of-paths-with-max-score",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1312-minimum-insertion-steps-to-make-a-string-palindrome",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1335-minimum-difficulty-of-a-job-schedule",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1349-maximum-students-taking-exam",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1354-construct-target-array-with-multiple-sums",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1388-pizza-with-3n-slices",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1402-reducing-dishes",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1416-restore-the-array",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1420-build-array-where-you-can-find-the-maximum-exactly-k-comparisons",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1434-number-of-ways-to-wear-different-hats-to-each-other",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1439-find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1444-number-of-ways-of-cutting-a-pizza",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1458-max-dot-product-of-two-subsequences",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1463-cherry-pickup-ii",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1473-paint-house-iii",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1489-find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
+      "final_stress_count": 5,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1494-parallel-courses-ii",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1510-stone-game-iv",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1526-minimum-number-of-increments-on-subarrays-to-form-a-target-array",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1531-string-compression-ii",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1547-minimum-cost-to-cut-a-stick",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1553-minimum-number-of-days-to-eat-n-oranges",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1563-stone-game-v",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1575-count-all-possible-routes",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1579-remove-max-number-of-edges-to-keep-graph-fully-traversable",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1591-strange-printer-ii",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1601-maximum-number-of-achievable-transfer-requests",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1611-minimum-one-bit-operations-to-make-integers-zero",
+      "final_stress_count": 3,
+      "rc_added_cases": 0
+    },
+    {
+      "problem_id": "lc-1632-rank-transform-of-a-matrix",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1639-number-of-ways-to-form-a-target-string-given-a-dictionary",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1659-maximize-grid-happiness",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1671-minimum-number-of-removals-to-make-mountain-array",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1675-minimize-deviation-in-array",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1681-minimum-incompatibility",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1691-maximum-height-by-stacking-cuboids",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1697-checking-existence-of-edge-length-limited-paths",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1707-maximum-xor-with-an-element-from-array",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1723-find-minimum-time-to-finish-all-jobs",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1735-count-ways-to-make-array-with-product",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1751-maximum-number-of-events-that-can-be-attended-ii",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1771-maximize-palindrome-length-from-subsequences",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1782-count-pairs-of-nodes",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1786-number-of-restricted-paths-from-first-to-last-node",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1799-maximize-score-after-n-operations",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1815-maximum-number-of-groups-getting-fresh-donuts",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1830-minimum-number-of-operations-to-make-string-sorted",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1851-minimum-interval-to-include-each-query",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1857-largest-color-value-in-a-directed-graph",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1866-number-of-ways-to-rearrange-sticks-with-k-sticks-visible",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1872-stone-game-viii",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1889-minimum-space-wasted-from-packaging",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1896-minimum-cost-to-change-the-final-value-of-expression",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1916-count-ways-to-build-rooms-in-an-ant-colony",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1931-painting-a-grid-with-three-different-colors",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1959-minimum-total-space-wasted-with-k-resizing-operations",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1970-last-day-where-you-can-still-cross",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1977-number-of-ways-to-separate-numbers",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-1987-number-of-unique-good-subsequences",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-1994-the-number-of-good-subsets",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-2009-minimum-number-of-operations-to-make-array-continuous",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-2045-second-minimum-time-to-reach-destination",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-2060-check-if-an-original-string-exists-given-two-encoded-strings",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-2071-maximum-number-of-tasks-you-can-assign",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-2092-find-all-people-with-secret",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-2106-maximum-fruits-harvested-after-at-most-k-steps",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-2127-maximum-employees-to-be-invited-to-a-meeting",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-2147-number-of-ways-to-divide-a-long-corridor",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-2163-minimum-difference-in-sums-after-removal-of-elements",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-2188-minimum-time-to-finish-the-race",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-2203-minimum-weighted-subgraph-with-the-required-paths",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-2366-minimum-replacements-to-sort-the-array",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-2421-number-of-good-paths",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-2478-number-of-beautiful-partitions",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-2719-count-of-integers",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-2809-minimum-time-to-make-array-sum-at-most-x",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-2926-maximum-balanced-subsequence-sum",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-2940-find-building-where-alice-and-bob-can-meet",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-2945-find-maximum-non-decreasing-array-length",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-3022-minimize-or-of-remaining-elements-using-operations",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-3045-count-prefix-and-suffix-pairs-ii",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-3072-distribute-elements-into-two-arrays-ii",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-3077-maximum-strength-of-k-disjoint-subarrays",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-3102-minimize-manhattan-distances",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-3108-minimum-cost-walk-in-weighted-graph",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    },
+    {
+      "problem_id": "lc-3116-kth-smallest-amount-with-single-denomination-combination",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-3117-minimum-sum-of-values-by-dividing-array",
+      "final_stress_count": 5,
+      "rc_added_cases": 2
+    },
+    {
+      "problem_id": "lc-3123-find-edges-in-shortest-paths",
+      "final_stress_count": 4,
+      "rc_added_cases": 1
+    }
+  ]
+}

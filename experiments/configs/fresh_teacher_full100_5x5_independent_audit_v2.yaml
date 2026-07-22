@@ -1,0 +1,13 @@
+{
+  "base_pilot_config": "experiments/configs/provenance_stratified_ff_v2_100_independent_audit_v2.yaml",
+  "output_root": "E:/fft-runs/fresh-teacher-full100-5x5-lineage-independent-audit-v2",
+  "teacher_repeats": 5,
+  "max_generations": 5,
+  "parallel_workers": 8,
+  "conditions": [
+    "independent_restart_v1",
+    "code_verdict_chain_v1",
+    "code_verdict_flat_ff_chain_v2"
+  ],
+  "mode": "dry-run"
+}

@@ -1,0 +1,18 @@
+[1/100] already validated lc-0995-minimum-number-of-k-consecutive-bit-flips
+[2/100] already validated lc-1143-longest-common-subsequence
+[3/100] validating lc-1155-number-of-dice-rolls-with-target-sum
+[4/100] validating lc-1187-make-array-strictly-increasing
+[4/100] FAILED lc-1187-make-array-strictly-increasing: AssertionError
+[5/100] validating lc-1220-count-vowels-permutation
+[5/100] FAILED lc-1220-count-vowels-permutation: AssertionError
+[6/100] validating lc-1235-maximum-profit-in-job-scheduling
+[6/100] FAILED lc-1235-maximum-profit-in-job-scheduling: AssertionError
+[7/100] validating lc-1240-tiling-a-rectangle-with-the-fewest-squares
+[7/100] FAILED lc-1240-tiling-a-rectangle-with-the-fewest-squares: AssertionError
+[8/100] validating lc-1269-number-of-ways-to-stay-in-the-same-place-after-some-steps
+[8/100] FAILED lc-1269-number-of-ways-to-stay-in-the-same-place-after-some-steps: AssertionError
+[9/100] validating lc-1278-palindrome-partitioning-iii
+[9/100] FAILED lc-1278-palindrome-partitioning-iii: AssertionError
+[10/100] validating lc-1284-minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix
+[10/100] FAILED lc-1284-minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix: AssertionError
+[11/100] validating lc-1293-shortest-path-in-a-grid-with-obstacles-elimination

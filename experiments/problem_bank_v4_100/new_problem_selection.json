@@ -1,0 +1,485 @@
+[
+  {
+    "leetcode_number": 1349,
+    "slug": "maximum-students-taking-exam",
+    "title": "Maximum Students Taking Exam",
+    "problem_id": "lc-1349-maximum-students-taking-exam",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1388,
+    "slug": "pizza-with-3n-slices",
+    "title": "Pizza With 3n Slices",
+    "problem_id": "lc-1388-pizza-with-3n-slices",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1416,
+    "slug": "restore-the-array",
+    "title": "Restore The Array",
+    "problem_id": "lc-1416-restore-the-array",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1420,
+    "slug": "build-array-where-you-can-find-the-maximum-exactly-k-comparisons",
+    "title": "Build Array Where You Can Find The Maximum Exactly K Comparisons",
+    "problem_id": "lc-1420-build-array-where-you-can-find-the-maximum-exactly-k-comparisons",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1434,
+    "slug": "number-of-ways-to-wear-different-hats-to-each-other",
+    "title": "Number of Ways to Wear Different Hats to Each Other",
+    "problem_id": "lc-1434-number-of-ways-to-wear-different-hats-to-each-other",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1439,
+    "slug": "find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows",
+    "title": "Find the Kth Smallest Sum of a Matrix With Sorted Rows",
+    "problem_id": "lc-1439-find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1444,
+    "slug": "number-of-ways-of-cutting-a-pizza",
+    "title": "Number of Ways of Cutting a Pizza",
+    "problem_id": "lc-1444-number-of-ways-of-cutting-a-pizza",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1458,
+    "slug": "max-dot-product-of-two-subsequences",
+    "title": "Max Dot Product of Two Subsequences",
+    "problem_id": "lc-1458-max-dot-product-of-two-subsequences",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1463,
+    "slug": "cherry-pickup-ii",
+    "title": "Cherry Pickup II",
+    "problem_id": "lc-1463-cherry-pickup-ii",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1473,
+    "slug": "paint-house-iii",
+    "title": "Paint House III",
+    "problem_id": "lc-1473-paint-house-iii",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1489,
+    "slug": "find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
+    "title": "Find Critical and Pseudo-Critical Edges in Minimum Spanning Tree",
+    "problem_id": "lc-1489-find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1494,
+    "slug": "parallel-courses-ii",
+    "title": "Parallel Courses II",
+    "problem_id": "lc-1494-parallel-courses-ii",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1531,
+    "slug": "string-compression-ii",
+    "title": "String Compression II",
+    "problem_id": "lc-1531-string-compression-ii",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2334,
+    "slug": "subarray-with-elements-greater-than-varying-threshold",
+    "title": "Subarray With Elements Greater Than Varying Threshold",
+    "problem_id": "lc-2334-subarray-with-elements-greater-than-varying-threshold",
+    "selection": "RESERVE"
+  },
+  {
+    "leetcode_number": 1553,
+    "slug": "minimum-number-of-days-to-eat-n-oranges",
+    "title": "Minimum Number of Days to Eat N Oranges",
+    "problem_id": "lc-1553-minimum-number-of-days-to-eat-n-oranges",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1563,
+    "slug": "stone-game-v",
+    "title": "Stone Game V",
+    "problem_id": "lc-1563-stone-game-v",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1575,
+    "slug": "count-all-possible-routes",
+    "title": "Count All Possible Routes",
+    "problem_id": "lc-1575-count-all-possible-routes",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1579,
+    "slug": "remove-max-number-of-edges-to-keep-graph-fully-traversable",
+    "title": "Remove Max Number of Edges to Keep Graph Fully Traversable",
+    "problem_id": "lc-1579-remove-max-number-of-edges-to-keep-graph-fully-traversable",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1591,
+    "slug": "strange-printer-ii",
+    "title": "Strange Printer II",
+    "problem_id": "lc-1591-strange-printer-ii",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1601,
+    "slug": "maximum-number-of-achievable-transfer-requests",
+    "title": "Maximum Number of Achievable Transfer Requests",
+    "problem_id": "lc-1601-maximum-number-of-achievable-transfer-requests",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1632,
+    "slug": "rank-transform-of-a-matrix",
+    "title": "Rank Transform of a Matrix",
+    "problem_id": "lc-1632-rank-transform-of-a-matrix",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1639,
+    "slug": "number-of-ways-to-form-a-target-string-given-a-dictionary",
+    "title": "Number of Ways to Form a Target String Given a Dictionary",
+    "problem_id": "lc-1639-number-of-ways-to-form-a-target-string-given-a-dictionary",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1659,
+    "slug": "maximize-grid-happiness",
+    "title": "Maximize Grid Happiness",
+    "problem_id": "lc-1659-maximize-grid-happiness",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1671,
+    "slug": "minimum-number-of-removals-to-make-mountain-array",
+    "title": "Minimum Number of Removals to Make Mountain Array",
+    "problem_id": "lc-1671-minimum-number-of-removals-to-make-mountain-array",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1675,
+    "slug": "minimize-deviation-in-array",
+    "title": "Minimize Deviation in Array",
+    "problem_id": "lc-1675-minimize-deviation-in-array",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1681,
+    "slug": "minimum-incompatibility",
+    "title": "Minimum Incompatibility",
+    "problem_id": "lc-1681-minimum-incompatibility",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1691,
+    "slug": "maximum-height-by-stacking-cuboids",
+    "title": "Maximum Height by Stacking Cuboids",
+    "problem_id": "lc-1691-maximum-height-by-stacking-cuboids",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1707,
+    "slug": "maximum-xor-with-an-element-from-array",
+    "title": "Maximum XOR With an Element From Array",
+    "problem_id": "lc-1707-maximum-xor-with-an-element-from-array",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1723,
+    "slug": "find-minimum-time-to-finish-all-jobs",
+    "title": "Find Minimum Time to Finish All Jobs",
+    "problem_id": "lc-1723-find-minimum-time-to-finish-all-jobs",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1735,
+    "slug": "count-ways-to-make-array-with-product",
+    "title": "Count Ways to Make Array With Product",
+    "problem_id": "lc-1735-count-ways-to-make-array-with-product",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1751,
+    "slug": "maximum-number-of-events-that-can-be-attended-ii",
+    "title": "Maximum Number of Events That Can Be Attended II",
+    "problem_id": "lc-1751-maximum-number-of-events-that-can-be-attended-ii",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1771,
+    "slug": "maximize-palindrome-length-from-subsequences",
+    "title": "Maximize Palindrome Length From Subsequences",
+    "problem_id": "lc-1771-maximize-palindrome-length-from-subsequences",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1782,
+    "slug": "count-pairs-of-nodes",
+    "title": "Count Pairs Of Nodes",
+    "problem_id": "lc-1782-count-pairs-of-nodes",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1799,
+    "slug": "maximize-score-after-n-operations",
+    "title": "Maximize Score After N Operations",
+    "problem_id": "lc-1799-maximize-score-after-n-operations",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1815,
+    "slug": "maximum-number-of-groups-getting-fresh-donuts",
+    "title": "Maximum Number of Groups Getting Fresh Donuts",
+    "problem_id": "lc-1815-maximum-number-of-groups-getting-fresh-donuts",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1830,
+    "slug": "minimum-number-of-operations-to-make-string-sorted",
+    "title": "Minimum Number of Operations to Make String Sorted",
+    "problem_id": "lc-1830-minimum-number-of-operations-to-make-string-sorted",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1857,
+    "slug": "largest-color-value-in-a-directed-graph",
+    "title": "Largest Color Value in a Directed Graph",
+    "problem_id": "lc-1857-largest-color-value-in-a-directed-graph",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1866,
+    "slug": "number-of-ways-to-rearrange-sticks-with-k-sticks-visible",
+    "title": "Number of Ways to Rearrange Sticks With K Sticks Visible",
+    "problem_id": "lc-1866-number-of-ways-to-rearrange-sticks-with-k-sticks-visible",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1872,
+    "slug": "stone-game-viii",
+    "title": "Stone Game VIII",
+    "problem_id": "lc-1872-stone-game-viii",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1889,
+    "slug": "minimum-space-wasted-from-packaging",
+    "title": "Minimum Space Wasted From Packaging",
+    "problem_id": "lc-1889-minimum-space-wasted-from-packaging",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1916,
+    "slug": "count-ways-to-build-rooms-in-an-ant-colony",
+    "title": "Count Ways to Build Rooms in an Ant Colony",
+    "problem_id": "lc-1916-count-ways-to-build-rooms-in-an-ant-colony",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1923,
+    "slug": "longest-common-subpath",
+    "title": "Longest Common Subpath",
+    "problem_id": "lc-1923-longest-common-subpath",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1931,
+    "slug": "painting-a-grid-with-three-different-colors",
+    "title": "Painting a Grid With Three Different Colors",
+    "problem_id": "lc-1931-painting-a-grid-with-three-different-colors",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1959,
+    "slug": "minimum-total-space-wasted-with-k-resizing-operations",
+    "title": "Minimum Total Space Wasted With K Resizing Operations",
+    "problem_id": "lc-1959-minimum-total-space-wasted-with-k-resizing-operations",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1977,
+    "slug": "number-of-ways-to-separate-numbers",
+    "title": "Number of Ways to Separate Numbers",
+    "problem_id": "lc-1977-number-of-ways-to-separate-numbers",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1982,
+    "slug": "find-array-given-subset-sums",
+    "title": "Find Array Given Subset Sums",
+    "problem_id": "lc-1982-find-array-given-subset-sums",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1987,
+    "slug": "number-of-unique-good-subsequences",
+    "title": "Number of Unique Good Subsequences",
+    "problem_id": "lc-1987-number-of-unique-good-subsequences",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 1994,
+    "slug": "the-number-of-good-subsets",
+    "title": "The Number of Good Subsets",
+    "problem_id": "lc-1994-the-number-of-good-subsets",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2009,
+    "slug": "minimum-number-of-operations-to-make-array-continuous",
+    "title": "Minimum Number of Operations to Make Array Continuous",
+    "problem_id": "lc-2009-minimum-number-of-operations-to-make-array-continuous",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2338,
+    "slug": "count-the-number-of-ideal-arrays",
+    "title": "Count The Number Of Ideal Arrays",
+    "problem_id": "lc-2338-count-the-number-of-ideal-arrays",
+    "selection": "RESERVE"
+  },
+  {
+    "leetcode_number": 2045,
+    "slug": "second-minimum-time-to-reach-destination",
+    "title": "Second Minimum Time to Reach Destination",
+    "problem_id": "lc-2045-second-minimum-time-to-reach-destination",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2060,
+    "slug": "check-if-an-original-string-exists-given-two-encoded-strings",
+    "title": "Check if an Original String Exists Given Two Encoded Strings",
+    "problem_id": "lc-2060-check-if-an-original-string-exists-given-two-encoded-strings",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2081,
+    "slug": "sum-of-k-mirror-numbers",
+    "title": "Sum of k-Mirror Numbers",
+    "problem_id": "lc-2081-sum-of-k-mirror-numbers",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2092,
+    "slug": "find-all-people-with-secret",
+    "title": "Find All People With Secret",
+    "problem_id": "lc-2092-find-all-people-with-secret",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2106,
+    "slug": "maximum-fruits-harvested-after-at-most-k-steps",
+    "title": "Maximum Fruits Harvested After at Most K Steps",
+    "problem_id": "lc-2106-maximum-fruits-harvested-after-at-most-k-steps",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2127,
+    "slug": "maximum-employees-to-be-invited-to-a-meeting",
+    "title": "Maximum Employees to Be Invited to a Meeting",
+    "problem_id": "lc-2127-maximum-employees-to-be-invited-to-a-meeting",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2147,
+    "slug": "number-of-ways-to-divide-a-long-corridor",
+    "title": "Number of Ways to Divide a Long Corridor",
+    "problem_id": "lc-2147-number-of-ways-to-divide-a-long-corridor",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2157,
+    "slug": "groups-of-strings",
+    "title": "Groups of Strings",
+    "problem_id": "lc-2157-groups-of-strings",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2163,
+    "slug": "minimum-difference-in-sums-after-removal-of-elements",
+    "title": "Minimum Difference in Sums After Removal of Elements",
+    "problem_id": "lc-2163-minimum-difference-in-sums-after-removal-of-elements",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2172,
+    "slug": "maximum-and-sum-of-array",
+    "title": "Maximum AND Sum of Array",
+    "problem_id": "lc-2172-maximum-and-sum-of-array",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2360,
+    "slug": "longest-cycle-in-a-graph",
+    "title": "Longest Cycle In A Graph",
+    "problem_id": "lc-2360-longest-cycle-in-a-graph",
+    "selection": "RESERVE"
+  },
+  {
+    "leetcode_number": 2218,
+    "slug": "maximum-value-of-k-coins-from-piles",
+    "title": "Maximum Value of K Coins From Piles",
+    "problem_id": "lc-2218-maximum-value-of-k-coins-from-piles",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2246,
+    "slug": "longest-path-with-different-adjacent-characters",
+    "title": "Longest Path With Different Adjacent Characters",
+    "problem_id": "lc-2246-longest-path-with-different-adjacent-characters",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2258,
+    "slug": "escape-the-spreading-fire",
+    "title": "Escape the Spreading Fire",
+    "problem_id": "lc-2258-escape-the-spreading-fire",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2267,
+    "slug": "check-if-there-is-a-valid-parentheses-string-path",
+    "title": "Check if There Is a Valid Parentheses String Path",
+    "problem_id": "lc-2267-check-if-there-is-a-valid-parentheses-string-path",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2290,
+    "slug": "minimum-obstacle-removal-to-reach-corner",
+    "title": "Minimum Obstacle Removal to Reach Corner",
+    "problem_id": "lc-2290-minimum-obstacle-removal-to-reach-corner",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2306,
+    "slug": "naming-a-company",
+    "title": "Naming a Company",
+    "problem_id": "lc-2306-naming-a-company",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2312,
+    "slug": "selling-pieces-of-wood",
+    "title": "Selling Pieces of Wood",
+    "problem_id": "lc-2312-selling-pieces-of-wood",
+    "selection": "FIXED"
+  },
+  {
+    "leetcode_number": 2328,
+    "slug": "number-of-increasing-paths-in-a-grid",
+    "title": "Number of Increasing Paths in a Grid",
+    "problem_id": "lc-2328-number-of-increasing-paths-in-a-grid",
+    "selection": "FIXED"
+  }
+]

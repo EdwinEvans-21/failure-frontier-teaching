@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.1",
+  "target_problem_count": 1,
+  "completed_problem_count": 1,
+  "completed": true,
+  "excluded_problem_ids": [
+    "exact_monotone_paths",
+    "lc-0761-special-binary-string"
+  ],
+  "problems": [
+    {
+      "problem_id": "lc-1489-find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
+      "public_verdict": "ACCEPTED",
+      "hidden_verdict": "ACCEPTED",
+      "stress_verdict": "ACCEPTED",
+      "public_case_count": 5,
+      "hidden_case_count": 60,
+      "stress_case_count": 4,
+      "max_stress_case_id": "max_n100_m200_equal_weight_no_bridges",
+      "max_stress_case_args_digest": 2567,
+      "reference_runtimes_ms": [
+        44,
+        52,
+        59,
+        51,
+        46,
+        50,
+        59,
+        49,
+        225
+      ],
+      "reference_runtime_summary": {
+        "runs": 7,
+        "median_ms": 51,
+        "p95_ms": 225,
+        "max_ms": 225
+      },
+      "reference_warmup_count": 2,
+      "reference_measurement_count": 7,
+      "runtime_measurement_scope": "container harness: starts immediately before submission import and entrypoint resolution; excludes Docker image build, container creation, and container startup",
+      "canary_small_verdicts": {
+        "public": "ACCEPTED",
+        "hidden": "ACCEPTED"
+      },
+      "canary_max_stress_verdicts": [
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED",
+        "TIME_LIMIT_EXCEEDED"
+      ],
+      "canary_max_stress_case_id": "max_n100_m200_equal_weight_no_bridges",
+      "memory_peak_mb": null
+    }
+  ],
+  "memory_peak_mb": null,
+  "memory_peak_status": "unavailable_from_current_dockerjudge"
+}

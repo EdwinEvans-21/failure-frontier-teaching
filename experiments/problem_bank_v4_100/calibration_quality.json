@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0",
+  "generator_seed": 20260720,
+  "calibration_problem_count": 5,
+  "problems": [
+    {
+      "problem_id": "lc-1489-find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
+      "public_test_count": 5,
+      "hidden_test_count": 60,
+      "stress_case_count": 3,
+      "differential_case_count": 10000,
+      "differential_runtime_seconds": 0.61713,
+      "reference_oracle_mismatches": 0,
+      "mutation_count": 5,
+      "mutation_score": 1.0,
+      "mutants": {
+        "wrong_semantic_1.py": true,
+        "wrong_semantic_2.py": true,
+        "wrong_semantic_3.py": true,
+        "wrong_semantic_4.py": true,
+        "wrong_semantic_5.py": true
+      },
+      "stress_runtime_seconds": 0.026396,
+      "quality_gate_status": "PASSED"
+    },
+    {
+      "problem_id": "lc-1494-parallel-courses-ii",
+      "public_test_count": 5,
+      "hidden_test_count": 60,
+      "stress_case_count": 3,
+      "differential_case_count": 10000,
+      "differential_runtime_seconds": 0.380432,
+      "reference_oracle_mismatches": 0,
+      "mutation_count": 5,
+      "mutation_score": 1.0,
+      "mutants": {
+        "wrong_semantic_1.py": true,
+        "wrong_semantic_2.py": true,
+        "wrong_semantic_3.py": true,
+        "wrong_semantic_4.py": true,
+        "wrong_semantic_5.py": true
+      },
+      "stress_runtime_seconds": 0.028869,
+      "quality_gate_status": "PASSED"
+    },
+    {
+      "problem_id": "lc-1531-string-compression-ii",
+      "public_test_count": 5,
+      "hidden_test_count": 60,
+      "stress_case_count": 3,
+      "differential_case_count": 10000,
+      "differential_runtime_seconds": 0.324093,
+      "reference_oracle_mismatches": 0,
+      "mutation_count": 5,
+      "mutation_score": 1.0,
+      "mutants": {
+        "wrong_semantic_1.py": true,
+        "wrong_semantic_2.py": true,
+        "wrong_semantic_3.py": true,
+        "wrong_semantic_4.py": true,
+        "wrong_semantic_5.py": true
+      },
+      "stress_runtime_seconds": 0.023754,
+      "quality_gate_status": "PASSED"
+    },
+    {
+      "problem_id": "lc-1547-minimum-cost-to-cut-a-stick",
+      "public_test_count": 5,
+      "hidden_test_count": 60,
+      "stress_case_count": 3,
+      "differential_case_count": 10000,
+      "differential_runtime_seconds": 0.290259,
+      "reference_oracle_mismatches": 0,
+      "mutation_count": 5,
+      "mutation_score": 1.0,
+      "mutants": {
+        "wrong_semantic_1.py": true,
+        "wrong_semantic_2.py": true,
+        "wrong_semantic_3.py": true,
+        "wrong_semantic_4.py": true,
+        "wrong_semantic_5.py": true
+      },
+      "stress_runtime_seconds": 0.024307,
+      "quality_gate_status": "PASSED"
+    },
+    {
+      "problem_id": "lc-1553-minimum-number-of-days-to-eat-n-oranges",
+      "public_test_count": 5,
+      "hidden_test_count": 60,
+      "stress_case_count": 3,
+      "differential_case_count": 10000,
+      "differential_runtime_seconds": 0.311281,
+      "reference_oracle_mismatches": 0,
+      "mutation_count": 5,
+      "mutation_score": 1.0,
+      "mutants": {
+        "wrong_semantic_1.py": true,
+        "wrong_semantic_2.py": true,
+        "wrong_semantic_3.py": true,
+        "wrong_semantic_4.py": true,
+        "wrong_semantic_5.py": true
+      },
+      "stress_runtime_seconds": 0.020052,
+      "quality_gate_status": "PASSED"
+    }
+  ]
+}

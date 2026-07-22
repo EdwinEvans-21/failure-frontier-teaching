@@ -1,0 +1,566 @@
+{
+  "schema_version": "2.0",
+  "baseline_id": "failure-frontier-baseline-v4-100-lc-independent-audit-v2",
+  "baseline_manifest": "experiments/baseline_v4_100_lc_independent_audit_v2/baseline_manifest.json",
+  "mode": "live",
+  "failure_frontier_policy": "provenance_stratified_ff_v2",
+  "teacher_failure_analysis_policy": "provenance_preserved_failure_analysis_v2",
+  "direct_ff_policy": "direct_ff_v2",
+  "rigorous_review_ff_policy": "rigorous_review_ff_v3",
+  "flat_ff_policy": "flat_ff_v2",
+  "baseline_policy": "baseline_v2",
+  "shared_failure_payload_builder": "provenance_payload_builder_v2",
+  "model": {
+    "provider": "deepseek",
+    "model_name": "deepseek-v4-flash",
+    "reasoning_mode": false,
+    "thinking": {
+      "type": "disabled"
+    },
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "max_output_tokens": 16384,
+    "base_url": "https://api.deepseek.com",
+    "api_key_env": "DEEPSEEK_API_KEY",
+    "seed": null,
+    "network_retry_limit": 2,
+    "network_retry_backoff_seconds": 1.0,
+    "mock_responses_path": null,
+    "tokenizer_name": null,
+    "tokenizer_revision": null
+  },
+  "solver": {
+    "protocol": "two_stage_v1",
+    "planning_max_output_tokens": 2048,
+    "final_max_output_tokens": 8192
+  },
+  "teaching_material": {
+    "token_match_tolerance": 0.1,
+    "gg_generation_policy": "blueprint_render_v1",
+    "failure_frontier_max_output_tokens": 8192,
+    "gg_blueprint_max_output_tokens": 2048,
+    "gg_blueprint_repair_attempts": 1,
+    "gg_material_max_output_tokens": 8192,
+    "gg_material_revision_attempts": 2,
+    "gg_short_expand_overshoot_factor": 1.08,
+    "gg_min_expand_scale": 1.05,
+    "gg_max_expand_scale": 3.5,
+    "gg_acceptance_policy": "semantic_complete_no_length_v2"
+  },
+  "execution": {
+    "output_root": "experiments/runs-provenance-v2-smoke",
+    "judge_image": "ffjudge-python:latest",
+    "judge_phase": "hidden",
+    "resume": true
+  },
+  "prompts_dir": "experiments/prompts",
+  "problems": [
+    {
+      "problem": "examples/lc-0995-minimum-number-of-k-consecutive-bit-flips/problem.json",
+      "public_tests": "examples/lc-0995-minimum-number-of-k-consecutive-bit-flips/public_tests.json",
+      "hidden_tests": "examples/lc-0995-minimum-number-of-k-consecutive-bit-flips/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1143-longest-common-subsequence/problem.json",
+      "public_tests": "examples/lc-1143-longest-common-subsequence/public_tests.json",
+      "hidden_tests": "examples/lc-1143-longest-common-subsequence/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1155-number-of-dice-rolls-with-target-sum/problem.json",
+      "public_tests": "examples/lc-1155-number-of-dice-rolls-with-target-sum/public_tests.json",
+      "hidden_tests": "examples/lc-1155-number-of-dice-rolls-with-target-sum/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1187-make-array-strictly-increasing/problem.json",
+      "public_tests": "examples/lc-1187-make-array-strictly-increasing/public_tests.json",
+      "hidden_tests": "examples/lc-1187-make-array-strictly-increasing/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1220-count-vowels-permutation/problem.json",
+      "public_tests": "examples/lc-1220-count-vowels-permutation/public_tests.json",
+      "hidden_tests": "examples/lc-1220-count-vowels-permutation/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1235-maximum-profit-in-job-scheduling/problem.json",
+      "public_tests": "examples/lc-1235-maximum-profit-in-job-scheduling/public_tests.json",
+      "hidden_tests": "examples/lc-1235-maximum-profit-in-job-scheduling/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1240-tiling-a-rectangle-with-the-fewest-squares/problem.json",
+      "public_tests": "examples/lc-1240-tiling-a-rectangle-with-the-fewest-squares/public_tests.json",
+      "hidden_tests": "examples/lc-1240-tiling-a-rectangle-with-the-fewest-squares/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1269-number-of-ways-to-stay-in-the-same-place-after-some-steps/problem.json",
+      "public_tests": "examples/lc-1269-number-of-ways-to-stay-in-the-same-place-after-some-steps/public_tests.json",
+      "hidden_tests": "examples/lc-1269-number-of-ways-to-stay-in-the-same-place-after-some-steps/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1278-palindrome-partitioning-iii/problem.json",
+      "public_tests": "examples/lc-1278-palindrome-partitioning-iii/public_tests.json",
+      "hidden_tests": "examples/lc-1278-palindrome-partitioning-iii/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1284-minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix/problem.json",
+      "public_tests": "examples/lc-1284-minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix/public_tests.json",
+      "hidden_tests": "examples/lc-1284-minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1293-shortest-path-in-a-grid-with-obstacles-elimination/problem.json",
+      "public_tests": "examples/lc-1293-shortest-path-in-a-grid-with-obstacles-elimination/public_tests.json",
+      "hidden_tests": "examples/lc-1293-shortest-path-in-a-grid-with-obstacles-elimination/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1301-number-of-paths-with-max-score/problem.json",
+      "public_tests": "examples/lc-1301-number-of-paths-with-max-score/public_tests.json",
+      "hidden_tests": "examples/lc-1301-number-of-paths-with-max-score/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1312-minimum-insertion-steps-to-make-a-string-palindrome/problem.json",
+      "public_tests": "examples/lc-1312-minimum-insertion-steps-to-make-a-string-palindrome/public_tests.json",
+      "hidden_tests": "examples/lc-1312-minimum-insertion-steps-to-make-a-string-palindrome/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1335-minimum-difficulty-of-a-job-schedule/problem.json",
+      "public_tests": "examples/lc-1335-minimum-difficulty-of-a-job-schedule/public_tests.json",
+      "hidden_tests": "examples/lc-1335-minimum-difficulty-of-a-job-schedule/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1349-maximum-students-taking-exam/problem.json",
+      "public_tests": "examples/lc-1349-maximum-students-taking-exam/public_tests.json",
+      "hidden_tests": "examples/lc-1349-maximum-students-taking-exam/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1354-construct-target-array-with-multiple-sums/problem.json",
+      "public_tests": "examples/lc-1354-construct-target-array-with-multiple-sums/public_tests.json",
+      "hidden_tests": "examples/lc-1354-construct-target-array-with-multiple-sums/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid/problem.json",
+      "public_tests": "examples/lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid/public_tests.json",
+      "hidden_tests": "examples/lc-1368-minimum-cost-to-make-at-least-one-valid-path-in-a-grid/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1388-pizza-with-3n-slices/problem.json",
+      "public_tests": "examples/lc-1388-pizza-with-3n-slices/public_tests.json",
+      "hidden_tests": "examples/lc-1388-pizza-with-3n-slices/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1402-reducing-dishes/problem.json",
+      "public_tests": "examples/lc-1402-reducing-dishes/public_tests.json",
+      "hidden_tests": "examples/lc-1402-reducing-dishes/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1416-restore-the-array/problem.json",
+      "public_tests": "examples/lc-1416-restore-the-array/public_tests.json",
+      "hidden_tests": "examples/lc-1416-restore-the-array/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1420-build-array-where-you-can-find-the-maximum-exactly-k-comparisons/problem.json",
+      "public_tests": "examples/lc-1420-build-array-where-you-can-find-the-maximum-exactly-k-comparisons/public_tests.json",
+      "hidden_tests": "examples/lc-1420-build-array-where-you-can-find-the-maximum-exactly-k-comparisons/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1434-number-of-ways-to-wear-different-hats-to-each-other/problem.json",
+      "public_tests": "examples/lc-1434-number-of-ways-to-wear-different-hats-to-each-other/public_tests.json",
+      "hidden_tests": "examples/lc-1434-number-of-ways-to-wear-different-hats-to-each-other/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1439-find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows/problem.json",
+      "public_tests": "examples/lc-1439-find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows/public_tests.json",
+      "hidden_tests": "examples/lc-1439-find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1444-number-of-ways-of-cutting-a-pizza/problem.json",
+      "public_tests": "examples/lc-1444-number-of-ways-of-cutting-a-pizza/public_tests.json",
+      "hidden_tests": "examples/lc-1444-number-of-ways-of-cutting-a-pizza/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1458-max-dot-product-of-two-subsequences/problem.json",
+      "public_tests": "examples/lc-1458-max-dot-product-of-two-subsequences/public_tests.json",
+      "hidden_tests": "examples/lc-1458-max-dot-product-of-two-subsequences/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1463-cherry-pickup-ii/problem.json",
+      "public_tests": "examples/lc-1463-cherry-pickup-ii/public_tests.json",
+      "hidden_tests": "examples/lc-1463-cherry-pickup-ii/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1473-paint-house-iii/problem.json",
+      "public_tests": "examples/lc-1473-paint-house-iii/public_tests.json",
+      "hidden_tests": "examples/lc-1473-paint-house-iii/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1489-find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/problem.json",
+      "public_tests": "examples/lc-1489-find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/public_tests.json",
+      "hidden_tests": "examples/lc-1489-find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1494-parallel-courses-ii/problem.json",
+      "public_tests": "examples/lc-1494-parallel-courses-ii/public_tests.json",
+      "hidden_tests": "examples/lc-1494-parallel-courses-ii/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1510-stone-game-iv/problem.json",
+      "public_tests": "examples/lc-1510-stone-game-iv/public_tests.json",
+      "hidden_tests": "examples/lc-1510-stone-game-iv/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1526-minimum-number-of-increments-on-subarrays-to-form-a-target-array/problem.json",
+      "public_tests": "examples/lc-1526-minimum-number-of-increments-on-subarrays-to-form-a-target-array/public_tests.json",
+      "hidden_tests": "examples/lc-1526-minimum-number-of-increments-on-subarrays-to-form-a-target-array/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1531-string-compression-ii/problem.json",
+      "public_tests": "examples/lc-1531-string-compression-ii/public_tests.json",
+      "hidden_tests": "examples/lc-1531-string-compression-ii/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1547-minimum-cost-to-cut-a-stick/problem.json",
+      "public_tests": "examples/lc-1547-minimum-cost-to-cut-a-stick/public_tests.json",
+      "hidden_tests": "examples/lc-1547-minimum-cost-to-cut-a-stick/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1553-minimum-number-of-days-to-eat-n-oranges/problem.json",
+      "public_tests": "examples/lc-1553-minimum-number-of-days-to-eat-n-oranges/public_tests.json",
+      "hidden_tests": "examples/lc-1553-minimum-number-of-days-to-eat-n-oranges/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1563-stone-game-v/problem.json",
+      "public_tests": "examples/lc-1563-stone-game-v/public_tests.json",
+      "hidden_tests": "examples/lc-1563-stone-game-v/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1575-count-all-possible-routes/problem.json",
+      "public_tests": "examples/lc-1575-count-all-possible-routes/public_tests.json",
+      "hidden_tests": "examples/lc-1575-count-all-possible-routes/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1579-remove-max-number-of-edges-to-keep-graph-fully-traversable/problem.json",
+      "public_tests": "examples/lc-1579-remove-max-number-of-edges-to-keep-graph-fully-traversable/public_tests.json",
+      "hidden_tests": "examples/lc-1579-remove-max-number-of-edges-to-keep-graph-fully-traversable/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1591-strange-printer-ii/problem.json",
+      "public_tests": "examples/lc-1591-strange-printer-ii/public_tests.json",
+      "hidden_tests": "examples/lc-1591-strange-printer-ii/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1601-maximum-number-of-achievable-transfer-requests/problem.json",
+      "public_tests": "examples/lc-1601-maximum-number-of-achievable-transfer-requests/public_tests.json",
+      "hidden_tests": "examples/lc-1601-maximum-number-of-achievable-transfer-requests/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1611-minimum-one-bit-operations-to-make-integers-zero/problem.json",
+      "public_tests": "examples/lc-1611-minimum-one-bit-operations-to-make-integers-zero/public_tests.json",
+      "hidden_tests": "examples/lc-1611-minimum-one-bit-operations-to-make-integers-zero/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1632-rank-transform-of-a-matrix/problem.json",
+      "public_tests": "examples/lc-1632-rank-transform-of-a-matrix/public_tests.json",
+      "hidden_tests": "examples/lc-1632-rank-transform-of-a-matrix/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1639-number-of-ways-to-form-a-target-string-given-a-dictionary/problem.json",
+      "public_tests": "examples/lc-1639-number-of-ways-to-form-a-target-string-given-a-dictionary/public_tests.json",
+      "hidden_tests": "examples/lc-1639-number-of-ways-to-form-a-target-string-given-a-dictionary/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1659-maximize-grid-happiness/problem.json",
+      "public_tests": "examples/lc-1659-maximize-grid-happiness/public_tests.json",
+      "hidden_tests": "examples/lc-1659-maximize-grid-happiness/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1671-minimum-number-of-removals-to-make-mountain-array/problem.json",
+      "public_tests": "examples/lc-1671-minimum-number-of-removals-to-make-mountain-array/public_tests.json",
+      "hidden_tests": "examples/lc-1671-minimum-number-of-removals-to-make-mountain-array/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1675-minimize-deviation-in-array/problem.json",
+      "public_tests": "examples/lc-1675-minimize-deviation-in-array/public_tests.json",
+      "hidden_tests": "examples/lc-1675-minimize-deviation-in-array/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1681-minimum-incompatibility/problem.json",
+      "public_tests": "examples/lc-1681-minimum-incompatibility/public_tests.json",
+      "hidden_tests": "examples/lc-1681-minimum-incompatibility/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1691-maximum-height-by-stacking-cuboids/problem.json",
+      "public_tests": "examples/lc-1691-maximum-height-by-stacking-cuboids/public_tests.json",
+      "hidden_tests": "examples/lc-1691-maximum-height-by-stacking-cuboids/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1697-checking-existence-of-edge-length-limited-paths/problem.json",
+      "public_tests": "examples/lc-1697-checking-existence-of-edge-length-limited-paths/public_tests.json",
+      "hidden_tests": "examples/lc-1697-checking-existence-of-edge-length-limited-paths/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1707-maximum-xor-with-an-element-from-array/problem.json",
+      "public_tests": "examples/lc-1707-maximum-xor-with-an-element-from-array/public_tests.json",
+      "hidden_tests": "examples/lc-1707-maximum-xor-with-an-element-from-array/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1723-find-minimum-time-to-finish-all-jobs/problem.json",
+      "public_tests": "examples/lc-1723-find-minimum-time-to-finish-all-jobs/public_tests.json",
+      "hidden_tests": "examples/lc-1723-find-minimum-time-to-finish-all-jobs/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1735-count-ways-to-make-array-with-product/problem.json",
+      "public_tests": "examples/lc-1735-count-ways-to-make-array-with-product/public_tests.json",
+      "hidden_tests": "examples/lc-1735-count-ways-to-make-array-with-product/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1751-maximum-number-of-events-that-can-be-attended-ii/problem.json",
+      "public_tests": "examples/lc-1751-maximum-number-of-events-that-can-be-attended-ii/public_tests.json",
+      "hidden_tests": "examples/lc-1751-maximum-number-of-events-that-can-be-attended-ii/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1771-maximize-palindrome-length-from-subsequences/problem.json",
+      "public_tests": "examples/lc-1771-maximize-palindrome-length-from-subsequences/public_tests.json",
+      "hidden_tests": "examples/lc-1771-maximize-palindrome-length-from-subsequences/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1782-count-pairs-of-nodes/problem.json",
+      "public_tests": "examples/lc-1782-count-pairs-of-nodes/public_tests.json",
+      "hidden_tests": "examples/lc-1782-count-pairs-of-nodes/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1786-number-of-restricted-paths-from-first-to-last-node/problem.json",
+      "public_tests": "examples/lc-1786-number-of-restricted-paths-from-first-to-last-node/public_tests.json",
+      "hidden_tests": "examples/lc-1786-number-of-restricted-paths-from-first-to-last-node/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1799-maximize-score-after-n-operations/problem.json",
+      "public_tests": "examples/lc-1799-maximize-score-after-n-operations/public_tests.json",
+      "hidden_tests": "examples/lc-1799-maximize-score-after-n-operations/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1815-maximum-number-of-groups-getting-fresh-donuts/problem.json",
+      "public_tests": "examples/lc-1815-maximum-number-of-groups-getting-fresh-donuts/public_tests.json",
+      "hidden_tests": "examples/lc-1815-maximum-number-of-groups-getting-fresh-donuts/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1830-minimum-number-of-operations-to-make-string-sorted/problem.json",
+      "public_tests": "examples/lc-1830-minimum-number-of-operations-to-make-string-sorted/public_tests.json",
+      "hidden_tests": "examples/lc-1830-minimum-number-of-operations-to-make-string-sorted/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1851-minimum-interval-to-include-each-query/problem.json",
+      "public_tests": "examples/lc-1851-minimum-interval-to-include-each-query/public_tests.json",
+      "hidden_tests": "examples/lc-1851-minimum-interval-to-include-each-query/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1857-largest-color-value-in-a-directed-graph/problem.json",
+      "public_tests": "examples/lc-1857-largest-color-value-in-a-directed-graph/public_tests.json",
+      "hidden_tests": "examples/lc-1857-largest-color-value-in-a-directed-graph/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1866-number-of-ways-to-rearrange-sticks-with-k-sticks-visible/problem.json",
+      "public_tests": "examples/lc-1866-number-of-ways-to-rearrange-sticks-with-k-sticks-visible/public_tests.json",
+      "hidden_tests": "examples/lc-1866-number-of-ways-to-rearrange-sticks-with-k-sticks-visible/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1872-stone-game-viii/problem.json",
+      "public_tests": "examples/lc-1872-stone-game-viii/public_tests.json",
+      "hidden_tests": "examples/lc-1872-stone-game-viii/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1889-minimum-space-wasted-from-packaging/problem.json",
+      "public_tests": "examples/lc-1889-minimum-space-wasted-from-packaging/public_tests.json",
+      "hidden_tests": "examples/lc-1889-minimum-space-wasted-from-packaging/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1896-minimum-cost-to-change-the-final-value-of-expression/problem.json",
+      "public_tests": "examples/lc-1896-minimum-cost-to-change-the-final-value-of-expression/public_tests.json",
+      "hidden_tests": "examples/lc-1896-minimum-cost-to-change-the-final-value-of-expression/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1916-count-ways-to-build-rooms-in-an-ant-colony/problem.json",
+      "public_tests": "examples/lc-1916-count-ways-to-build-rooms-in-an-ant-colony/public_tests.json",
+      "hidden_tests": "examples/lc-1916-count-ways-to-build-rooms-in-an-ant-colony/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1931-painting-a-grid-with-three-different-colors/problem.json",
+      "public_tests": "examples/lc-1931-painting-a-grid-with-three-different-colors/public_tests.json",
+      "hidden_tests": "examples/lc-1931-painting-a-grid-with-three-different-colors/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1959-minimum-total-space-wasted-with-k-resizing-operations/problem.json",
+      "public_tests": "examples/lc-1959-minimum-total-space-wasted-with-k-resizing-operations/public_tests.json",
+      "hidden_tests": "examples/lc-1959-minimum-total-space-wasted-with-k-resizing-operations/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1970-last-day-where-you-can-still-cross/problem.json",
+      "public_tests": "examples/lc-1970-last-day-where-you-can-still-cross/public_tests.json",
+      "hidden_tests": "examples/lc-1970-last-day-where-you-can-still-cross/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1977-number-of-ways-to-separate-numbers/problem.json",
+      "public_tests": "examples/lc-1977-number-of-ways-to-separate-numbers/public_tests.json",
+      "hidden_tests": "examples/lc-1977-number-of-ways-to-separate-numbers/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1987-number-of-unique-good-subsequences/problem.json",
+      "public_tests": "examples/lc-1987-number-of-unique-good-subsequences/public_tests.json",
+      "hidden_tests": "examples/lc-1987-number-of-unique-good-subsequences/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-1994-the-number-of-good-subsets/problem.json",
+      "public_tests": "examples/lc-1994-the-number-of-good-subsets/public_tests.json",
+      "hidden_tests": "examples/lc-1994-the-number-of-good-subsets/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2009-minimum-number-of-operations-to-make-array-continuous/problem.json",
+      "public_tests": "examples/lc-2009-minimum-number-of-operations-to-make-array-continuous/public_tests.json",
+      "hidden_tests": "examples/lc-2009-minimum-number-of-operations-to-make-array-continuous/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference/problem.json",
+      "public_tests": "examples/lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference/public_tests.json",
+      "hidden_tests": "examples/lc-2035-partition-array-into-two-arrays-to-minimize-sum-difference/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2045-second-minimum-time-to-reach-destination/problem.json",
+      "public_tests": "examples/lc-2045-second-minimum-time-to-reach-destination/public_tests.json",
+      "hidden_tests": "examples/lc-2045-second-minimum-time-to-reach-destination/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2060-check-if-an-original-string-exists-given-two-encoded-strings/problem.json",
+      "public_tests": "examples/lc-2060-check-if-an-original-string-exists-given-two-encoded-strings/public_tests.json",
+      "hidden_tests": "examples/lc-2060-check-if-an-original-string-exists-given-two-encoded-strings/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2071-maximum-number-of-tasks-you-can-assign/problem.json",
+      "public_tests": "examples/lc-2071-maximum-number-of-tasks-you-can-assign/public_tests.json",
+      "hidden_tests": "examples/lc-2071-maximum-number-of-tasks-you-can-assign/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2092-find-all-people-with-secret/problem.json",
+      "public_tests": "examples/lc-2092-find-all-people-with-secret/public_tests.json",
+      "hidden_tests": "examples/lc-2092-find-all-people-with-secret/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2106-maximum-fruits-harvested-after-at-most-k-steps/problem.json",
+      "public_tests": "examples/lc-2106-maximum-fruits-harvested-after-at-most-k-steps/public_tests.json",
+      "hidden_tests": "examples/lc-2106-maximum-fruits-harvested-after-at-most-k-steps/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2127-maximum-employees-to-be-invited-to-a-meeting/problem.json",
+      "public_tests": "examples/lc-2127-maximum-employees-to-be-invited-to-a-meeting/public_tests.json",
+      "hidden_tests": "examples/lc-2127-maximum-employees-to-be-invited-to-a-meeting/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2147-number-of-ways-to-divide-a-long-corridor/problem.json",
+      "public_tests": "examples/lc-2147-number-of-ways-to-divide-a-long-corridor/public_tests.json",
+      "hidden_tests": "examples/lc-2147-number-of-ways-to-divide-a-long-corridor/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2163-minimum-difference-in-sums-after-removal-of-elements/problem.json",
+      "public_tests": "examples/lc-2163-minimum-difference-in-sums-after-removal-of-elements/public_tests.json",
+      "hidden_tests": "examples/lc-2163-minimum-difference-in-sums-after-removal-of-elements/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2188-minimum-time-to-finish-the-race/problem.json",
+      "public_tests": "examples/lc-2188-minimum-time-to-finish-the-race/public_tests.json",
+      "hidden_tests": "examples/lc-2188-minimum-time-to-finish-the-race/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2203-minimum-weighted-subgraph-with-the-required-paths/problem.json",
+      "public_tests": "examples/lc-2203-minimum-weighted-subgraph-with-the-required-paths/public_tests.json",
+      "hidden_tests": "examples/lc-2203-minimum-weighted-subgraph-with-the-required-paths/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2366-minimum-replacements-to-sort-the-array/problem.json",
+      "public_tests": "examples/lc-2366-minimum-replacements-to-sort-the-array/public_tests.json",
+      "hidden_tests": "examples/lc-2366-minimum-replacements-to-sort-the-array/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2421-number-of-good-paths/problem.json",
+      "public_tests": "examples/lc-2421-number-of-good-paths/public_tests.json",
+      "hidden_tests": "examples/lc-2421-number-of-good-paths/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2478-number-of-beautiful-partitions/problem.json",
+      "public_tests": "examples/lc-2478-number-of-beautiful-partitions/public_tests.json",
+      "hidden_tests": "examples/lc-2478-number-of-beautiful-partitions/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2719-count-of-integers/problem.json",
+      "public_tests": "examples/lc-2719-count-of-integers/public_tests.json",
+      "hidden_tests": "examples/lc-2719-count-of-integers/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2809-minimum-time-to-make-array-sum-at-most-x/problem.json",
+      "public_tests": "examples/lc-2809-minimum-time-to-make-array-sum-at-most-x/public_tests.json",
+      "hidden_tests": "examples/lc-2809-minimum-time-to-make-array-sum-at-most-x/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2926-maximum-balanced-subsequence-sum/problem.json",
+      "public_tests": "examples/lc-2926-maximum-balanced-subsequence-sum/public_tests.json",
+      "hidden_tests": "examples/lc-2926-maximum-balanced-subsequence-sum/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2940-find-building-where-alice-and-bob-can-meet/problem.json",
+      "public_tests": "examples/lc-2940-find-building-where-alice-and-bob-can-meet/public_tests.json",
+      "hidden_tests": "examples/lc-2940-find-building-where-alice-and-bob-can-meet/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-2945-find-maximum-non-decreasing-array-length/problem.json",
+      "public_tests": "examples/lc-2945-find-maximum-non-decreasing-array-length/public_tests.json",
+      "hidden_tests": "examples/lc-2945-find-maximum-non-decreasing-array-length/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-3022-minimize-or-of-remaining-elements-using-operations/problem.json",
+      "public_tests": "examples/lc-3022-minimize-or-of-remaining-elements-using-operations/public_tests.json",
+      "hidden_tests": "examples/lc-3022-minimize-or-of-remaining-elements-using-operations/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-3045-count-prefix-and-suffix-pairs-ii/problem.json",
+      "public_tests": "examples/lc-3045-count-prefix-and-suffix-pairs-ii/public_tests.json",
+      "hidden_tests": "examples/lc-3045-count-prefix-and-suffix-pairs-ii/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-3072-distribute-elements-into-two-arrays-ii/problem.json",
+      "public_tests": "examples/lc-3072-distribute-elements-into-two-arrays-ii/public_tests.json",
+      "hidden_tests": "examples/lc-3072-distribute-elements-into-two-arrays-ii/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-3077-maximum-strength-of-k-disjoint-subarrays/problem.json",
+      "public_tests": "examples/lc-3077-maximum-strength-of-k-disjoint-subarrays/public_tests.json",
+      "hidden_tests": "examples/lc-3077-maximum-strength-of-k-disjoint-subarrays/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-3102-minimize-manhattan-distances/problem.json",
+      "public_tests": "examples/lc-3102-minimize-manhattan-distances/public_tests.json",
+      "hidden_tests": "examples/lc-3102-minimize-manhattan-distances/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-3108-minimum-cost-walk-in-weighted-graph/problem.json",
+      "public_tests": "examples/lc-3108-minimum-cost-walk-in-weighted-graph/public_tests.json",
+      "hidden_tests": "examples/lc-3108-minimum-cost-walk-in-weighted-graph/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-3116-kth-smallest-amount-with-single-denomination-combination/problem.json",
+      "public_tests": "examples/lc-3116-kth-smallest-amount-with-single-denomination-combination/public_tests.json",
+      "hidden_tests": "examples/lc-3116-kth-smallest-amount-with-single-denomination-combination/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-3117-minimum-sum-of-values-by-dividing-array/problem.json",
+      "public_tests": "examples/lc-3117-minimum-sum-of-values-by-dividing-array/public_tests.json",
+      "hidden_tests": "examples/lc-3117-minimum-sum-of-values-by-dividing-array/hidden_tests.json"
+    },
+    {
+      "problem": "examples/lc-3123-find-edges-in-shortest-paths/problem.json",
+      "public_tests": "examples/lc-3123-find-edges-in-shortest-paths/public_tests.json",
+      "hidden_tests": "examples/lc-3123-find-edges-in-shortest-paths/hidden_tests.json"
+    }
+  ],
+  "student_conditions": [
+    "baseline",
+    "direct_ff_v2",
+    "rigorous_review_ff_v3",
+    "flat_ff_v2",
+    "general_guidance"
+  ]
+}

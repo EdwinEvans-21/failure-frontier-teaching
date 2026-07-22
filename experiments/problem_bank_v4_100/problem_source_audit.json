@@ -1,0 +1,2891 @@
+{
+  "schema_version": "1.0",
+  "source": "https://leetcode.com/graphql",
+  "source_scope": "public question metadata, statements, constraints, and public examples only",
+  "problem_count": 69,
+  "verified_count": 69,
+  "failed": [],
+  "rows": [
+    {
+      "problem_id": "lc-1349-maximum-students-taking-exam",
+      "leetcode_number": 1349,
+      "title": "Maximum Students Taking Exam",
+      "slug": "maximum-students-taking-exam",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/maximum-students-taking-exam/",
+      "method_name": "maxStudents",
+      "params": [
+        {
+          "name": "seats",
+          "type": "character[][]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[[\"#\",\".\",\"#\",\"#\",\".\",\"#\"],[\".\",\"#\",\"#\",\"#\",\"#\",\".\"],[\"#\",\".\",\"#\",\"#\",\".\",\"#\"]]",
+        "[[\".\",\"#\"],[\"#\",\"#\"],[\"#\",\".\"],[\"#\",\"#\"],[\".\",\"#\"]]",
+        "[[\"#\",\".\",\".\",\".\",\"#\"],[\".\",\"#\",\".\",\"#\",\".\"],[\".\",\".\",\"#\",\".\",\".\"],[\".\",\"#\",\".\",\"#\",\".\"],[\"#\",\".\",\".\",\".\",\"#\"]]"
+      ],
+      "constraints_text": "seats\ncontains only characters\n'.'\nand\n'#'.\nm == seats.length\nn == seats[i].length\n1 <= m <= 8\n1 <= n <= 8",
+      "public_content_sha256": "d8bfa966a789979bd99687db757f72ae41a1825267d12a24cf14d2c2780ab3b7",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1388-pizza-with-3n-slices",
+      "leetcode_number": 1388,
+      "title": "Pizza With 3n Slices",
+      "slug": "pizza-with-3n-slices",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/pizza-with-3n-slices/",
+      "method_name": "maxSizeSlices",
+      "params": [
+        {
+          "name": "slices",
+          "type": "integer[]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[1,2,3,4,5,6]",
+        "[8,9,8,6,1,1]"
+      ],
+      "constraints_text": "3 * n == slices.length\n1 <= slices.length <= 500\n1 <= slices[i] <= 1000",
+      "public_content_sha256": "1fcd1bbc31aebbd6413c0d29d65e7f5a2554bb539d0e505f4420c721c7aaa8d2",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1416-restore-the-array",
+      "leetcode_number": 1416,
+      "title": "Restore The Array",
+      "slug": "restore-the-array",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/restore-the-array/",
+      "method_name": "numberOfArrays",
+      "params": [
+        {
+          "name": "s",
+          "type": "string"
+        },
+        {
+          "type": "integer",
+          "name": "k"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "\"1000\"",
+        "10000",
+        "\"1000\"",
+        "10",
+        "\"1317\"",
+        "2000"
+      ],
+      "constraints_text": "1 <= s.length <= 10\n5\ns\nconsists of only digits and does not contain leading zeros.\n1 <= k <= 10\n9",
+      "public_content_sha256": "565e8cd0e5320e6037c9eafea076c1d3f075e9d2f623191dad36341ad4186f66",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1420-build-array-where-you-can-find-the-maximum-exactly-k-comparisons",
+      "leetcode_number": 1420,
+      "title": "Build Array Where You Can Find The Maximum Exactly K Comparisons",
+      "slug": "build-array-where-you-can-find-the-maximum-exactly-k-comparisons",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/build-array-where-you-can-find-the-maximum-exactly-k-comparisons/",
+      "method_name": "numOfArrays",
+      "params": [
+        {
+          "name": "n",
+          "type": "integer"
+        },
+        {
+          "type": "integer",
+          "name": "m"
+        },
+        {
+          "type": "integer",
+          "name": "k"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "2",
+        "3",
+        "1",
+        "5",
+        "2",
+        "3",
+        "9",
+        "1",
+        "1"
+      ],
+      "constraints_text": "1 <= n <= 50\n1 <= m <= 100\n0 <= k <= n",
+      "public_content_sha256": "014e99781f4b6468fffa712855059ef26f87a2fb394692b3513a2ae25c601bfb",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1434-number-of-ways-to-wear-different-hats-to-each-other",
+      "leetcode_number": 1434,
+      "title": "Number of Ways to Wear Different Hats to Each Other",
+      "slug": "number-of-ways-to-wear-different-hats-to-each-other",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/number-of-ways-to-wear-different-hats-to-each-other/",
+      "method_name": "numberWays",
+      "params": [
+        {
+          "name": "hats",
+          "type": "list<list<integer>>"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[[3,4],[4,5],[5]]",
+        "[[3,5,1],[3,5]]",
+        "[[1,2,3,4],[1,2,3,4],[1,2,3,4],[1,2,3,4]]"
+      ],
+      "constraints_text": "n == hats.length\n1 <= n <= 10\n1 <= hats[i].length <= 40\n1 <= hats[i][j] <= 40\nhats[i]\ncontains a list of\nunique\nintegers.",
+      "public_content_sha256": "03ea2e5964b16d37869fce06c83f4d1e2992d2b8a48cd2f1f26056fb79bcec4d",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1439-find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows",
+      "leetcode_number": 1439,
+      "title": "Find the Kth Smallest Sum of a Matrix With Sorted Rows",
+      "slug": "find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows/",
+      "method_name": "kthSmallest",
+      "params": [
+        {
+          "name": "mat",
+          "type": "integer[][]"
+        },
+        {
+          "type": "integer",
+          "name": "k"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[[1,3,11],[2,4,6]]",
+        "5",
+        "[[1,3,11],[2,4,6]]",
+        "9",
+        "[[1,10,10],[1,4,5],[2,3,6]]",
+        "7"
+      ],
+      "constraints_text": "m == mat.length\nn == mat.length[i]\n1 <= m, n <= 40\n1 <= mat[i][j] <= 5000\n1 <= k <= min(200, n\nm\n)\nmat[i]\nis a non-decreasing array.",
+      "public_content_sha256": "01a846505ad59f13a58e1183cb10ef76a93994a9b6246f9a12f573460a7e0ba2",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1444-number-of-ways-of-cutting-a-pizza",
+      "leetcode_number": 1444,
+      "title": "Number of Ways of Cutting a Pizza",
+      "slug": "number-of-ways-of-cutting-a-pizza",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/number-of-ways-of-cutting-a-pizza/",
+      "method_name": "ways",
+      "params": [
+        {
+          "name": "pizza",
+          "type": "string[]"
+        },
+        {
+          "type": "integer",
+          "name": "k"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[\"A..\",\"AAA\",\"...\"]",
+        "3",
+        "[\"A..\",\"AA.\",\"...\"]",
+        "3",
+        "[\"A..\",\"A..\",\"...\"]",
+        "1"
+      ],
+      "constraints_text": "1 <= rows, cols <= 50\nrows == pizza.length\ncols == pizza[i].length\n1 <= k <= 10\npizza\nconsists of characters\n'A'\nand\n'.'\nonly.",
+      "public_content_sha256": "f0b3dbd9ba9047d200094c35412f06982d5adfb770c39bbabe21f88af757f2b8",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1458-max-dot-product-of-two-subsequences",
+      "leetcode_number": 1458,
+      "title": "Max Dot Product of Two Subsequences",
+      "slug": "max-dot-product-of-two-subsequences",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/max-dot-product-of-two-subsequences/",
+      "method_name": "maxDotProduct",
+      "params": [
+        {
+          "name": "nums1",
+          "type": "integer[]"
+        },
+        {
+          "type": "integer[]",
+          "name": "nums2"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[2,1,-2,5]",
+        "[3,0,-6]",
+        "[3,-2]",
+        "[2,-6,7]",
+        "[-1,-1]",
+        "[1,1]"
+      ],
+      "constraints_text": "1 <= nums1.length, nums2.length <= 500\n-1000 <= nums1[i], nums2[i] <= 1000",
+      "public_content_sha256": "08a565b372c9bc0bdaeff41881378b8e971a1b0d18dbf39bf9952b9a16def1ad",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1463-cherry-pickup-ii",
+      "leetcode_number": 1463,
+      "title": "Cherry Pickup II",
+      "slug": "cherry-pickup-ii",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/cherry-pickup-ii/",
+      "method_name": "cherryPickup",
+      "params": [
+        {
+          "name": "grid",
+          "type": "integer[][]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[[3,1,1],[2,5,1],[1,5,5],[2,1,1]]",
+        "[[1,0,0,0,0,0,1],[2,0,0,0,0,3,0],[2,0,9,0,0,0,0],[0,3,0,5,4,0,0],[1,0,2,3,0,0,6]]"
+      ],
+      "constraints_text": "rows == grid.length\ncols == grid[i].length\n2 <= rows, cols <= 70\n0 <= grid[i][j] <= 100",
+      "public_content_sha256": "265f90320a04e55e16c3bb72c99015823a0cd9791168f1238ca59a34a2bd6e67",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1473-paint-house-iii",
+      "leetcode_number": 1473,
+      "title": "Paint House III",
+      "slug": "paint-house-iii",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/paint-house-iii/",
+      "method_name": "minCost",
+      "params": [
+        {
+          "name": "houses",
+          "type": "integer[]"
+        },
+        {
+          "type": "integer[][]",
+          "name": "cost"
+        },
+        {
+          "type": "integer",
+          "name": "m"
+        },
+        {
+          "type": "integer",
+          "name": "n"
+        },
+        {
+          "type": "integer",
+          "name": "target"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[0,0,0,0,0]",
+        "[[1,10],[10,1],[10,1],[1,10],[5,1]]",
+        "5",
+        "2",
+        "3",
+        "[0,2,1,2,0]",
+        "[[1,10],[10,1],[10,1],[1,10],[5,1]]",
+        "5",
+        "2",
+        "3",
+        "[3,1,2,3]",
+        "[[1,1,1],[1,1,1],[1,1,1],[1,1,1]]",
+        "4",
+        "3",
+        "3"
+      ],
+      "constraints_text": "m == houses.length == cost.length\nn == cost[i].length\n1 <= m <= 100\n1 <= n <= 20\n1 <= target <= m\n0 <= houses[i] <= n\n1 <= cost[i][j] <= 10\n4",
+      "public_content_sha256": "d7116cc2010ab0a37f57f0d5f95216fcfc24265923d383138aaf16757228c07a",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1489-find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
+      "leetcode_number": 1489,
+      "title": "Find Critical and Pseudo-Critical Edges in Minimum Spanning Tree",
+      "slug": "find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/",
+      "method_name": "findCriticalAndPseudoCriticalEdges",
+      "params": [
+        {
+          "name": "n",
+          "type": "integer"
+        },
+        {
+          "type": "integer[][]",
+          "name": "edges"
+        }
+      ],
+      "return": {
+        "type": "list<list<integer>>"
+      },
+      "public_example_testcases": [
+        "5",
+        "[[0,1,1],[1,2,1],[2,3,2],[0,3,2],[0,4,3],[3,4,3],[1,4,6]]",
+        "4",
+        "[[0,1,1],[1,2,1],[2,3,1],[0,3,1]]"
+      ],
+      "constraints_text": "2 <= n <= 100\n1 <= edges.length <= min(200, n * (n - 1) / 2)\nedges[i].length == 3\n0 <= a\ni\n< b\ni\n< n\n1 <= weight\ni\n<= 1000\nAll pairs\n(a\ni\n, b\ni\n)\nare\ndistinct\n.",
+      "public_content_sha256": "1b9556a2d9a4d6d6bfa4c6b058e3c6a55b54e9f26330dc026e9a8c3a6db72c33",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1494-parallel-courses-ii",
+      "leetcode_number": 1494,
+      "title": "Parallel Courses II",
+      "slug": "parallel-courses-ii",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/parallel-courses-ii/",
+      "method_name": "minNumberOfSemesters",
+      "params": [
+        {
+          "name": "n",
+          "type": "integer"
+        },
+        {
+          "type": "integer[][]",
+          "name": "relations"
+        },
+        {
+          "type": "integer",
+          "name": "k"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "4",
+        "[[2,1],[3,1],[1,4]]",
+        "2",
+        "5",
+        "[[2,1],[3,1],[4,1],[1,5]]",
+        "2"
+      ],
+      "constraints_text": "1 <= n <= 15\n1 <= k <= n\n0 <= relations.length <= n * (n-1) / 2\nrelations[i].length == 2\n1 <= prevCourse\ni\n, nextCourse\ni\n<= n\nprevCourse\ni\n!= nextCourse\ni\nAll the pairs\n[prevCourse\ni\n, nextCourse\ni\n]\nare\nunique\n.\nThe given graph is a directed acyclic graph.",
+      "public_content_sha256": "80e9758048918f3a5c6281ee5f3b4e971a80538883707d38cc6dd3733e413d95",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1531-string-compression-ii",
+      "leetcode_number": 1531,
+      "title": "String Compression II",
+      "slug": "string-compression-ii",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/string-compression-ii/",
+      "method_name": "getLengthOfOptimalCompression",
+      "params": [
+        {
+          "name": "s",
+          "type": "string"
+        },
+        {
+          "type": "integer",
+          "name": "k"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "\"aaabcccd\"",
+        "2",
+        "\"aabbaa\"",
+        "2",
+        "\"aaaaaaaaaaa\"",
+        "0"
+      ],
+      "constraints_text": "1 <= s.length <= 100\n0 <= k <= s.length\ns\ncontains only lowercase English letters.",
+      "public_content_sha256": "06171fb476998fa885762238510516a8e4aedec67cf4fa7137f0594c5244e1bf",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2334-subarray-with-elements-greater-than-varying-threshold",
+      "leetcode_number": 2334,
+      "title": "Subarray With Elements Greater Than Varying Threshold",
+      "slug": "subarray-with-elements-greater-than-varying-threshold",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/subarray-with-elements-greater-than-varying-threshold/",
+      "method_name": "validSubarraySize",
+      "params": [
+        {
+          "name": "nums",
+          "type": "integer[]"
+        },
+        {
+          "type": "integer",
+          "name": "threshold"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[1,3,4,3,1]",
+        "6",
+        "[6,5,6,5,8]",
+        "7"
+      ],
+      "constraints_text": "1 <= nums.length <= 10\n5\n1 <= nums[i], threshold <= 10\n9",
+      "public_content_sha256": "7e2ce482d0a5607a2921699d0498fc2f7c1d421b1e245e706fbd5c88492a0275",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1553-minimum-number-of-days-to-eat-n-oranges",
+      "leetcode_number": 1553,
+      "title": "Minimum Number of Days to Eat N Oranges",
+      "slug": "minimum-number-of-days-to-eat-n-oranges",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/minimum-number-of-days-to-eat-n-oranges/",
+      "method_name": "minDays",
+      "params": [
+        {
+          "name": "n",
+          "type": "integer"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "10",
+        "6"
+      ],
+      "constraints_text": "1 <= n <= 2 * 10\n9",
+      "public_content_sha256": "93c1e5b49d3f7f7fd926c8710b29686fc13fb1268ecce2eb6499d38646abea0b",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1563-stone-game-v",
+      "leetcode_number": 1563,
+      "title": "Stone Game V",
+      "slug": "stone-game-v",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/stone-game-v/",
+      "method_name": "stoneGameV",
+      "params": [
+        {
+          "name": "stoneValue",
+          "type": "integer[]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[6,2,3,4,5,5]",
+        "[7,7,7,7,7,7,7]",
+        "[4]"
+      ],
+      "constraints_text": "1 <= stoneValue.length <= 500\n1 <= stoneValue[i] <= 10\n6",
+      "public_content_sha256": "00af895c5e13b736949870da33e028cdaeebdb8ab17fff7614f37bf0fcccc9f1",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1575-count-all-possible-routes",
+      "leetcode_number": 1575,
+      "title": "Count All Possible Routes",
+      "slug": "count-all-possible-routes",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/count-all-possible-routes/",
+      "method_name": "countRoutes",
+      "params": [
+        {
+          "name": "locations",
+          "type": "integer[]"
+        },
+        {
+          "type": "integer",
+          "name": "start"
+        },
+        {
+          "type": "integer",
+          "name": "finish"
+        },
+        {
+          "type": "integer",
+          "name": "fuel"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[2,3,6,8,4]",
+        "1",
+        "3",
+        "5",
+        "[4,3,1]",
+        "1",
+        "0",
+        "6",
+        "[5,2,1]",
+        "0",
+        "2",
+        "3"
+      ],
+      "constraints_text": "2 <= locations.length <= 100\n1 <= locations[i] <= 10\n9\nAll integers in\nlocations\nare\ndistinct\n.\n0 <= start, finish < locations.length\n1 <= fuel <= 200",
+      "public_content_sha256": "c05ba954096c23bc4123d3c2ea42cee7f6257705a7f3460c15247326bcdd8fc4",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1579-remove-max-number-of-edges-to-keep-graph-fully-traversable",
+      "leetcode_number": 1579,
+      "title": "Remove Max Number of Edges to Keep Graph Fully Traversable",
+      "slug": "remove-max-number-of-edges-to-keep-graph-fully-traversable",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/remove-max-number-of-edges-to-keep-graph-fully-traversable/",
+      "method_name": "maxNumEdgesToRemove",
+      "params": [
+        {
+          "name": "n",
+          "type": "integer"
+        },
+        {
+          "type": "integer[][]",
+          "name": "edges"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "4",
+        "[[3,1,2],[3,2,3],[1,1,3],[1,2,4],[1,1,2],[2,3,4]]",
+        "4",
+        "[[3,1,2],[3,2,3],[1,1,4],[2,1,4]]",
+        "4",
+        "[[3,2,3],[1,1,2],[2,3,4]]"
+      ],
+      "constraints_text": "1 <= n <= 10\n5\n1 <= edges.length <= min(10\n5\n, 3 * n * (n - 1) / 2)\nedges[i].length == 3\n1 <= type\ni\n<= 3\n1 <= u\ni\n< v\ni\n<= n\nAll tuples\n(type\ni\n, u\ni\n, v\ni\n)\nare distinct.",
+      "public_content_sha256": "516fa7fa17402a57679ea0d4ae920904eca6b7450df6b120c2eee3d19d4197ca",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1591-strange-printer-ii",
+      "leetcode_number": 1591,
+      "title": "Strange Printer II",
+      "slug": "strange-printer-ii",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/strange-printer-ii/",
+      "method_name": "isPrintable",
+      "params": [
+        {
+          "name": "targetGrid",
+          "type": "integer[][]"
+        }
+      ],
+      "return": {
+        "type": "boolean"
+      },
+      "public_example_testcases": [
+        "[[1,1,1,1],[1,2,2,1],[1,2,2,1],[1,1,1,1]]",
+        "[[1,1,1,1],[1,1,3,3],[1,1,3,4],[5,5,1,4]]",
+        "[[1,2,1],[2,1,2],[1,2,1]]"
+      ],
+      "constraints_text": "m == targetGrid.length\nn == targetGrid[i].length\n1 <= m, n <= 60\n1 <= targetGrid[row][col] <= 60",
+      "public_content_sha256": "ecd1166db539025713cce0d9983d98e9e2c16eff6a722f9ef6ead50405214618",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1601-maximum-number-of-achievable-transfer-requests",
+      "leetcode_number": 1601,
+      "title": "Maximum Number of Achievable Transfer Requests",
+      "slug": "maximum-number-of-achievable-transfer-requests",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/maximum-number-of-achievable-transfer-requests/",
+      "method_name": "maximumRequests",
+      "params": [
+        {
+          "name": "n",
+          "type": "integer"
+        },
+        {
+          "type": "integer[][]",
+          "name": "requests"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "5",
+        "[[0,1],[1,0],[0,1],[1,2],[2,0],[3,4]]",
+        "3",
+        "[[0,0],[1,2],[2,1]]",
+        "4",
+        "[[0,3],[3,1],[1,2],[2,0]]"
+      ],
+      "constraints_text": "1 <= n <= 20\n1 <= requests.length <= 16\nrequests[i].length == 2\n0 <= from\ni\n, to\ni\n< n",
+      "public_content_sha256": "ba9edc7c84bb8d1667c3e8f8fbbf30315ff5226e9f2312ce200e6d04ce4cf268",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1632-rank-transform-of-a-matrix",
+      "leetcode_number": 1632,
+      "title": "Rank Transform of a Matrix",
+      "slug": "rank-transform-of-a-matrix",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/rank-transform-of-a-matrix/",
+      "method_name": "matrixRankTransform",
+      "params": [
+        {
+          "name": "matrix",
+          "type": "integer[][]"
+        }
+      ],
+      "return": {
+        "type": "integer[][]"
+      },
+      "public_example_testcases": [
+        "[[1,2],[3,4]]",
+        "[[7,7],[7,7]]",
+        "[[20,-21,14],[-19,4,19],[22,-47,24],[-19,4,19]]"
+      ],
+      "constraints_text": "m == matrix.length\nn == matrix[i].length\n1 <= m, n <= 500\n-10\n9\n<= matrix[row][col] <= 10\n9",
+      "public_content_sha256": "96c9ddc23eb0a37c07df2c5c00135ec47bf83fe4a24673b889acda056dae37e8",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1639-number-of-ways-to-form-a-target-string-given-a-dictionary",
+      "leetcode_number": 1639,
+      "title": "Number of Ways to Form a Target String Given a Dictionary",
+      "slug": "number-of-ways-to-form-a-target-string-given-a-dictionary",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/number-of-ways-to-form-a-target-string-given-a-dictionary/",
+      "method_name": "numWays",
+      "params": [
+        {
+          "name": "words",
+          "type": "string[]"
+        },
+        {
+          "type": "string",
+          "name": "target"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[\"acca\",\"bbbb\",\"caca\"]",
+        "\"aba\"",
+        "[\"abba\",\"baab\"]",
+        "\"bab\""
+      ],
+      "constraints_text": "1 <= words.length <= 1000\n1 <= words[i].length <= 1000\nAll strings in\nwords\nhave the same length.\n1 <= target.length <= 1000\nwords[i]\nand\ntarget\ncontain only lowercase English letters.",
+      "public_content_sha256": "f1d1e733dbf4795487e2bd5864f073d14f19d8d648d707f7ae9a82e97412b6e2",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1659-maximize-grid-happiness",
+      "leetcode_number": 1659,
+      "title": "Maximize Grid Happiness",
+      "slug": "maximize-grid-happiness",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/maximize-grid-happiness/",
+      "method_name": "getMaxGridHappiness",
+      "params": [
+        {
+          "name": "m",
+          "type": "integer"
+        },
+        {
+          "type": "integer",
+          "name": "n"
+        },
+        {
+          "type": "integer",
+          "name": "introvertsCount"
+        },
+        {
+          "type": "integer",
+          "name": "extrovertsCount"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "2",
+        "3",
+        "1",
+        "2",
+        "3",
+        "1",
+        "2",
+        "1",
+        "2",
+        "2",
+        "4",
+        "0"
+      ],
+      "constraints_text": "1 <= m, n <= 5\n0 <= introvertsCount, extrovertsCount <= min(m * n, 6)",
+      "public_content_sha256": "f718b0a0852d74509243ae1c4661fca3b956a3ab100429c6f9e9f18463f3cea6",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1671-minimum-number-of-removals-to-make-mountain-array",
+      "leetcode_number": 1671,
+      "title": "Minimum Number of Removals to Make Mountain Array",
+      "slug": "minimum-number-of-removals-to-make-mountain-array",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/minimum-number-of-removals-to-make-mountain-array/",
+      "method_name": "minimumMountainRemovals",
+      "params": [
+        {
+          "name": "nums",
+          "type": "integer[]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[1,3,1]",
+        "[2,1,1,5,6,2,3,1]"
+      ],
+      "constraints_text": "3 <= nums.length <= 1000\n1 <= nums[i] <= 10\n9\nIt is guaranteed that you can make a mountain array out of\nnums\n.",
+      "public_content_sha256": "cd4fd5a19c982215eeca8ceb6df8613045d91d96c1a68e2b6a38e4682722d6d9",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1675-minimize-deviation-in-array",
+      "leetcode_number": 1675,
+      "title": "Minimize Deviation in Array",
+      "slug": "minimize-deviation-in-array",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/minimize-deviation-in-array/",
+      "method_name": "minimumDeviation",
+      "params": [
+        {
+          "name": "nums",
+          "type": "integer[]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[1,2,3,4]",
+        "[4,1,5,20,3]",
+        "[2,10,8]"
+      ],
+      "constraints_text": "n == nums.length\n2 <= n <= 5 * 10\n4\n1 <= nums[i] <= 10\n9",
+      "public_content_sha256": "abdbac13ec2eb50d27dcb56d79c598d3e34f499be18df0df58fc9ee79fd4b1d8",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1681-minimum-incompatibility",
+      "leetcode_number": 1681,
+      "title": "Minimum Incompatibility",
+      "slug": "minimum-incompatibility",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/minimum-incompatibility/",
+      "method_name": "minimumIncompatibility",
+      "params": [
+        {
+          "name": "nums",
+          "type": "integer[]"
+        },
+        {
+          "type": "integer",
+          "name": "k"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[1,2,1,4]",
+        "2",
+        "[6,3,8,1,3,1,2,2]",
+        "4",
+        "[5,3,3,6,3,3]",
+        "3"
+      ],
+      "constraints_text": "1 <= k <= nums.length <= 16\nnums.length\nis divisible by\nk\n1 <= nums[i] <= nums.length",
+      "public_content_sha256": "99a80d8dbf068bb23375261dcccf22f51eb02828a23ffde4c4a07512b09a62d7",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1691-maximum-height-by-stacking-cuboids",
+      "leetcode_number": 1691,
+      "title": "Maximum Height by Stacking Cuboids",
+      "slug": "maximum-height-by-stacking-cuboids",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/maximum-height-by-stacking-cuboids/",
+      "method_name": "maxHeight",
+      "params": [
+        {
+          "name": "cuboids",
+          "type": "integer[][]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[[50,45,20],[95,37,53],[45,23,12]]",
+        "[[38,25,45],[76,35,3]]",
+        "[[7,11,17],[7,17,11],[11,7,17],[11,17,7],[17,7,11],[17,11,7]]"
+      ],
+      "constraints_text": "n == cuboids.length\n1 <= n <= 100\n1 <= width\ni\n, length\ni\n, height\ni\n<= 100",
+      "public_content_sha256": "b27bdfa957924afe87a331f2bcbf41c81433bcd7f13d2b2c00c5c31fd5d32850",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1707-maximum-xor-with-an-element-from-array",
+      "leetcode_number": 1707,
+      "title": "Maximum XOR With an Element From Array",
+      "slug": "maximum-xor-with-an-element-from-array",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/maximum-xor-with-an-element-from-array/",
+      "method_name": "maximizeXor",
+      "params": [
+        {
+          "name": "nums",
+          "type": "integer[]"
+        },
+        {
+          "type": "integer[][]",
+          "name": "queries"
+        }
+      ],
+      "return": {
+        "type": "integer[]"
+      },
+      "public_example_testcases": [
+        "[0,1,2,3,4]",
+        "[[3,1],[1,3],[5,6]]",
+        "[5,2,4,6,6,3]",
+        "[[12,4],[8,1],[6,3]]"
+      ],
+      "constraints_text": "1 <= nums.length, queries.length <= 10\n5\nqueries[i].length == 2\n0 <= nums[j], x\ni\n, m\ni\n<= 10\n9",
+      "public_content_sha256": "7009e244b370d276576aab2c15e9640a8b5f05efa2cdb4266995c9ecb935fb77",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1723-find-minimum-time-to-finish-all-jobs",
+      "leetcode_number": 1723,
+      "title": "Find Minimum Time to Finish All Jobs",
+      "slug": "find-minimum-time-to-finish-all-jobs",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/find-minimum-time-to-finish-all-jobs/",
+      "method_name": "minimumTimeRequired",
+      "params": [
+        {
+          "name": "jobs",
+          "type": "integer[]"
+        },
+        {
+          "type": "integer",
+          "name": "k"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[3,2,3]",
+        "3",
+        "[1,2,4,7,8]",
+        "2"
+      ],
+      "constraints_text": "1 <= k <= jobs.length <= 12\n1 <= jobs[i] <= 10\n7",
+      "public_content_sha256": "356b73b078d044d9e6ab8c6b60d1a253de8da66c81a0e9fbccf393010283bdfe",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1735-count-ways-to-make-array-with-product",
+      "leetcode_number": 1735,
+      "title": "Count Ways to Make Array With Product",
+      "slug": "count-ways-to-make-array-with-product",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/count-ways-to-make-array-with-product/",
+      "method_name": "waysToFillArray",
+      "params": [
+        {
+          "name": "queries",
+          "type": "integer[][]"
+        }
+      ],
+      "return": {
+        "type": "integer[]"
+      },
+      "public_example_testcases": [
+        "[[2,6],[5,1],[73,660]]",
+        "[[1,1],[2,2],[3,3],[4,4],[5,5]]"
+      ],
+      "constraints_text": "1 <= queries.length <= 10\n4\n1 <= n\ni\n, k\ni\n<= 10\n4",
+      "public_content_sha256": "58746b5fcc67700d760d33e45aa08c5c763835419782a29eaa5e5b9e6ccd6a51",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1751-maximum-number-of-events-that-can-be-attended-ii",
+      "leetcode_number": 1751,
+      "title": "Maximum Number of Events That Can Be Attended II",
+      "slug": "maximum-number-of-events-that-can-be-attended-ii",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended-ii/",
+      "method_name": "maxValue",
+      "params": [
+        {
+          "name": "events",
+          "type": "integer[][]"
+        },
+        {
+          "type": "integer",
+          "name": "k"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[[1,2,4],[3,4,3],[2,3,1]]",
+        "2",
+        "[[1,2,4],[3,4,3],[2,3,10]]",
+        "2",
+        "[[1,1,1],[2,2,2],[3,3,3],[4,4,4]]",
+        "3"
+      ],
+      "constraints_text": "1 <= k <= events.length\n1 <= k * events.length <= 10\n6\n1 <= startDay\ni\n<= endDay\ni\n<= 10\n9\n1 <= value\ni\n<= 10\n6",
+      "public_content_sha256": "10db6124d558f955e895ba2a2846d6f262113ad2ee5c2e8d968268fae8f35210",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1771-maximize-palindrome-length-from-subsequences",
+      "leetcode_number": 1771,
+      "title": "Maximize Palindrome Length From Subsequences",
+      "slug": "maximize-palindrome-length-from-subsequences",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/maximize-palindrome-length-from-subsequences/",
+      "method_name": "longestPalindrome",
+      "params": [
+        {
+          "name": "word1",
+          "type": "string"
+        },
+        {
+          "type": "string",
+          "name": "word2"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "\"cacb\"",
+        "\"cbba\"",
+        "\"ab\"",
+        "\"ab\"",
+        "\"aa\"",
+        "\"bb\""
+      ],
+      "constraints_text": "1 <= word1.length, word2.length <= 1000\nword1\nand\nword2\nconsist of lowercase English letters.",
+      "public_content_sha256": "9f0e630538ef6f3aa74f208c017dd1f46f9067a6968aa9d461303da4ebe3ac41",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1782-count-pairs-of-nodes",
+      "leetcode_number": 1782,
+      "title": "Count Pairs Of Nodes",
+      "slug": "count-pairs-of-nodes",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/count-pairs-of-nodes/",
+      "method_name": "countPairs",
+      "params": [
+        {
+          "name": "n",
+          "type": "integer"
+        },
+        {
+          "type": "integer[][]",
+          "name": "edges"
+        },
+        {
+          "type": "integer[]",
+          "name": "queries"
+        }
+      ],
+      "return": {
+        "type": "integer[]"
+      },
+      "public_example_testcases": [
+        "4",
+        "[[1,2],[2,4],[1,3],[2,3],[2,1]]",
+        "[2,3]",
+        "5",
+        "[[1,5],[1,5],[3,4],[2,5],[1,3],[5,1],[2,3],[2,5]]",
+        "[1,2,3,4,5]"
+      ],
+      "constraints_text": "2 <= n <= 2 * 10\n4\n1 <= edges.length <= 10\n5\n1 <= u\ni\n, v\ni\n<= n\nu\ni\n!= v\ni\n1 <= queries.length <= 20\n0 <= queries[j] < edges.length",
+      "public_content_sha256": "78e677edab028dfccf2f51eba0282d4261133bd415522b3ea630f60fb8614ff7",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1799-maximize-score-after-n-operations",
+      "leetcode_number": 1799,
+      "title": "Maximize Score After N Operations",
+      "slug": "maximize-score-after-n-operations",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/maximize-score-after-n-operations/",
+      "method_name": "maxScore",
+      "params": [
+        {
+          "name": "nums",
+          "type": "integer[]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[1,2]",
+        "[3,4,6,8]",
+        "[1,2,3,4,5,6]"
+      ],
+      "constraints_text": "1 <= n <= 7\nnums.length == 2 * n\n1 <= nums[i] <= 10\n6",
+      "public_content_sha256": "ebf10acea89f9dcf650ae32771ce10b87efdfef601d14804bdb6ce4bb55be489",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1815-maximum-number-of-groups-getting-fresh-donuts",
+      "leetcode_number": 1815,
+      "title": "Maximum Number of Groups Getting Fresh Donuts",
+      "slug": "maximum-number-of-groups-getting-fresh-donuts",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/maximum-number-of-groups-getting-fresh-donuts/",
+      "method_name": "maxHappyGroups",
+      "params": [
+        {
+          "name": "batchSize",
+          "type": "integer"
+        },
+        {
+          "type": "integer[]",
+          "name": "groups"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "3",
+        "[1,2,3,4,5,6]",
+        "4",
+        "[1,3,2,5,2,2,1,6]"
+      ],
+      "constraints_text": "1 <= batchSize <= 9\n1 <= groups.length <= 30\n1 <= groups[i] <= 10\n9",
+      "public_content_sha256": "2211e098b1a9d53105859861c84a343ca4f1151ec17a9240466a1702a4e665a0",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1830-minimum-number-of-operations-to-make-string-sorted",
+      "leetcode_number": 1830,
+      "title": "Minimum Number of Operations to Make String Sorted",
+      "slug": "minimum-number-of-operations-to-make-string-sorted",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/minimum-number-of-operations-to-make-string-sorted/",
+      "method_name": "makeStringSorted",
+      "params": [
+        {
+          "name": "s",
+          "type": "string"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "\"cba\"",
+        "\"aabaa\""
+      ],
+      "constraints_text": "1 <= s.length <= 3000\ns\n​​​​​​ consists only of lowercase English letters.",
+      "public_content_sha256": "5f12860d08ef2bffbd4b3f674989b4760947be5a3c5f716442d04f566a4982a1",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1857-largest-color-value-in-a-directed-graph",
+      "leetcode_number": 1857,
+      "title": "Largest Color Value in a Directed Graph",
+      "slug": "largest-color-value-in-a-directed-graph",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/largest-color-value-in-a-directed-graph/",
+      "method_name": "largestPathValue",
+      "params": [
+        {
+          "name": "colors",
+          "type": "string"
+        },
+        {
+          "type": "integer[][]",
+          "name": "edges"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "\"abaca\"",
+        "[[0,1],[0,2],[2,3],[3,4]]",
+        "\"a\"",
+        "[[0,0]]"
+      ],
+      "constraints_text": "n == colors.length\nm == edges.length\n1 <= n <= 10\n5\n0 <= m <= 10\n5\ncolors\nconsists of lowercase English letters.\n0 <= a\nj\n, b\nj\n< n",
+      "public_content_sha256": "07ef45b9d45152b75c77598d8c964920cded08e99cf025e7e0565f15f71eff7f",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1866-number-of-ways-to-rearrange-sticks-with-k-sticks-visible",
+      "leetcode_number": 1866,
+      "title": "Number of Ways to Rearrange Sticks With K Sticks Visible",
+      "slug": "number-of-ways-to-rearrange-sticks-with-k-sticks-visible",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/number-of-ways-to-rearrange-sticks-with-k-sticks-visible/",
+      "method_name": "rearrangeSticks",
+      "params": [
+        {
+          "name": "n",
+          "type": "integer"
+        },
+        {
+          "type": "integer",
+          "name": "k"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "3",
+        "2",
+        "5",
+        "5",
+        "20",
+        "11"
+      ],
+      "constraints_text": "1 <= n <= 1000\n1 <= k <= n",
+      "public_content_sha256": "0f6d76b19c06570c3d7f54565fc14b6cce2da9cf1b5cbc6c6d4662b6e9dffe33",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1872-stone-game-viii",
+      "leetcode_number": 1872,
+      "title": "Stone Game VIII",
+      "slug": "stone-game-viii",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/stone-game-viii/",
+      "method_name": "stoneGameVIII",
+      "params": [
+        {
+          "name": "stones",
+          "type": "integer[]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[-1,2,-3,4,-5]",
+        "[7,-6,5,10,5,-2,-6]",
+        "[-10,-12]"
+      ],
+      "constraints_text": "n == stones.length\n2 <= n <= 10\n5\n-10\n4\n<= stones[i] <= 10\n4",
+      "public_content_sha256": "d0f52f7815ed0934c6562ec51d2b1d0baa07648629822a5fb565cafa1d3638dd",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1889-minimum-space-wasted-from-packaging",
+      "leetcode_number": 1889,
+      "title": "Minimum Space Wasted From Packaging",
+      "slug": "minimum-space-wasted-from-packaging",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/minimum-space-wasted-from-packaging/",
+      "method_name": "minWastedSpace",
+      "params": [
+        {
+          "name": "packages",
+          "type": "integer[]"
+        },
+        {
+          "type": "integer[][]",
+          "name": "boxes"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[2,3,5]",
+        "[[4,8],[2,8]]",
+        "[2,3,5]",
+        "[[1,4],[2,3],[3,4]]",
+        "[3,5,8,10,11,12]",
+        "[[12],[11,9],[10,5,14]]"
+      ],
+      "constraints_text": "n == packages.length\nm == boxes.length\n1 <= n <= 10\n5\n1 <= m <= 10\n5\n1 <= packages[i] <= 10\n5\n1 <= boxes[j].length <= 10\n5\n1 <= boxes[j][k] <= 10\n5\nsum(boxes[j].length) <= 10\n5\nThe elements in\nboxes[j]\nare\ndistinct\n.",
+      "public_content_sha256": "4feb02a22b8eca8d930e3e763c94f959fbfa7f6b4b5d49722277867154baa676",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1916-count-ways-to-build-rooms-in-an-ant-colony",
+      "leetcode_number": 1916,
+      "title": "Count Ways to Build Rooms in an Ant Colony",
+      "slug": "count-ways-to-build-rooms-in-an-ant-colony",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/count-ways-to-build-rooms-in-an-ant-colony/",
+      "method_name": "waysToBuildRooms",
+      "params": [
+        {
+          "name": "prevRoom",
+          "type": "integer[]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[-1,0,1]",
+        "[-1,0,0,1,2]"
+      ],
+      "constraints_text": "n == prevRoom.length\n2 <= n <= 10\n5\nprevRoom[0] == -1\n0 <= prevRoom[i] < n\nfor all\n1 <= i < n\nEvery room is reachable from room\n0\nonce all the rooms are built.",
+      "public_content_sha256": "5af3ea9be3dee749c5f19bcce9f8a9cae6e400479cee57e79badef457aa01aca",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1923-longest-common-subpath",
+      "leetcode_number": 1923,
+      "title": "Longest Common Subpath",
+      "slug": "longest-common-subpath",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/longest-common-subpath/",
+      "method_name": "longestCommonSubpath",
+      "params": [
+        {
+          "name": "n",
+          "type": "integer"
+        },
+        {
+          "type": "integer[][]",
+          "name": "paths"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "5",
+        "[[0,1,2,3,4],[2,3,4],[4,0,1,2,3]]",
+        "3",
+        "[[0],[1],[2]]",
+        "5",
+        "[[0,1,2,3,4],[4,3,2,1,0]]"
+      ],
+      "constraints_text": "1 <= n <= 10\n5\nm == paths.length\n2 <= m <= 10\n5\nsum(paths[i].length) <= 10\n5\n0 <= paths[i][j] < n\nThe same city is not listed multiple times consecutively in\npaths[i]\n.",
+      "public_content_sha256": "c5946f3986df59a868fbd2d899d86b3d1ebecc72cc575fbb83b0aa3518672370",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1931-painting-a-grid-with-three-different-colors",
+      "leetcode_number": 1931,
+      "title": "Painting a Grid With Three Different Colors",
+      "slug": "painting-a-grid-with-three-different-colors",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/painting-a-grid-with-three-different-colors/",
+      "method_name": "colorTheGrid",
+      "params": [
+        {
+          "name": "m",
+          "type": "integer"
+        },
+        {
+          "type": "integer",
+          "name": "n"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "1",
+        "1",
+        "1",
+        "2",
+        "5",
+        "5"
+      ],
+      "constraints_text": "1 <= m <= 5\n1 <= n <= 1000",
+      "public_content_sha256": "eaa51e25a14de511a5bd01f395a2478cf77132bde9c3fdbe9027a920663bf71b",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1959-minimum-total-space-wasted-with-k-resizing-operations",
+      "leetcode_number": 1959,
+      "title": "Minimum Total Space Wasted With K Resizing Operations",
+      "slug": "minimum-total-space-wasted-with-k-resizing-operations",
+      "difficulty": "medium",
+      "source_url": "https://leetcode.com/problems/minimum-total-space-wasted-with-k-resizing-operations/",
+      "method_name": "minSpaceWastedKResizing",
+      "params": [
+        {
+          "name": "nums",
+          "type": "integer[]"
+        },
+        {
+          "type": "integer",
+          "name": "k"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[10,20]",
+        "0",
+        "[10,20,30]",
+        "1",
+        "[10,20,15,30,20]",
+        "2"
+      ],
+      "constraints_text": "1 <= nums.length <= 200\n1 <= nums[i] <= 10\n6\n0 <= k <= nums.length - 1",
+      "public_content_sha256": "8b9dbdde40211b57fdd207d4ed562c36fbd0662d7e23b240c2f2b15cee18e109",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1977-number-of-ways-to-separate-numbers",
+      "leetcode_number": 1977,
+      "title": "Number of Ways to Separate Numbers",
+      "slug": "number-of-ways-to-separate-numbers",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/number-of-ways-to-separate-numbers/",
+      "method_name": "numberOfCombinations",
+      "params": [
+        {
+          "name": "num",
+          "type": "string"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "\"327\"",
+        "\"094\"",
+        "\"0\""
+      ],
+      "constraints_text": "1 <= num.length <= 3500\nnum\nconsists of digits\n'0'\nthrough\n'9'\n.",
+      "public_content_sha256": "618ffef554fd3014bbc198fb586e6fe1292a8cff8613e96736dcbd8ecc392839",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1982-find-array-given-subset-sums",
+      "leetcode_number": 1982,
+      "title": "Find Array Given Subset Sums",
+      "slug": "find-array-given-subset-sums",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/find-array-given-subset-sums/",
+      "method_name": "recoverArray",
+      "params": [
+        {
+          "name": "n",
+          "type": "integer"
+        },
+        {
+          "type": "integer[]",
+          "name": "sums"
+        }
+      ],
+      "return": {
+        "type": "integer[]"
+      },
+      "public_example_testcases": [
+        "3",
+        "[-3,-2,-1,0,0,1,2,3]",
+        "2",
+        "[0,0,0,0]",
+        "4",
+        "[0,0,5,5,4,-1,4,9,9,-1,4,3,4,8,3,8]"
+      ],
+      "constraints_text": "1 <= n <= 15\nsums.length == 2\nn\n-10\n4\n<= sums[i] <= 10\n4",
+      "public_content_sha256": "c1c148bc9ad3ce3e8dd1e8baf3eddad02b401ce41d512583947b44708771f6d5",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1987-number-of-unique-good-subsequences",
+      "leetcode_number": 1987,
+      "title": "Number of Unique Good Subsequences",
+      "slug": "number-of-unique-good-subsequences",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/number-of-unique-good-subsequences/",
+      "method_name": "numberOfUniqueGoodSubsequences",
+      "params": [
+        {
+          "name": "binary",
+          "type": "string"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "\"001\"",
+        "\"11\"",
+        "\"101\""
+      ],
+      "constraints_text": "1 <= binary.length <= 10\n5\nbinary\nconsists of only\n'0'\ns and\n'1'\ns.",
+      "public_content_sha256": "7c212e3d1eca245d6bc659af5ee5ccf23669043c8a44c024dabd6406ea3a7c23",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-1994-the-number-of-good-subsets",
+      "leetcode_number": 1994,
+      "title": "The Number of Good Subsets",
+      "slug": "the-number-of-good-subsets",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/the-number-of-good-subsets/",
+      "method_name": "numberOfGoodSubsets",
+      "params": [
+        {
+          "name": "nums",
+          "type": "integer[]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[1,2,3,4]",
+        "[4,2,3,15]"
+      ],
+      "constraints_text": "1 <= nums.length <= 10\n5\n1 <= nums[i] <= 30",
+      "public_content_sha256": "3a272c8e478c50c088703bcf94ef1bb31d5a70d85ad9346c55a5db9de3638f5d",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2009-minimum-number-of-operations-to-make-array-continuous",
+      "leetcode_number": 2009,
+      "title": "Minimum Number of Operations to Make Array Continuous",
+      "slug": "minimum-number-of-operations-to-make-array-continuous",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/minimum-number-of-operations-to-make-array-continuous/",
+      "method_name": "minOperations",
+      "params": [
+        {
+          "name": "nums",
+          "type": "integer[]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[4,2,5,3]",
+        "[1,2,3,5,6]",
+        "[1,10,100,1000]"
+      ],
+      "constraints_text": "1 <= nums.length <= 10\n5\n1 <= nums[i] <= 10\n9",
+      "public_content_sha256": "a7055e47bf771d0c4d169bacbe87e6e2fde7da81f3814012bddab2238c94e356",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2338-count-the-number-of-ideal-arrays",
+      "leetcode_number": 2338,
+      "title": "Count the Number of Ideal Arrays",
+      "slug": "count-the-number-of-ideal-arrays",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/count-the-number-of-ideal-arrays/",
+      "method_name": "idealArrays",
+      "params": [
+        {
+          "name": "n",
+          "type": "integer"
+        },
+        {
+          "type": "integer",
+          "name": "maxValue"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "2",
+        "5",
+        "5",
+        "3"
+      ],
+      "constraints_text": "2 <= n <= 10\n4\n1 <= maxValue <= 10\n4",
+      "public_content_sha256": "363ff3a193f3d4359dbedcb1786314db80b2ae264007efd417945b913af6407e",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2045-second-minimum-time-to-reach-destination",
+      "leetcode_number": 2045,
+      "title": "Second Minimum Time to Reach Destination",
+      "slug": "second-minimum-time-to-reach-destination",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/second-minimum-time-to-reach-destination/",
+      "method_name": "secondMinimum",
+      "params": [
+        {
+          "name": "n",
+          "type": "integer"
+        },
+        {
+          "type": "integer[][]",
+          "name": "edges"
+        },
+        {
+          "type": "integer",
+          "name": "time"
+        },
+        {
+          "type": "integer",
+          "name": "change"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "5",
+        "[[1,2],[1,3],[1,4],[3,4],[4,5]]",
+        "3",
+        "5",
+        "2",
+        "[[1,2]]",
+        "3",
+        "2"
+      ],
+      "constraints_text": "2 <= n <= 10\n4\nn - 1 <= edges.length <= min(2 * 10\n4\n, n * (n - 1) / 2)\nedges[i].length == 2\n1 <= u\ni\n, v\ni\n<= n\nu\ni\n!= v\ni\nThere are no duplicate edges.\nEach vertex can be reached directly or indirectly from every other vertex.\n1 <= time, change <= 10\n3",
+      "public_content_sha256": "876845077df1a74d3332cd3bba976eeefb188d5ef8392fca067f570a44302a45",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2060-check-if-an-original-string-exists-given-two-encoded-strings",
+      "leetcode_number": 2060,
+      "title": "Check if an Original String Exists Given Two Encoded Strings",
+      "slug": "check-if-an-original-string-exists-given-two-encoded-strings",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/check-if-an-original-string-exists-given-two-encoded-strings/",
+      "method_name": "possiblyEquals",
+      "params": [
+        {
+          "name": "s1",
+          "type": "string"
+        },
+        {
+          "type": "string",
+          "name": "s2"
+        }
+      ],
+      "return": {
+        "type": "boolean"
+      },
+      "public_example_testcases": [
+        "\"internationalization\"",
+        "\"i18n\"",
+        "\"l123e\"",
+        "\"44\"",
+        "\"a5b\"",
+        "\"c5b\""
+      ],
+      "constraints_text": "1 <= s1.length, s2.length <= 40\ns1\nand\ns2\nconsist of digits\n1-9\n(inclusive), and lowercase English letters only.\nThe number of consecutive digits in\ns1\nand\ns2\ndoes not exceed\n3\n.",
+      "public_content_sha256": "a29265f6c6729150311212f1f1bdfce5ae167ac03b41312135a010d93174fa8b",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2081-sum-of-k-mirror-numbers",
+      "leetcode_number": 2081,
+      "title": "Sum of k-Mirror Numbers",
+      "slug": "sum-of-k-mirror-numbers",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/sum-of-k-mirror-numbers/",
+      "method_name": "kMirror",
+      "params": [
+        {
+          "name": "k",
+          "type": "integer"
+        },
+        {
+          "type": "integer",
+          "name": "n"
+        }
+      ],
+      "return": {
+        "type": "long"
+      },
+      "public_example_testcases": [
+        "2",
+        "5",
+        "3",
+        "7",
+        "7",
+        "17"
+      ],
+      "constraints_text": "2 <= k <= 9\n1 <= n <= 30",
+      "public_content_sha256": "935250bfb293b67d5f33ae8f3e175fd4d81a1b9bf1f40a953a4f1579634210dc",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2092-find-all-people-with-secret",
+      "leetcode_number": 2092,
+      "title": "Find All People With Secret",
+      "slug": "find-all-people-with-secret",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/find-all-people-with-secret/",
+      "method_name": "findAllPeople",
+      "params": [
+        {
+          "name": "n",
+          "type": "integer"
+        },
+        {
+          "type": "integer[][]",
+          "name": "meetings"
+        },
+        {
+          "type": "integer",
+          "name": "firstPerson"
+        }
+      ],
+      "return": {
+        "type": "list<integer>"
+      },
+      "public_example_testcases": [
+        "6",
+        "[[1,2,5],[2,3,8],[1,5,10]]",
+        "1",
+        "4",
+        "[[3,1,3],[1,2,2],[0,3,3]]",
+        "3",
+        "5",
+        "[[3,4,2],[1,2,1],[2,3,1]]",
+        "1"
+      ],
+      "constraints_text": "2 <= n <= 10\n5\n1 <= meetings.length <= 10\n5\nmeetings[i].length == 3\n0 <= x\ni\n, y\ni\n<= n - 1\nx\ni\n!= y\ni\n1 <= time\ni\n<= 10\n5\n1 <= firstPerson <= n - 1",
+      "public_content_sha256": "b0be9a5ff345af43abfbff221a7e32cd18f60c5e98996b37e1e6b6e7ffa27ae7",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2106-maximum-fruits-harvested-after-at-most-k-steps",
+      "leetcode_number": 2106,
+      "title": "Maximum Fruits Harvested After at Most K Steps",
+      "slug": "maximum-fruits-harvested-after-at-most-k-steps",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/maximum-fruits-harvested-after-at-most-k-steps/",
+      "method_name": "maxTotalFruits",
+      "params": [
+        {
+          "name": "fruits",
+          "type": "integer[][]"
+        },
+        {
+          "type": "integer",
+          "name": "startPos"
+        },
+        {
+          "type": "integer",
+          "name": "k"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[[2,8],[6,3],[8,6]]",
+        "5",
+        "4",
+        "[[0,9],[4,1],[5,7],[6,2],[7,4],[10,9]]",
+        "5",
+        "4",
+        "[[0,3],[6,4],[8,5]]",
+        "3",
+        "2"
+      ],
+      "constraints_text": "1 <= fruits.length <= 10\n5\nfruits[i].length == 2\n0 <= startPos, position\ni\n<= 2 * 10\n5\nposition\ni-1\n< position\ni\nfor any\ni > 0\n(\n0-indexed\n)\n1 <= amount\ni\n<= 10\n4\n0 <= k <= 2 * 10\n5",
+      "public_content_sha256": "706e316a6ecbbdfac22dbf5b44dc6c5cea2d83cf31942f9871b1a031c0b5bd5d",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2127-maximum-employees-to-be-invited-to-a-meeting",
+      "leetcode_number": 2127,
+      "title": "Maximum Employees to Be Invited to a Meeting",
+      "slug": "maximum-employees-to-be-invited-to-a-meeting",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/maximum-employees-to-be-invited-to-a-meeting/",
+      "method_name": "maximumInvitations",
+      "params": [
+        {
+          "name": "favorite",
+          "type": "integer[]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[2,2,1,2]",
+        "[1,2,0]",
+        "[3,0,1,4,1]"
+      ],
+      "constraints_text": "n == favorite.length\n2 <= n <= 10\n5\n0 <= favorite[i] <= n - 1\nfavorite[i] != i",
+      "public_content_sha256": "fcae39e61c6ab4433f6818d871c1031b0d216b1916dcfc9de45eb69c17b53da9",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2147-number-of-ways-to-divide-a-long-corridor",
+      "leetcode_number": 2147,
+      "title": "Number of Ways to Divide a Long Corridor",
+      "slug": "number-of-ways-to-divide-a-long-corridor",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/number-of-ways-to-divide-a-long-corridor/",
+      "method_name": "numberOfWays",
+      "params": [
+        {
+          "name": "corridor",
+          "type": "string"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "\"SSPPSPS\"",
+        "\"PPSPSP\"",
+        "\"S\""
+      ],
+      "constraints_text": "n == corridor.length\n1 <= n <= 10\n5\ncorridor[i]\nis either\n'S'\nor\n'P'\n.",
+      "public_content_sha256": "c6e9fd722df3f854e444f15ffb52f1799d529a41e856a0b760651775cf5389c4",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2157-groups-of-strings",
+      "leetcode_number": 2157,
+      "title": "Groups of Strings",
+      "slug": "groups-of-strings",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/groups-of-strings/",
+      "method_name": "groupStrings",
+      "params": [
+        {
+          "name": "words",
+          "type": "string[]"
+        }
+      ],
+      "return": {
+        "type": "integer[]"
+      },
+      "public_example_testcases": [
+        "[\"a\",\"b\",\"ab\",\"cde\"]",
+        "[\"a\",\"ab\",\"abc\"]"
+      ],
+      "constraints_text": "1 <= words.length <= 2 * 10\n4\n1 <= words[i].length <= 26\nwords[i]\nconsists of lowercase English letters only.\nNo letter occurs more than once in\nwords[i]\n.",
+      "public_content_sha256": "f96e4b4ecffef946fdf9368885a2c536deb06a1e7f09e595ee22843e4d3969d0",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2163-minimum-difference-in-sums-after-removal-of-elements",
+      "leetcode_number": 2163,
+      "title": "Minimum Difference in Sums After Removal of Elements",
+      "slug": "minimum-difference-in-sums-after-removal-of-elements",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/minimum-difference-in-sums-after-removal-of-elements/",
+      "method_name": "minimumDifference",
+      "params": [
+        {
+          "name": "nums",
+          "type": "integer[]"
+        }
+      ],
+      "return": {
+        "type": "long"
+      },
+      "public_example_testcases": [
+        "[3,1,2]",
+        "[7,9,5,8,1,3]"
+      ],
+      "constraints_text": "nums.length == 3 * n\n1 <= n <= 10\n5\n1 <= nums[i] <= 10\n5",
+      "public_content_sha256": "553904c78bc1dccb9f98e93161b9f5d77b377c6b56ba100a137c720ac5616d2c",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2172-maximum-and-sum-of-array",
+      "leetcode_number": 2172,
+      "title": "Maximum AND Sum of Array",
+      "slug": "maximum-and-sum-of-array",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/maximum-and-sum-of-array/",
+      "method_name": "maximumANDSum",
+      "params": [
+        {
+          "name": "nums",
+          "type": "integer[]"
+        },
+        {
+          "type": "integer",
+          "name": "numSlots"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[1,2,3,4,5,6]",
+        "3",
+        "[1,3,10,4,7,1]",
+        "9"
+      ],
+      "constraints_text": "n == nums.length\n1 <= numSlots <= 9\n1 <= n <= 2 * numSlots\n1 <= nums[i] <= 15",
+      "public_content_sha256": "ccbdadb67e17d8c0fd8e014292b0d5fff48ec9537e703be2d4692b1ef6d4a96b",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2360-longest-cycle-in-a-graph",
+      "leetcode_number": 2360,
+      "title": "Longest Cycle in a Graph",
+      "slug": "longest-cycle-in-a-graph",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/longest-cycle-in-a-graph/",
+      "method_name": "longestCycle",
+      "params": [
+        {
+          "name": "edges",
+          "type": "integer[]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[3,3,4,2,3]",
+        "[2,-1,3,1]"
+      ],
+      "constraints_text": "n == edges.length\n2 <= n <= 10\n5\n-1 <= edges[i] < n\nedges[i] != i",
+      "public_content_sha256": "fe44ee5e9d43577fcd6a57e93522fa22ec994eb7ca10dce3107b21b3e5487216",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2218-maximum-value-of-k-coins-from-piles",
+      "leetcode_number": 2218,
+      "title": "Maximum Value of K Coins From Piles",
+      "slug": "maximum-value-of-k-coins-from-piles",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/maximum-value-of-k-coins-from-piles/",
+      "method_name": "maxValueOfCoins",
+      "params": [
+        {
+          "name": "piles",
+          "type": "list<list<integer>>"
+        },
+        {
+          "type": "integer",
+          "name": "k"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[[1,100,3],[7,8,9]]",
+        "2",
+        "[[100],[100],[100],[100],[100],[100],[1,1,1,1,1,1,700]]",
+        "7"
+      ],
+      "constraints_text": "n == piles.length\n1 <= n <= 1000\n1 <= piles[i][j] <= 10\n5\n1 <= k <= sum(piles[i].length) <= 2000",
+      "public_content_sha256": "3520e157da51a6759d5dbc8600b523c7e7b691ea768c9ff7f2872ce7023bb30a",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2246-longest-path-with-different-adjacent-characters",
+      "leetcode_number": 2246,
+      "title": "Longest Path With Different Adjacent Characters",
+      "slug": "longest-path-with-different-adjacent-characters",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/longest-path-with-different-adjacent-characters/",
+      "method_name": "longestPath",
+      "params": [
+        {
+          "type": "integer[]",
+          "name": "parent"
+        },
+        {
+          "type": "string",
+          "name": "s"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[-1,0,0,1,1,2]",
+        "\"abacbe\"",
+        "[-1,0,0,0]",
+        "\"aabc\""
+      ],
+      "constraints_text": "n == parent.length == s.length\n1 <= n <= 10\n5\n0 <= parent[i] <= n - 1\nfor all\ni >= 1\nparent[0] == -1\nparent\nrepresents a valid tree.\ns\nconsists of only lowercase English letters.",
+      "public_content_sha256": "adca65b525dce80dae01e57e476516874740a1be74f849a29f1fe1f6a7b12c8b",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2258-escape-the-spreading-fire",
+      "leetcode_number": 2258,
+      "title": "Escape the Spreading Fire",
+      "slug": "escape-the-spreading-fire",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/escape-the-spreading-fire/",
+      "method_name": "maximumMinutes",
+      "params": [
+        {
+          "name": "grid",
+          "type": "integer[][]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[[0,2,0,0,0,0,0],[0,0,0,2,2,1,0],[0,2,0,0,1,2,0],[0,0,2,2,2,0,2],[0,0,0,0,0,0,0]]",
+        "[[0,0,0,0],[0,1,2,0],[0,2,0,0]]",
+        "[[0,0,0],[2,2,0],[1,2,0]]"
+      ],
+      "constraints_text": "m == grid.length\nn == grid[i].length\n2 <= m, n <= 300\n4 <= m * n <= 2 * 10\n4\ngrid[i][j]\nis either\n0\n,\n1\n, or\n2\n.\ngrid[0][0] == grid[m - 1][n - 1] == 0",
+      "public_content_sha256": "4adec037131bfa04a3ec4fd13264c4c632eea5d5f1176668926b0ecb494beae0",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2267-check-if-there-is-a-valid-parentheses-string-path",
+      "leetcode_number": 2267,
+      "title": "Check if There Is a Valid Parentheses String Path",
+      "slug": "check-if-there-is-a-valid-parentheses-string-path",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/check-if-there-is-a-valid-parentheses-string-path/",
+      "method_name": "hasValidPath",
+      "params": [
+        {
+          "name": "grid",
+          "type": "character[][]"
+        }
+      ],
+      "return": {
+        "type": "boolean"
+      },
+      "public_example_testcases": [
+        "[[\"(\",\"(\",\"(\"],[\")\",\"(\",\")\"],[\"(\",\"(\",\")\"],[\"(\",\"(\",\")\"]]",
+        "[[\")\",\")\"],[\"(\",\"(\"]]"
+      ],
+      "constraints_text": "m == grid.length\nn == grid[i].length\n1 <= m, n <= 100\ngrid[i][j]\nis either\n'('\nor\n')'\n.",
+      "public_content_sha256": "3c88005bac1311cd8790fbecad9025e1fcda51028e1df433d74aaa6d369d8eec",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2290-minimum-obstacle-removal-to-reach-corner",
+      "leetcode_number": 2290,
+      "title": "Minimum Obstacle Removal to Reach Corner",
+      "slug": "minimum-obstacle-removal-to-reach-corner",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/minimum-obstacle-removal-to-reach-corner/",
+      "method_name": "minimumObstacles",
+      "params": [
+        {
+          "name": "grid",
+          "type": "integer[][]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[[0,1,1],[1,1,0],[1,1,0]]",
+        "[[0,1,0,0,0],[0,1,0,1,0],[0,0,0,1,0]]"
+      ],
+      "constraints_text": "m == grid.length\nn == grid[i].length\n1 <= m, n <= 10\n5\n2 <= m * n <= 10\n5\ngrid[i][j]\nis either\n0\nor\n1\n.\ngrid[0][0] == grid[m - 1][n - 1] == 0",
+      "public_content_sha256": "10152d29b7b8f687ef58e25a593c02ebac99590b3173399774cbb945ea091b36",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2306-naming-a-company",
+      "leetcode_number": 2306,
+      "title": "Naming a Company",
+      "slug": "naming-a-company",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/naming-a-company/",
+      "method_name": "distinctNames",
+      "params": [
+        {
+          "name": "ideas",
+          "type": "string[]"
+        }
+      ],
+      "return": {
+        "type": "long"
+      },
+      "public_example_testcases": [
+        "[\"coffee\",\"donuts\",\"time\",\"toffee\"]",
+        "[\"lack\",\"back\"]"
+      ],
+      "constraints_text": "2 <= ideas.length <= 5 * 10\n4\n1 <= ideas[i].length <= 10\nideas[i]\nconsists of lowercase English letters.\nAll the strings in\nideas\nare\nunique\n.",
+      "public_content_sha256": "1080addf1771da09a75a5d2f7afafb229339688cc7ad69b289e5be28d1e82dc0",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2312-selling-pieces-of-wood",
+      "leetcode_number": 2312,
+      "title": "Selling Pieces of Wood",
+      "slug": "selling-pieces-of-wood",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/selling-pieces-of-wood/",
+      "method_name": "sellingWood",
+      "params": [
+        {
+          "name": "m",
+          "type": "integer"
+        },
+        {
+          "type": "integer",
+          "name": "n"
+        },
+        {
+          "type": "integer[][]",
+          "name": "prices"
+        }
+      ],
+      "return": {
+        "type": "long"
+      },
+      "public_example_testcases": [
+        "3",
+        "5",
+        "[[1,4,2],[2,2,7],[2,1,3]]",
+        "4",
+        "6",
+        "[[3,2,10],[1,4,2],[4,1,3]]"
+      ],
+      "constraints_text": "1 <= m, n <= 200\n1 <= prices.length <= 2 * 10\n4\nprices[i].length == 3\n1 <= h\ni\n<= m\n1 <= w\ni\n<= n\n1 <= price\ni\n<= 10\n6\nAll the shapes of wood\n(h\ni\n, w\ni\n)\nare pairwise\ndistinct\n.",
+      "public_content_sha256": "bad4ac7afa9b070546095681a7da22576d710069b9e8daa53fa31383145d307d",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    },
+    {
+      "problem_id": "lc-2328-number-of-increasing-paths-in-a-grid",
+      "leetcode_number": 2328,
+      "title": "Number of Increasing Paths in a Grid",
+      "slug": "number-of-increasing-paths-in-a-grid",
+      "difficulty": "hard",
+      "source_url": "https://leetcode.com/problems/number-of-increasing-paths-in-a-grid/",
+      "method_name": "countPaths",
+      "params": [
+        {
+          "name": "grid",
+          "type": "integer[][]"
+        }
+      ],
+      "return": {
+        "type": "integer"
+      },
+      "public_example_testcases": [
+        "[[1,1],[3,4]]",
+        "[[1],[2]]"
+      ],
+      "constraints_text": "m == grid.length\nn == grid[i].length\n1 <= m, n <= 1000\n1 <= m * n <= 10\n5\n1 <= grid[i][j] <= 10\n5",
+      "public_content_sha256": "472e09ab6704728d0fc5dc484695e2454ab70d8739821cb3cc2573f4c2f26006",
+      "checks": {
+        "number": true,
+        "slug": true,
+        "title": true,
+        "method_present": true,
+        "parameters_present": true,
+        "return_present": true,
+        "constraints_present": true,
+        "examples_present": true
+      },
+      "source_verified": true,
+      "source_scope": "public LeetCode GraphQL question fields only; no submissions or hidden tests"
+    }
+  ]
+}
