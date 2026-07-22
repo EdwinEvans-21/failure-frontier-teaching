@@ -1,0 +1,39 @@
+[
+  {
+    "args": [
+      4,
+      43
+    ],
+    "expected": 9
+  },
+  {
+    "args": [
+      91,
+      10
+    ],
+    "expected": 662366465
+  },
+  {
+    "args": [
+      37,
+      35
+    ],
+    "expected": 700270879
+  },
+  {
+    "args": [
+      500,
+      1000000
+    ],
+    "expected": 374847123,
+    "case_id": "max_steps_large_arr"
+  },
+  {
+    "args": [
+      500,
+      251
+    ],
+    "expected": 374847123,
+    "case_id": "max_active_width"
+  }
+]

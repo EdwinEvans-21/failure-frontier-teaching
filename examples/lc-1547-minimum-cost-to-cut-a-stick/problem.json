@@ -1,12 +1,12 @@
 {
   "problem_id": "lc-1547-minimum-cost-to-cut-a-stick",
-  "title": "Minimum Cost To Cut A Stick",
+  "title": "Minimum Cost to Cut a Stick",
   "difficulty": "hard",
-  "role": "medium_dynamic_programming_optimization_candidate",
+  "role": "hard_interval_dp_candidate",
   "source_url": "https://leetcode.com/problems/minimum-cost-to-cut-a-stick/",
-  "description": "Cut a stick at every distinct requested interior position; each cut costs the current segment length. Return the minimum total cost. Inputs use Python lists and integers; unless explicitly stated, callers need not preserve mutable inputs.",
-  "input_contract": "Parameters in order: n: int, cuts: list[int]. 2 <= n <= 1e6; 1 <= len(cuts) <= 100; cuts are distinct interior integer positions and may be reordered.",
-  "output_contract": "Return integer using exact comparison. Python integer arithmetic has no 32-bit overflow; array/query order is significant.",
+  "description": "Cut the stick at all requested positions with minimum total cost.",
+  "input_contract": "2 <= n <= 1e6; cuts are distinct interior integer positions.",
+  "output_contract": "Return the minimum total cut cost. Exact integer comparison.",
   "entrypoint": {
     "kind": "class_method",
     "class_name": "Solution",
@@ -14,8 +14,8 @@
   },
   "comparison": "exact",
   "limits": {
-    "time_seconds": 4.0,
-    "memory_mb": 256,
+    "time_seconds": 6.0,
+    "memory_mb": 512,
     "cpus": 1.0,
     "pids": 32
   }

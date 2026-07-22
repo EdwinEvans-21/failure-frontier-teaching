@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-2045-second-minimum-time-to-reach-destination",
+  "topic": "second_shortest_path",
+  "memorization_risk": "medium",
+  "generator_seed": 224760720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

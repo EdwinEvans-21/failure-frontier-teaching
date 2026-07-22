@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-2060-check-if-an-original-string-exists-given-two-encoded-strings",
+  "topic": "memoized_state_search",
+  "memorization_risk": "medium",
+  "generator_seed": 226260720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

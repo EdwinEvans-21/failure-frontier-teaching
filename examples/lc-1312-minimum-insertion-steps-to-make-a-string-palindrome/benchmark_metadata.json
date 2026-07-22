@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1312-minimum-insertion-steps-to-make-a-string-palindrome",
+  "topic": "string_dp",
+  "memorization_risk": "medium",
+  "generator_seed": 151460720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

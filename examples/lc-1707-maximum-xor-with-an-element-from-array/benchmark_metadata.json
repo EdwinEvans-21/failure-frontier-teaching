@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1707-maximum-xor-with-an-element-from-array",
+  "topic": "binary_trie",
+  "memorization_risk": "medium",
+  "generator_seed": 190960720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

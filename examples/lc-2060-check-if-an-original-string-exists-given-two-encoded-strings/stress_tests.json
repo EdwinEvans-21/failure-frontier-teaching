@@ -1,0 +1,39 @@
+[
+  {
+    "args": [
+      "1c",
+      "11"
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      "c1aad",
+      "dca23"
+    ],
+    "expected": false
+  },
+  {
+    "args": [
+      "131",
+      "aa1aa"
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      "a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4",
+      "1a2b3c4d1a2b3c4d1a2b3c4d1a2b3c4d1a2b3c4d"
+    ],
+    "expected": true,
+    "case_id": "max_encoded"
+  },
+  {
+    "args": [
+      "999a999a999a999a999a999a999a999a999a999a",
+      "a999a999a999a999a999a999a999a999a999a999"
+    ],
+    "expected": true,
+    "case_id": "max_digits"
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1526-minimum-number-of-increments-on-subarrays-to-form-a-target-array",
+  "topic": "greedy_difference",
+  "memorization_risk": "medium",
+  "generator_seed": 172860720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

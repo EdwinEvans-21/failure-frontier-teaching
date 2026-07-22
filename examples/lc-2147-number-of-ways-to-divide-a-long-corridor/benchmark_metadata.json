@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-2147-number-of-ways-to-divide-a-long-corridor",
+  "topic": "counting",
+  "memorization_risk": "medium",
+  "generator_seed": 234960720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

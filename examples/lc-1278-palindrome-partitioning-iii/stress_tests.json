@@ -1,0 +1,39 @@
+[
+  {
+    "args": [
+      "cbbacbaaabcbccbcbbccabccbabbcbbbaaaabb",
+      5
+    ],
+    "expected": 4
+  },
+  {
+    "args": [
+      "bcbcaaabcaabbbbbcacaaababccaabcacccbbcc",
+      35
+    ],
+    "expected": 0
+  },
+  {
+    "args": [
+      "aabaaaabcacabcbbbaabcacccaacbaacaccbab",
+      35
+    ],
+    "expected": 0
+  },
+  {
+    "args": [
+      "abacabadabacabaeabacabadabacabaeabacabadabacabaeabacabadabacabaeabacabadabacabaeabacabadabacabaeabac",
+      50
+    ],
+    "expected": 0,
+    "case_id": "max_random_k50"
+  },
+  {
+    "args": [
+      "abacabadabacabaeabacabadabacabaeabacabadabacabaeabacabadabacabaeabacabadabacabaeabacabadabacabaeabac",
+      1
+    ],
+    "expected": 50,
+    "case_id": "max_random_k1"
+  }
+]

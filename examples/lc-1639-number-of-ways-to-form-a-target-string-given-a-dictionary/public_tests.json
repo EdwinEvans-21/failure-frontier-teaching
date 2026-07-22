@@ -1,0 +1,72 @@
+[
+  {
+    "args": [
+      [
+        "b",
+        "b",
+        "b",
+        "a",
+        "a"
+      ],
+      "c"
+    ],
+    "expected": 0
+  },
+  {
+    "args": [
+      [
+        "c"
+      ],
+      "b"
+    ],
+    "expected": 0
+  },
+  {
+    "args": [
+      [
+        "aac",
+        "ccc",
+        "acc",
+        "cac",
+        "bbc"
+      ],
+      "bcc"
+    ],
+    "expected": 10
+  },
+  {
+    "args": [
+      [
+        "ca",
+        "ca",
+        "cb",
+        "cb"
+      ],
+      "b"
+    ],
+    "expected": 2
+  },
+  {
+    "args": [
+      [
+        "acba",
+        "bbbc",
+        "caba",
+        "acab",
+        "aaac"
+      ],
+      "ac"
+    ],
+    "expected": 20
+  },
+  {
+    "args": [
+      [
+        "acbac",
+        "abcba"
+      ],
+      "acc"
+    ],
+    "expected": 6
+  }
+]

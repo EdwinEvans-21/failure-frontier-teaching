@@ -1,0 +1,10 @@
+﻿{
+    "wrong_boundary.py":  "constant boundary mutant",
+    "wrong_off_by_one.py":  "constant off-by-one mutant",
+    "wrong_direction.py":  "constant direction/value mutant",
+    "wrong_semantic_one_die.py":  "semantic: ignores all dice after the first die",
+    "wrong_semantic_combinations.py":  "semantic: counts unordered compositions instead of ordered rolls",
+    "wrong_semantic_unbounded_faces.py":  "semantic: treats face values as unbounded positive integers",
+    "wrong_semantic_missing_face_one.py":  "semantic: omits the face-one transition",
+    "wrong_semantic_no_modulo.py":  "semantic: omits required modulo reduction"
+}

@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1931-painting-a-grid-with-three-different-colors",
+  "topic": "state_compression_dp",
+  "memorization_risk": "medium",
+  "generator_seed": 213360720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1782-count-pairs-of-nodes",
+  "topic": "degree_counting",
+  "memorization_risk": "medium",
+  "generator_seed": 198460720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

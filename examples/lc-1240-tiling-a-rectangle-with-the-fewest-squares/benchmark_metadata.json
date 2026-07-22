@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1240-tiling-a-rectangle-with-the-fewest-squares",
+  "topic": "backtracking",
+  "memorization_risk": "medium",
+  "generator_seed": 144260720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

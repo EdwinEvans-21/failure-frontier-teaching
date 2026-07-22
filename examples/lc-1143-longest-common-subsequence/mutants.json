@@ -1,0 +1,10 @@
+﻿{
+    "wrong_boundary.py":  "constant boundary mutant",
+    "wrong_off_by_one.py":  "constant off-by-one mutant",
+    "wrong_direction.py":  "constant direction/value mutant",
+    "wrong_semantic_greedy_first_match.py":  "semantic: greedy first-match subsequence selection without global optimality",
+    "wrong_semantic_longest_common_substring.py":  "semantic: confuses subsequence with contiguous common substring",
+    "wrong_semantic_character_set.py":  "semantic: ignores multiplicity and order by intersecting character sets",
+    "wrong_semantic_diagonal_only.py":  "semantic: compares aligned positions only and omits skip transitions",
+    "wrong_semantic_length_bound.py":  "semantic: assumes the shorter input is always a common subsequence"
+}

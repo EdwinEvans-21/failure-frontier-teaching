@@ -1,0 +1,38 @@
+[
+  {
+    "args": [
+      "ccbbadcaccaaab"
+    ],
+    "expected": 6
+  },
+  {
+    "args": [
+      "bdddacda"
+    ],
+    "expected": 4
+  },
+  {
+    "args": [
+      "ddbcdbababbca"
+    ],
+    "expected": 6
+  },
+  {
+    "args": [
+      "cdbdddaccad"
+    ],
+    "expected": 5
+  },
+  {
+    "args": [
+      "dacdaab"
+    ],
+    "expected": 4
+  },
+  {
+    "args": [
+      "ddaacab"
+    ],
+    "expected": 4
+  }
+]

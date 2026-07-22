@@ -1,0 +1,31 @@
+[
+  {
+    "args": [
+      "baccccaaccacacbbcbbbbababccbc",
+      "ccacaccbcbbbcaab"
+    ],
+    "expected": 32
+  },
+  {
+    "args": [
+      "aacbcaa",
+      "baabbaccacaca"
+    ],
+    "expected": 14
+  },
+  {
+    "args": [
+      "ababbbaaababb",
+      "b"
+    ],
+    "expected": 11
+  },
+  {
+    "args": [
+      "abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde",
+      "edcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcbaedcba"
+    ],
+    "expected": 2000,
+    "case_id": "max_words"
+  }
+]

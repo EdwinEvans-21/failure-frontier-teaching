@@ -1,0 +1,5 @@
+﻿{
+    "wrong_boundary.py":  "constant boundary mutant",
+    "wrong_off_by_one.py":  "constant off-by-one mutant",
+    "wrong_direction.py":  "constant direction/value mutant"
+}

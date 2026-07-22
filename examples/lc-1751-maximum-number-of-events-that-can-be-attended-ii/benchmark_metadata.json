@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1751-maximum-number-of-events-that-can-be-attended-ii",
+  "topic": "weighted_interval_dp",
+  "memorization_risk": "medium",
+  "generator_seed": 195360720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

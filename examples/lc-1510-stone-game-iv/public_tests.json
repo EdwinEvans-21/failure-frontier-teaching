@@ -1,0 +1,38 @@
+[
+  {
+    "args": [
+      31
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      5
+    ],
+    "expected": false
+  },
+  {
+    "args": [
+      81
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      260
+    ],
+    "expected": false
+  },
+  {
+    "args": [
+      190
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      50
+    ],
+    "expected": true
+  }
+]

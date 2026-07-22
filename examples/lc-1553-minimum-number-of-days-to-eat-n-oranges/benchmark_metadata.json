@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1553-minimum-number-of-days-to-eat-n-oranges",
+  "topic": "memoized_search",
+  "memorization_risk": "medium",
+  "generator_seed": 175560720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

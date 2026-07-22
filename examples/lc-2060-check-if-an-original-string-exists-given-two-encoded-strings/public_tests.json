@@ -1,0 +1,44 @@
+[
+  {
+    "args": [
+      "b",
+      "1"
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      "ad2caabda",
+      "adac33"
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      "1acd11",
+      "c3321"
+    ],
+    "expected": false
+  },
+  {
+    "args": [
+      "3bcb2",
+      "2db2d1"
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      "a",
+      "1"
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      "a213d",
+      "dc1"
+    ],
+    "expected": false
+  }
+]

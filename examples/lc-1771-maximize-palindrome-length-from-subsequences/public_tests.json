@@ -1,0 +1,44 @@
+[
+  {
+    "args": [
+      "bbbacbcc",
+      "cacb"
+    ],
+    "expected": 8
+  },
+  {
+    "args": [
+      "bacccb",
+      "abbaac"
+    ],
+    "expected": 7
+  },
+  {
+    "args": [
+      "bcac",
+      "abaa"
+    ],
+    "expected": 5
+  },
+  {
+    "args": [
+      "abba",
+      "caa"
+    ],
+    "expected": 5
+  },
+  {
+    "args": [
+      "acbb",
+      "ab"
+    ],
+    "expected": 4
+  },
+  {
+    "args": [
+      "cabbc",
+      "cbb"
+    ],
+    "expected": 6
+  }
+]

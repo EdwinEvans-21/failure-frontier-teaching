@@ -1,0 +1,39 @@
+[
+  {
+    "args": [
+      4,
+      7
+    ],
+    "expected": 5
+  },
+  {
+    "args": [
+      7,
+      8
+    ],
+    "expected": 7
+  },
+  {
+    "args": [
+      3,
+      6
+    ],
+    "expected": 2
+  },
+  {
+    "args": [
+      11,
+      13
+    ],
+    "expected": 6,
+    "case_id": "hard_11x13"
+  },
+  {
+    "args": [
+      13,
+      13
+    ],
+    "expected": 1,
+    "case_id": "max_square"
+  }
+]

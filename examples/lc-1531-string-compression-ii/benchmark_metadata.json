@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1531-string-compression-ii",
+  "topic": "string_dp",
+  "memorization_risk": "medium",
+  "generator_seed": 173360720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1235-maximum-profit-in-job-scheduling",
+  "topic": "weighted_interval_dp",
+  "memorization_risk": "medium",
+  "generator_seed": 143760720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

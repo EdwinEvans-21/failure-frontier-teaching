@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1439-find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows",
+  "topic": "heap_enumeration",
+  "memorization_risk": "medium",
+  "generator_seed": 164160720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

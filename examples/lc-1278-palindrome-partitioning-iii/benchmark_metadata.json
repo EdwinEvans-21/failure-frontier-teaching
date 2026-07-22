@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1278-palindrome-partitioning-iii",
+  "topic": "interval_dp",
+  "memorization_risk": "medium",
+  "generator_seed": 148060720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1579-remove-max-number-of-edges-to-keep-graph-fully-traversable",
+  "topic": "union_find",
+  "memorization_risk": "medium",
+  "generator_seed": 178160720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

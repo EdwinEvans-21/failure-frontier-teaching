@@ -1,0 +1,10 @@
+{
+  "problem_id": "lc-1489-find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
+  "topic": "mst",
+  "generator_seed": 20260720,
+  "formal_generator": "tools/generate_problem_bank_v4_calibration.py",
+  "reference_complexity": "O(E^2 alpha(V)) time, O(V+E) space",
+  "oracle_version": "v4-calibration-2",
+  "oracle_algorithm": "MST enumeration with edge forcing",
+  "differential_target": 10000
+}

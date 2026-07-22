@@ -1,0 +1,55 @@
+[
+  {
+    "args": [
+      [
+        12
+      ]
+    ],
+    "expected": false
+  },
+  {
+    "args": [
+      [
+        18,
+        24,
+        12
+      ]
+    ],
+    "expected": false
+  },
+  {
+    "args": [
+      [
+        22
+      ]
+    ],
+    "expected": false
+  },
+  {
+    "args": [
+      [
+        26
+      ]
+    ],
+    "expected": false
+  },
+  {
+    "args": [
+      [
+        29,
+        21,
+        1,
+        40
+      ]
+    ],
+    "expected": false
+  },
+  {
+    "args": [
+      [
+        19
+      ]
+    ],
+    "expected": false
+  }
+]

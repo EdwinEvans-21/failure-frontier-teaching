@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1494-parallel-courses-ii",
+  "topic": "subset_dp",
+  "memorization_risk": "medium",
+  "generator_seed": 169660720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

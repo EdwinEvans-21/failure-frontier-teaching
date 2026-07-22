@@ -1,0 +1,23 @@
+{
+  "problem_id": "lc-1489-find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
+  "title": "Find Critical and Pseudo-Critical Edges in Minimum Spanning Tree",
+  "difficulty": "hard",
+  "role": "hard_mst_candidate",
+  "source_url": "https://leetcode.com/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/",
+  "description": "Classify edges that are required or optional in some minimum spanning tree.",
+  "input_contract": "n is 2..100; edges are distinct undirected weighted pairs and the graph is connected.",
+  "output_contract": "Return [critical_indices, pseudo_critical_indices].",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "findCriticalAndPseudoCriticalEdges"
+  },
+  "comparison": "custom",
+  "limits": {
+    "time_seconds": 6.0,
+    "memory_mb": 512,
+    "cpus": 1.0,
+    "pids": 32
+  },
+  "checker": "mst_edge_classification"
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "args": [
+      9084
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      8895
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      9181
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      100000
+    ],
+    "expected": true,
+    "case_id": "max_n"
+  }
+]

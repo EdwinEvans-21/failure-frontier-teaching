@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1601-maximum-number-of-achievable-transfer-requests",
+  "topic": "subset_enumeration",
+  "memorization_risk": "medium",
+  "generator_seed": 180360720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "args": [
+      "SPPPPSPP"
+    ],
+    "expected": 1
+  },
+  {
+    "args": [
+      "S"
+    ],
+    "expected": 0
+  },
+  {
+    "args": [
+      "PSSSP"
+    ],
+    "expected": 0
+  },
+  {
+    "args": [
+      "PSPSPSPSPPSSSPPPPPPPPPP"
+    ],
+    "expected": 0
+  },
+  {
+    "args": [
+      "PSSPPPSSPPP"
+    ],
+    "expected": 4
+  },
+  {
+    "args": [
+      "SSPPPSPPPSSSPPPPP"
+    ],
+    "expected": 4
+  }
+]

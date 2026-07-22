@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1269-number-of-ways-to-stay-in-the-same-place-after-some-steps",
+  "topic": "sequence_dp",
+  "memorization_risk": "medium",
+  "generator_seed": 147160720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

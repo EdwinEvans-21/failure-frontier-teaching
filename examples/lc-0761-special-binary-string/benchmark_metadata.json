@@ -1,7 +1,0 @@
-{
-  "problem_id": "lc-0761-special-binary-string",
-  "topic": "bit_string_expression",
-  "memorization_risk": "high",
-  "generator_seed": 20260718,
-  "formal_generator": "tools/generate_expanded_benchmarks.py"
-}

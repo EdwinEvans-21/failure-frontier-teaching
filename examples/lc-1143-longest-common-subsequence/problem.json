@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-1143-longest-common-subsequence",
+  "title": "Longest Common Subsequence",
+  "difficulty": "medium",
+  "role": "expanded_sequence_dp",
+  "source_url": "https://leetcode.com/problems/longest-common-subsequence/",
+  "description": "Implement LeetCode 1143, Longest Common Subsequence. The method must follow the stated parameter order and return the exact deterministic result. Inputs use Python values; callers need not preserve mutable inputs unless the original problem explicitly requires it. This pack paraphrases the public task and does not include platform hidden tests.",
+  "input_contract": "Parameters in order: text1, text2. Inputs satisfy the public LeetCode constraints for this problem.",
+  "output_contract": "Return a JSON-serializable int using exact comparison; list order is significant where the original problem defines an ordered result.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "longestCommonSubsequence"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 6.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}

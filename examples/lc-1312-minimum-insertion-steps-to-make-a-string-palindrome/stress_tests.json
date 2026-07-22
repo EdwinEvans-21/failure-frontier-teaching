@@ -1,0 +1,34 @@
+[
+  {
+    "args": [
+      "adccccacb"
+    ],
+    "expected": 3
+  },
+  {
+    "args": [
+      "adadccddbdbcc"
+    ],
+    "expected": 6
+  },
+  {
+    "args": [
+      "dcdcccadca"
+    ],
+    "expected": 3
+  },
+  {
+    "args": [
+      "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef"
+    ],
+    "expected": 461,
+    "case_id": "max_random"
+  },
+  {
+    "args": [
+      "edcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcbaonmlkjihgfedcba"
+    ],
+    "expected": 433,
+    "case_id": "max_distinct_pattern"
+  }
+]

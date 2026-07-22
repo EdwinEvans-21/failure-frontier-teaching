@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1866-number-of-ways-to-rearrange-sticks-with-k-sticks-visible",
+  "topic": "counting_dp",
+  "memorization_risk": "medium",
+  "generator_seed": 206860720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

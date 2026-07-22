@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-2127-maximum-employees-to-be-invited-to-a-meeting",
+  "topic": "functional_graph",
+  "memorization_risk": "medium",
+  "generator_seed": 232960720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

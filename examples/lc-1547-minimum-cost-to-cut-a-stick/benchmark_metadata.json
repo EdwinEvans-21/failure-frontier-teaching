@@ -1,7 +1,10 @@
 {
   "problem_id": "lc-1547-minimum-cost-to-cut-a-stick",
-  "topic": "dynamic_programming_optimization",
-  "memorization_risk": "high",
-  "generator_seed": 20260718,
-  "formal_generator": "tools/generate_expanded_benchmarks.py"
+  "topic": "interval_dp",
+  "generator_seed": 20260720,
+  "formal_generator": "tools/generate_problem_bank_v4_calibration.py",
+  "reference_complexity": "O(m^3) time, O(m^2) space",
+  "oracle_version": "v4-calibration-2",
+  "oracle_algorithm": "interval DP over cut positions",
+  "differential_target": 10000
 }

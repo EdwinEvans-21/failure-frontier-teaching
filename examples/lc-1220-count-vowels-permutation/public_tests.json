@@ -1,0 +1,38 @@
+[
+  {
+    "args": [
+      13
+    ],
+    "expected": 12221
+  },
+  {
+    "args": [
+      7
+    ],
+    "expected": 249
+  },
+  {
+    "args": [
+      11
+    ],
+    "expected": 3336
+  },
+  {
+    "args": [
+      17
+    ],
+    "expected": 164092
+  },
+  {
+    "args": [
+      14
+    ],
+    "expected": 23378
+  },
+  {
+    "args": [
+      20
+    ],
+    "expected": 1151090
+  }
+]

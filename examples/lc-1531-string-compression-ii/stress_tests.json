@@ -1,0 +1,39 @@
+[
+  {
+    "args": [
+      "aaaabaabcbbbbabbaabbabaaabbacabbaaabbcba",
+      16
+    ],
+    "expected": 6
+  },
+  {
+    "args": [
+      "cbbcbaababaacbbcacbbbbbbbacacabaaabbbaaaababaabbaaaaabba",
+      8
+    ],
+    "expected": 26
+  },
+  {
+    "args": [
+      "baaa",
+      0
+    ],
+    "expected": 3
+  },
+  {
+    "args": [
+      "aaabcccdxyzaaabcccdxyzaaabcccdxyzaaabcccdxyzaaabcccdxyzaaabcccdxyzaaabcccdxyzaaabcccdxyzaaabcccdxyza",
+      50
+    ],
+    "expected": 26,
+    "case_id": "max_mixed"
+  },
+  {
+    "args": [
+      "abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij",
+      20
+    ],
+    "expected": 79,
+    "case_id": "max_runs"
+  }
+]

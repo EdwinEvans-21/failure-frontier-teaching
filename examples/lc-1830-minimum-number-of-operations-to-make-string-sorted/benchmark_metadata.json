@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1830-minimum-number-of-operations-to-make-string-sorted",
+  "topic": "combinatorics",
+  "memorization_risk": "medium",
+  "generator_seed": 203260720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

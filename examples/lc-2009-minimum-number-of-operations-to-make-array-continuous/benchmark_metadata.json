@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-2009-minimum-number-of-operations-to-make-array-continuous",
+  "topic": "sliding_window",
+  "memorization_risk": "medium",
+  "generator_seed": 221160720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

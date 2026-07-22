@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1735-count-ways-to-make-array-with-product",
+  "topic": "combinatorics",
+  "memorization_risk": "medium",
+  "generator_seed": 193760720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

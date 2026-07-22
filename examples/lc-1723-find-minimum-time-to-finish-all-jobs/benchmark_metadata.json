@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1723-find-minimum-time-to-finish-all-jobs",
+  "topic": "backtracking",
+  "memorization_risk": "medium",
+  "generator_seed": 192560720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

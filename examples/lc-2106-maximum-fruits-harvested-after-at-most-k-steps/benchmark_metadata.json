@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-2106-maximum-fruits-harvested-after-at-most-k-steps",
+  "topic": "sliding_window",
+  "memorization_risk": "medium",
+  "generator_seed": 230860720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

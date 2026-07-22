@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-2163-minimum-difference-in-sums-after-removal-of-elements",
+  "topic": "two_heaps",
+  "memorization_risk": "medium",
+  "generator_seed": 236560720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1771-maximize-palindrome-length-from-subsequences",
+  "topic": "string_dp",
+  "memorization_risk": "medium",
+  "generator_seed": 197360720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

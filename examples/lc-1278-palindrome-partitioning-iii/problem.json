@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-1278-palindrome-partitioning-iii",
+  "title": "Palindrome Partitioning III",
+  "difficulty": "hard",
+  "role": "expanded_interval_dp",
+  "source_url": "https://leetcode.com/problems/palindrome-partitioning-iii/",
+  "description": "Implement LeetCode 1278, Palindrome Partitioning III. The method must follow the stated parameter order and return the exact deterministic result. Inputs use Python values; callers need not preserve mutable inputs unless the original problem explicitly requires it. This pack paraphrases the public task and does not include platform hidden tests.",
+  "input_contract": "Parameters in order: s, k. Inputs satisfy the public LeetCode constraints for this problem.",
+  "output_contract": "Return a JSON-serializable int using exact comparison; list order is significant where the original problem defines an ordered result.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "palindromePartition"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 6.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}

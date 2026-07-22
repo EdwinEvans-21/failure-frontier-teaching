@@ -1,0 +1,44 @@
+[
+  {
+    "args": [
+      2,
+      4
+    ],
+    "expected": 2
+  },
+  {
+    "args": [
+      2,
+      3
+    ],
+    "expected": 3
+  },
+  {
+    "args": [
+      4,
+      1
+    ],
+    "expected": 4
+  },
+  {
+    "args": [
+      1,
+      4
+    ],
+    "expected": 4
+  },
+  {
+    "args": [
+      5,
+      2
+    ],
+    "expected": 4
+  },
+  {
+    "args": [
+      3,
+      4
+    ],
+    "expected": 4
+  }
+]

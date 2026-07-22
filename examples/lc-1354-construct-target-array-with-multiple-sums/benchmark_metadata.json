@@ -1,0 +1,8 @@
+{
+  "problem_id": "lc-1354-construct-target-array-with-multiple-sums",
+  "topic": "greedy_heap",
+  "memorization_risk": "medium",
+  "generator_seed": 155660720,
+  "formal_generator": "pack_tools/build_pack.py",
+  "pack_quality": "runtime_validated_provisional"
+}

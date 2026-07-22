@@ -1,0 +1,38 @@
+[
+  {
+    "args": [
+      "edacaedeec"
+    ],
+    "expected": 14773
+  },
+  {
+    "args": [
+      "eaaacddada"
+    ],
+    "expected": 4564
+  },
+  {
+    "args": [
+      "eaaaadb"
+    ],
+    "expected": 181
+  },
+  {
+    "args": [
+      "eacb"
+    ],
+    "expected": 19
+  },
+  {
+    "args": [
+      "deabcacdedcb"
+    ],
+    "expected": 1312997
+  },
+  {
+    "args": [
+      "bcad"
+    ],
+    "expected": 8
+  }
+]

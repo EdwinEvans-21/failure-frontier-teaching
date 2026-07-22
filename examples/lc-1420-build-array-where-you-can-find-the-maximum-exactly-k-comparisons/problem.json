@@ -1,0 +1,22 @@
+{
+  "problem_id": "lc-1420-build-array-where-you-can-find-the-maximum-exactly-k-comparisons",
+  "title": "Build Array Where You Can Find the Maximum Exactly K Comparisons",
+  "difficulty": "hard",
+  "role": "expanded_counting_dp",
+  "source_url": "https://leetcode.com/problems/build-array-where-you-can-find-the-maximum-exactly-k-comparisons/",
+  "description": "Implement LeetCode 1420, Build Array Where You Can Find the Maximum Exactly K Comparisons. The method must follow the stated parameter order and return the exact deterministic result. Inputs use Python values; callers need not preserve mutable inputs unless the original problem explicitly requires it. This pack paraphrases the public task and does not include platform hidden tests.",
+  "input_contract": "Parameters in order: n, m, k. Inputs satisfy the public LeetCode constraints for this problem.",
+  "output_contract": "Return a JSON-serializable int using exact comparison; list order is significant where the original problem defines an ordered result.",
+  "entrypoint": {
+    "kind": "class_method",
+    "class_name": "Solution",
+    "method": "numOfArrays"
+  },
+  "comparison": "exact",
+  "limits": {
+    "time_seconds": 6.0,
+    "memory_mb": 256,
+    "cpus": 1.0,
+    "pids": 32
+  }
+}
